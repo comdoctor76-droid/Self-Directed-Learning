@@ -11,8 +11,12 @@ body{font-family:'Noto Sans KR',sans-serif;background:#FBF8F5;color:#26282C;font
 :root{--or:#E8651A;--ord:#C94F0A;--ors:#FFF3EA;--navy:#1A2744;--navy2:#2C3F6E;--gray:#6B7078}
 
 /* HERO */
-.hero{background:linear-gradient(135deg,#1A2744 0%,#2C3F6E 60%,#3d5390 100%);color:#fff;padding:56px 20px 68px}
+.hero{background:linear-gradient(135deg,#1A2744 0%,#2C3F6E 60%,#3d5390 100%);color:#fff;padding:56px 20px 68px;position:relative}
 .hero-in{max-width:1060px;margin:0 auto}
+.refresh-btn{position:absolute;top:18px;right:18px;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);color:#fff;font-family:inherit;font-size:13px;font-weight:700;padding:8px 14px;border-radius:999px;cursor:pointer}
+.refresh-btn:hover{background:rgba(255,255,255,.22)}
+.refresh-btn:active{transform:scale(.95)}
+.refresh-btn .ic{font-size:15px;line-height:1}
 .badge{display:inline-block;background:#E8651A;color:#fff;font-weight:700;font-size:14px;padding:7px 16px;border-radius:999px;margin-bottom:16px}
 .hero h1{font-size:34px;font-weight:900;line-height:1.35;margin-bottom:14px}
 .hero h1 span{color:#FFB37E}
@@ -47,17 +51,22 @@ footer b{color:#FFB37E}
 @media(max-width:760px){
   .hero h1{font-size:26px}
   .deck-h h2{font-size:19px}
+  .refresh-btn .label{display:none}
+  .refresh-btn{padding:8px 10px}
 }
 </style>
 </head>
 <body>
 
 <div class="hero">
+  <button class="refresh-btn" onclick="location.reload()" aria-label="새로고침">
+    <span class="ic">🔄</span><span class="label">새로고침</span>
+  </button>
   <div class="hero-in">
     <span class="badge">스스로 학습하기</span>
     <h1>플래너를 위한 니즈환기 자료<br><span>인터랙티브 가이드</span></h1>
     <p>가입설계서로 담보설명에 집중하는 프리젠테이션은 이제그만! 니즈환기로 승부하자!!</p>
-    <div class="version-tag"><span class="dot"></span>v0.02</div>
+    <div class="version-tag"><span class="dot"></span>v0.03</div>
   </div>
 </div>
 
