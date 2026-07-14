@@ -3,150 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>법인세 · 법인보험 완전 가이드 | 현대해상 호남지역단</title>
+<title>스스로 학습하기 | 플래너를 위한 니즈환기 자료</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
-
-<!-- ★ 모달 제어 함수 - HEAD에 먼저 선언 (카카오 인앱브라우저 호환) -->
-<script>
-function OM(key) {
-  var bg = document.getElementById('MB');
-  var title = document.getElementById('MT');
-  var body = document.getElementById('MC');
-  var data = window.MD ? window.MD[key] : null;
-  if (!data || !bg || !title || !body) return;
-  title.innerHTML = data.t;
-  body.innerHTML = data.b;
-  bg.style.cssText = 'display:block;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(20,25,38,0.75);z-index:9999;overflow-y:auto;-webkit-overflow-scrolling:touch;';
-}
-function CM() {
-  var bg = document.getElementById('MB');
-  if (bg) bg.style.display = 'none';
-}
-</script>
-
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Noto Sans KR',sans-serif;background:#FBF8F5;color:#26282C;font-size:17px;line-height:1.65}
-:root{--or:#E8651A;--ord:#C94F0A;--ors:#FFF3EA;--navy:#1A2744;--navy2:#2C3F6E;--gray:#6B7078;--green:#1E8E5A;--red:#D6403A}
+:root{--or:#E8651A;--ord:#C94F0A;--ors:#FFF3EA;--navy:#1A2744;--navy2:#2C3F6E;--gray:#6B7078}
 
 /* HERO */
-.hero{background:linear-gradient(135deg,#1A2744 0%,#2C3F6E 60%,#3d5390 100%);color:#fff;padding:50px 20px 64px}
+.hero{background:linear-gradient(135deg,#1A2744 0%,#2C3F6E 60%,#3d5390 100%);color:#fff;padding:56px 20px 68px}
 .hero-in{max-width:1060px;margin:0 auto}
 .badge{display:inline-block;background:#E8651A;color:#fff;font-weight:700;font-size:14px;padding:7px 16px;border-radius:999px;margin-bottom:16px}
-.hero h1{font-size:32px;font-weight:900;line-height:1.3;margin-bottom:12px}
+.hero h1{font-size:34px;font-weight:900;line-height:1.35;margin-bottom:14px}
 .hero h1 span{color:#FFB37E}
-.hero p{font-size:17px;opacity:.9;max-width:600px}
-.tip{margin-top:22px;display:inline-block;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:11px 16px;font-size:14.5px}
-.tip b{color:#FFC79B}
-
-/* NAV */
-.nav{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.1)}
-.nav-in{max-width:1060px;margin:0 auto;display:flex;overflow-x:auto;gap:4px;padding:9px 12px;scrollbar-width:none}
-.nav-in::-webkit-scrollbar{display:none}
-.nav a{flex:0 0 auto;font-size:14.5px;font-weight:700;color:#6B7078;text-decoration:none;padding:8px 14px;border-radius:999px;white-space:nowrap}
-.nav a:hover{background:#FFF3EA;color:#C94F0A}
+.hero p{font-size:17px;opacity:.92;max-width:620px}
+.version-tag{margin-top:20px;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:6px 14px;font-size:13px;color:rgba(255,255,255,.85);font-weight:700;letter-spacing:.3px}
+.version-tag .dot{width:6px;height:6px;border-radius:50%;background:#7CE0A8}
 
 /* WRAP */
 .wrap{max-width:1060px;margin:0 auto;padding:0 16px}
-section{padding:52px 0 20px}
-.sh{margin-bottom:22px}
-.sh .no{display:block;color:#E8651A;font-weight:900;font-size:14px;letter-spacing:1.5px;margin-bottom:6px}
-.sh h2{font-size:26px;font-weight:900;color:#1A2744}
-.sh p{color:#6B7078;margin-top:7px;font-size:16px}
-.hint{display:inline-block;background:#FFF3EA;color:#C94F0A;font-size:14px;font-weight:700;border-radius:999px;padding:6px 14px;margin-top:10px}
+.deck{padding:52px 0 60px}
+.deck-h{margin-bottom:22px}
+.deck-h .no{display:block;color:#E8651A;font-weight:900;font-size:14px;letter-spacing:1.5px;margin-bottom:6px}
+.deck-h h2{font-size:22px;font-weight:900;color:#1A2744}
 
-/* GRID */
-.g{display:grid;gap:14px}
-.g2{grid-template-columns:1fr 1fr}
-.g3{grid-template-columns:1fr 1fr 1fr}
+/* CARD GRID */
+.g{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
 
-/* CARD - onclick 직접 하드코딩 방식 */
-.card{background:#fff;border:2px solid #EEE7DF;border-radius:16px;padding:22px 20px;cursor:pointer;position:relative;display:block;width:100%;text-align:left}
-.card:active{border-color:#E8651A;background:#FFF9F5}
-.ico{font-size:28px;margin-bottom:8px;display:block}
-.card h3{font-size:18px;font-weight:800;color:#1A2744;margin-bottom:6px;line-height:1.4}
-.card p{font-size:15px;color:#6B7078}
-.plus{position:absolute;top:16px;right:16px;width:28px;height:28px;border-radius:50%;background:#FFF3EA;color:#E8651A;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;line-height:1}
-.tag{display:inline-block;font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;margin-bottom:8px}
-.to{background:#FFF3EA;color:#C94F0A}
-.tg{background:#E7F5EE;color:#1E8E5A}
-.tr{background:#FCEBEA;color:#D6403A}
-.tn{background:#EBEFF8;color:#2C3F6E}
-
-/* FLOW */
-.flow{display:flex;flex-direction:column;max-width:620px;margin:0 auto}
-.step{background:#fff;border:2px solid #EEE7DF;border-radius:12px;padding:15px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;margin-bottom:4px}
-.step:active{border-color:#E8651A;background:#FFF9F5}
-.sn{flex:0 0 38px;height:38px;border-radius:10px;background:#E8651A;color:#fff;font-weight:900;font-size:17px;display:flex;align-items:center;justify-content:center}
-.alt .sn{background:#2C3F6E}
-.step b{font-size:17px;color:#1A2744;display:block}
-.step small{font-size:13.5px;color:#6B7078;margin-top:2px;display:block}
-.arr{text-align:center;color:#E8651A;font-size:18px;font-weight:900;padding:2px 0;margin-bottom:4px}
-
-/* TABLE */
-.tbl{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;font-size:15.5px}
-.tbl th{background:#1A2744;color:#fff;font-weight:700;padding:12px 10px;font-size:15px}
-.tbl td{padding:12px 10px;border-bottom:1px solid #F0EAE2;text-align:center}
-.tbl tr:last-child td{border-bottom:none}
-.tbl td.hl{color:#C94F0A;font-weight:800}
-.tbl-box{border-radius:12px;overflow:auto;box-shadow:0 3px 12px rgba(0,0,0,.07)}
-
-/* BAR */
-.bars{display:flex;flex-direction:column;gap:14px;margin-top:6px}
-.bar{background:#fff;border:2px solid #EEE7DF;border-radius:12px;padding:15px 16px;cursor:pointer}
-.bar:active{border-color:#E8651A;background:#FFF9F5}
-.bl{display:flex;justify-content:space-between;font-weight:800;font-size:15.5px;margin-bottom:8px}
-.bl .amt{color:#C94F0A}
-.bt{height:24px;background:#F1ECE5;border-radius:999px;overflow:hidden}
-.bf{height:100%;border-radius:999px;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;color:#fff;font-weight:800;font-size:13px}
-.bfa{background:linear-gradient(90deg,#98A2B3,#6B7078);width:74%}
-.bfb{background:linear-gradient(90deg,#F09A54,#E8651A);width:80%}
-.bfc{background:linear-gradient(90deg,#E8651A,#C94F0A);width:96%}
-
-/* 경고/OK박스 */
-.bad{background:#FCEEED;border-left:4px solid #D6403A;border-radius:0 8px 8px 0;padding:12px 14px;margin:12px 0;font-size:15.5px}
-.ok{background:#E9F6EF;border-left:4px solid #1E8E5A;border-radius:0 8px 8px 0;padding:12px 14px;margin:12px 0;font-size:15.5px}
-.note{background:#FFF9E8;border-left:4px solid #E5A00D;border-radius:0 8px 8px 0;padding:12px 14px;margin:12px 0;font-size:15.5px}
+.lcard{display:block;text-decoration:none;color:inherit;background:#fff;border:2px solid #EEE7DF;border-radius:18px;overflow:hidden;box-shadow:0 4px 18px rgba(26,39,68,.06)}
+.lcard:active{border-color:#E8651A}
+.lcard .thumb{height:150px;background:linear-gradient(135deg,#1A2744 0%,#2C3F6E 60%,#3d5390 100%);display:flex;align-items:center;justify-content:center;position:relative}
+.lcard .thumb .ico{font-size:44px}
+.lcard .thumb .menu{position:absolute;left:16px;bottom:12px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:13px;font-weight:800;padding:5px 12px;border-radius:999px}
+.lcard .info{padding:20px 22px 22px}
+.lcard .info h3{font-size:19px;font-weight:900;color:#1A2744;margin-bottom:6px;line-height:1.4}
+.lcard .info p{font-size:14.5px;color:#6B7078}
+.lcard .info .go{margin-top:14px;font-size:14px;font-weight:800;color:#E8651A;display:flex;align-items:center;gap:4px}
 
 /* FOOTER */
-footer{background:#1A2744;color:rgba(255,255,255,.75);text-align:center;padding:34px 16px;margin-top:50px;font-size:14.5px;line-height:1.9}
+footer{background:#1A2744;color:rgba(255,255,255,.75);text-align:center;padding:34px 16px;font-size:14.5px;line-height:1.9}
 footer b{color:#FFB37E}
 
-/* MODAL */
-#MB{display:none;padding:20px 16px}
-.mbox{background:#fff;border-radius:18px;max-width:660px;margin:0 auto;overflow:hidden}
-.mh{background:linear-gradient(120deg,#E8651A,#C94F0A);color:#fff;padding:20px 22px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;position:sticky;top:0}
-.mh h3{font-size:19px;font-weight:900;line-height:1.4}
-.mcl{flex:0 0 36px;height:36px;border:none;border-radius:50%;background:rgba(255,255,255,.25);color:#fff;font-size:19px;font-weight:900;cursor:pointer;line-height:36px;text-align:center;padding:0}
-.mb{padding:20px 22px 26px;font-size:16px}
-.mb h4{color:#C94F0A;font-size:17px;font-weight:800;margin:18px 0 7px;padding-left:10px;border-left:4px solid #E8651A}
-.mb h4:first-child{margin-top:0}
-.mb p{margin-bottom:9px;color:#3A3E45}
-.mb ul{margin:5px 0 10px 2px;list-style:none}
-.mb li{padding:6px 0 6px 24px;position:relative;color:#3A3E45}
-.mb li::before{content:'✓';position:absolute;left:2px;color:#E8651A;font-weight:900}
-.mb li.x::before{content:'✕';color:#D6403A}
-.mb li.w::before{content:'!';color:#E5A00D}
-.calc{background:#FFF3EA;border:1.5px dashed #F6C9A8;border-radius:12px;padding:14px 16px;margin:10px 0;font-size:15px;line-height:1.9;white-space:pre-line;font-weight:500}
-.mb .ok{background:#E9F6EF;border-left:4px solid #1E8E5A;border-radius:0 8px 8px 0;padding:11px 14px;margin:10px 0;font-size:15px}
-.mb .note{background:#FFF9E8;border-left:4px solid #E5A00D;border-radius:0 8px 8px 0;padding:11px 14px;margin:10px 0;font-size:15px}
-.mb .bad{background:#FCEEED;border-left:4px solid #D6403A;border-radius:0 8px 8px 0;padding:11px 14px;margin:10px 0;font-size:15px}
-.mt{width:100%;border-collapse:collapse;font-size:14.5px;margin:8px 0}
-.mt th{background:#E8651A;color:#fff;padding:9px;font-weight:700}
-.mt td{padding:9px;border-bottom:1px solid #F0EAE2;text-align:center}
-
-/* MOBILE */
 @media(max-width:760px){
-  .hero h1{font-size:25px}
-  .sh h2{font-size:22px}
-  .g2,.g3{grid-template-columns:1fr}
-  .card h3{font-size:17px}
-  .mb{padding:16px 16px 22px}
-  .mh{padding:16px 18px}
-  .mh h3{font-size:17px}
-}
-@media(min-width:761px) and (max-width:960px){
-  .g3{grid-template-columns:1fr 1fr}
+  .hero h1{font-size:26px}
+  .deck-h h2{font-size:19px}
 }
 </style>
 </head>
@@ -154,227 +54,39 @@ footer b{color:#FFB37E}
 
 <div class="hero">
   <div class="hero-in">
-    <span class="badge">현대해상 법인 컨설팅 가이드</span>
-    <h1>법인세 · 법인보험<br><span>인터랙티브 완전 가이드</span></h1>
-    <p>법인세 기초부터 법인보험 비용처리, 임원 퇴직금 플랜, 보험금 지급 전략까지</p>
-    <div class="tip">👆 카드를 <b>터치(클릭)</b>하면 상세 내용이 팝업으로 열립니다</div>
+    <span class="badge">스스로 학습하기</span>
+    <h1>플래너를 위한 니즈환기 자료<br><span>인터랙티브 가이드</span></h1>
+    <p>가입설계서로 담보설명에 집중하는 프리젠테이션은 이제그만! 니즈환기로 승부하자!!</p>
+    <div class="version-tag"><span class="dot"></span>v0.02</div>
   </div>
 </div>
 
-<nav class="nav"><div class="nav-in">
-  <a href="#s1">① 법인세 기초</a>
-  <a href="#s2">② 법인 전환</a>
-  <a href="#s3">③ 비용처리 13가지</a>
-  <a href="#s4">④ 보험 비용처리</a>
-  <a href="#s5">⑤ 퇴직금 플랜</a>
-  <a href="#s6">⑥ 지급 전략</a>
-</div></nav>
-
 <div class="wrap">
-
-<!-- S1 -->
-<section id="s1">
-  <div class="sh">
-    <span class="no">SECTION 01</span>
-    <h2>법인세, 이것만 알면 됩니다</h2>
-    <p>매출 전체가 아니라 <b>비용을 뺀 순이익</b>에만 세금이 붙습니다.</p>
-    <span class="hint">👇 각 단계를 터치하면 설명이 열립니다</span>
-  </div>
-  <div class="flow">
-    <div class="step" onclick="OM('s1a')"><span class="sn">1</span><div><b>당기순이익</b><small>회계장부상 1년간의 이익</small></div></div>
-    <div class="arr">▼</div>
-    <div class="step" onclick="OM('s1b')"><span class="sn">2</span><div><b>세무조정 (± 가감)</b><small>익금산입·손금불산입 등 세법 조정</small></div></div>
-    <div class="arr">▼</div>
-    <div class="step alt" onclick="OM('s1c')"><span class="sn">3</span><div><b>과세표준 확정</b><small>이월결손금·비과세·소득공제 차감 후 세율 적용</small></div></div>
-    <div class="arr">▼</div>
-    <div class="step" onclick="OM('s1d')"><span class="sn">4</span><div><b>세율 적용 → 산출세액</b><small>2026년 구간별 누진세율</small></div></div>
-    <div class="arr">▼</div>
-    <div class="step alt" onclick="OM('s1e')"><span class="sn">5</span><div><b>최종 납부세액 + 지방소득세 10%</b><small>세액공제·감면·중간예납 차감 후 확정</small></div></div>
-  </div>
-  <div style="margin-top:28px">
-    <h3 style="font-size:19px;font-weight:800;color:#1A2744;margin-bottom:12px">📋 2026년 법인세율표</h3>
-    <div class="tbl-box"><table class="tbl">
-      <tr><th>과세표준 구간</th><th>세율</th><th>누진공제</th></tr>
-      <tr><td>2억 원 이하</td><td class="hl">10%</td><td>—</td></tr>
-      <tr><td>2억 초과 ~ 200억</td><td class="hl">20%</td><td>4,000만 원</td></tr>
-      <tr><td>200억 초과 ~ 3,000억</td><td>22%</td><td>—</td></tr>
-      <tr><td>3,000억 초과</td><td>24%</td><td>—</td></tr>
-    </table></div>
-    <div class="g g2" style="margin-top:14px">
-      <div class="card" onclick="OM('s1f')"><span class="plus">+</span><span class="ico">🧮</span><h3>과세표준 5억 원 계산 예시</h3><p>구간별 쪼개기 vs 누진공제 간편계산 — 두 방법 모두 8,000만 원</p></div>
-      <div class="card" onclick="OM('s1g')"><span class="plus">+</span><span class="ico">⚠️</span><h3>절세 포인트 5가지 &amp; 실수 TOP 3</h3><p>증빙·접대비·중간예납·이월결손금·세액공제 + 가지급금 주의</p></div>
+  <div class="deck">
+    <div class="deck-h">
+      <span class="no">CONTENTS</span>
+      <h2>학습 자료 목록</h2>
+    </div>
+    <div class="g">
+      <a class="lcard" href="corporate-guide.html">
+        <div class="thumb">
+          <span class="ico">🏢</span>
+          <span class="menu">법인컨설팅 가이드</span>
+        </div>
+        <div class="info">
+          <h3>법인세 · 법인보험 완전 가이드</h3>
+          <p>법인세 기초부터 법인보험 비용처리, 임원 퇴직금 플랜, 보험금 지급 전략까지</p>
+          <div class="go">자료 보기 →</div>
+        </div>
+      </a>
     </div>
   </div>
-</section>
-
-<!-- S2 -->
-<section id="s2">
-  <div class="sh">
-    <span class="no">SECTION 02</span>
-    <h2>개인사업자 → 법인 전환, 왜 할까?</h2>
-    <p>연 이익 <b>2억 원</b>을 넘어가면 진지하게 고민할 시점입니다.</p>
-  </div>
-  <div class="g g3">
-    <div class="card" onclick="OM('s2a')"><span class="plus">+</span><span class="tag to">절세</span><span class="ico">💰</span><h3>세금을 덜 낸다</h3><p>개인 최대 45% vs 법인 최대 24% — 연 이익 3억이면 약 4,900만 원 차이</p></div>
-    <div class="card" onclick="OM('s2b')"><span class="plus">+</span><span class="tag tn">보호</span><span class="ico">🛡️</span><h3>개인 재산 보호</h3><p>회사가 망해도 출자금 범위 내에서만 책임 (유한책임)</p></div>
-    <div class="card" onclick="OM('s2c')"><span class="plus">+</span><span class="tag tn">자금</span><span class="ico">📈</span><h3>자금 조달이 쉽다</h3><p>법인 명의 대출·투자 유치 가능</p></div>
-    <div class="card" onclick="OM('s2d')"><span class="plus">+</span><span class="tag tn">구조</span><span class="ico">🤝</span><h3>운영이 체계적</h3><p>이사회·주주 구조, 지분 매각·동업자 영입 용이</p></div>
-    <div class="card" onclick="OM('s2e')"><span class="plus">+</span><span class="tag to">비용</span><span class="ico">💸</span><h3>비용 처리 범위 확대</h3><p>대표이사 급여·퇴직금이 비용 인정</p></div>
-    <div class="card" onclick="OM('s2f')"><span class="plus">+</span><span class="tag tn">승계</span><span class="ico">🏠</span><h3>승계·매각이 편하다</h3><p>주식 양도 방식으로 사업 이전 간단</p></div>
-  </div>
-</section>
-
-<!-- S3 -->
-<section id="s3">
-  <div class="sh">
-    <span class="no">SECTION 03</span>
-    <h2>법인세를 줄이는 비용처리 13가지</h2>
-    <p>이익 = 매출 − 비용. <b>비용이 많을수록 세금이 줄어듭니다.</b> 사업 목적 + 증빙 필수!</p>
-  </div>
-  <div class="g g3">
-    <div class="card" onclick="OM('s3a')"><span class="plus">+</span><span class="ico">👤</span><h3>1. 인건비 (급여·상여·퇴직금)</h3><p>대표이사 본인 월급도 비용 인정</p></div>
-    <div class="card" onclick="OM('s3b')"><span class="plus">+</span><span class="ico">🏢</span><h3>2. 4대 보험료</h3><p>회사 부담분 전액 비용 처리</p></div>
-    <div class="card" onclick="OM('s3c')"><span class="plus">+</span><span class="ico">🏠</span><h3>3. 사무실 임차료</h3><p>월세·관리비 전액 — 개인 집은 불가</p></div>
-    <div class="card" onclick="OM('s3d')"><span class="plus">+</span><span class="ico">🚗</span><h3>4. 업무용 차량</h3><p>연 1,500만 원 한도, 운행기록부 필수</p></div>
-    <div class="card" onclick="OM('s3e')"><span class="plus">+</span><span class="ico">🍽️</span><h3>5. 접대비</h3><p>한도 내 인정 — 법인카드 결제 필수</p></div>
-    <div class="card" onclick="OM('s3f')"><span class="plus">+</span><span class="ico">📱</span><h3>6. 통신비</h3><p>업무용 휴대폰·인터넷 전액</p></div>
-    <div class="card" onclick="OM('s3g')"><span class="plus">+</span><span class="ico">💻</span><h3>7. 소모품·비품</h3><p>100만 원 기준으로 즉시비용 vs 감가상각</p></div>
-    <div class="card" onclick="OM('s3h')"><span class="plus">+</span><span class="ico">📚</span><h3>8. 교육훈련비</h3><p>비용 처리 + 중소기업 세액공제 이중 혜택</p></div>
-    <div class="card" onclick="OM('s3i')"><span class="plus">+</span><span class="ico">🧳</span><h3>9. 출장비</h3><p>교통·숙박·식비 업무 목적 전액</p></div>
-    <div class="card" onclick="OM('s3j')"><span class="plus">+</span><span class="ico">💳</span><h3>10. 복리후생비</h3><p>식대 월 10만 원 비과세 등</p></div>
-    <div class="card" onclick="OM('s3k')"><span class="plus">+</span><span class="ico">🏗️</span><h3>11. 감가상각비</h3><p>건물·기계 가치 하락분 매년 비용화</p></div>
-    <div class="card" onclick="OM('s3l')"><span class="plus">+</span><span class="ico">💰</span><h3>12. 대출 이자</h3><p>사업 목적 대출 이자 전액 — 가지급금은 반대!</p></div>
-    <div class="card" onclick="OM('s3m')"><span class="plus">+</span><span class="ico">🔬</span><h3>13. 연구개발비 (R&amp;D)</h3><p>비용 처리 + 세액공제 추가</p></div>
-  </div>
-  <div class="bad" style="margin-top:18px"><b>⚠️ 핵심 원칙</b> — ① 사업 목적 + ② 증빙(영수증·세금계산서) 반드시 필요. <b>법인카드 사용 + 영수증 보관</b>이 절세의 첫걸음!</div>
-</section>
-
-<!-- S4 -->
-<section id="s4">
-  <div class="sh">
-    <span class="no">SECTION 04</span>
-    <h2>법인 보험료 비용처리의 핵심</h2>
-    <p><b>"계약자 · 피보험자 · 수익자를 누구로 하느냐"</b>가 전부입니다.</p>
-  </div>
-  <div class="g g2">
-    <div class="card" onclick="OM('s4a')"><span class="plus">+</span><span class="tag to">필수</span><span class="ico">🚗</span><h3>업무용 차량 보험</h3><p>반드시 "임직원 전용 특약"으로 가입 — 일반 보험이면 전액 불인정!</p></div>
-    <div class="card" onclick="OM('s4b')"><span class="plus">+</span><span class="tag tg">유리</span><span class="ico">🏦</span><h3>수익자 = 법인</h3><p>보장 부분은 비용, 환급금 부분은 자산 — 직원 소득세 없음</p></div>
-    <div class="card" onclick="OM('s4c')"><span class="plus">+</span><span class="tag tn">조건부</span><span class="ico">👥</span><h3>수익자 = 임직원 개인</h3><p>1인당 연 70만 원 이하 단체보장성보험만 복리후생비 인정</p></div>
-    <div class="card" onclick="OM('s4d')"><span class="plus">+</span><span class="tag tr">주의</span><span class="ico">🚫</span><h3>절대 비용처리 안 되는 보험</h3><p>임원 수익자 퇴직금 목적 저축성보험은 손금 불산입</p></div>
-  </div>
-  <div class="ok" style="margin-top:18px"><b>💡 3가지만 기억하세요</b> — 계약자 = 법인, 피보험자 = 임직원, <b>수익자 = 법인</b>. 이 구조면 대부분 안전하게 비용처리됩니다.</div>
-</section>
-
-<!-- S5 -->
-<section id="s5">
-  <div class="sh">
-    <span class="no">SECTION 05</span>
-    <h2>보장성보험 활용 임원 퇴직금 플랜</h2>
-    <p>해지환급금이 없는 <b>순수 보장성(무해지환급형)</b> 손해보험 구조입니다.</p>
-  </div>
-  <div class="g g2">
-    <div class="card" onclick="OM('s5a')"><span class="plus">+</span><span class="ico">🏗️</span><h3>플랜의 기본 구조</h3><p>계약자·수익자 = 법인, 피보험자 = 대표이사 / 보장보험료 100%, 해약환급금 0원</p></div>
-    <div class="card" onclick="OM('s5b')"><span class="plus">+</span><span class="ico">📜</span><h3>전액 비용처리의 법적 근거</h3><p>법인세법 기본통칙 + 대법원 판결(2015다56147)</p></div>
-    <div class="card" onclick="OM('s5c')"><span class="plus">+</span><span class="ico">🔄</span><h3>퇴직 시 현물 지급 5단계</h3><p>보험계약 자체를 대표이사에게 넘기는 계약자 변경 절차</p></div>
-    <div class="card" onclick="OM('s5d')"><span class="plus">+</span><span class="ico">📈</span><h3>완납 후 퇴직이 더 유리한 이유</h3><p>자산 9,000만 &lt; 퇴직금 1억 2,000만 → 차액 3,000만 추가 손금!</p></div>
-    <div class="card" onclick="OM('s5e')"><span class="plus">+</span><span class="ico">🔑</span><h3>핵심 결론 3줄 요약</h3><p>해지환급금 &lt; 납입보험료 (항상) → 퇴직금 평가액 = 납입보험료 합계</p></div>
-    <div class="card" onclick="OM('s5f')"><span class="plus">+</span><span class="ico">✅</span><h3>가입 전 체크리스트 7가지</h3><p>임원퇴직금 지급규정 정관 명시부터 세무사 사전 검토까지</p></div>
-  </div>
-</section>
-
-<!-- S6 -->
-<section id="s6">
-  <div class="sh">
-    <span class="no">SECTION 06</span>
-    <h2>보험금 1억 수령 후, 어떻게 지급할까?</h2>
-    <p>지급 방식에 따라 대표이사 <b>실수령액이 최대 2,154만 원</b>까지 달라집니다. (연봉 6,000만·4인 가족 기준)</p>
-    <span class="hint">👇 막대를 터치하면 상세 세금 계산이 열립니다</span>
-  </div>
-  <div class="bars">
-    <div class="bar" onclick="OM('s6a')">
-      <div class="bl"><span>A안 · 일시 상여금</span><span class="amt">실수령 약 7,423만 원</span></div>
-      <div class="bt"><div class="bf bfa">74%</div></div>
-    </div>
-    <div class="bar" onclick="OM('s6b')">
-      <div class="bl"><span>B안 · 연도 분산 상여금 (12월/1월)</span><span class="amt">실수령 약 8,027만 원</span></div>
-      <div class="bt"><div class="bf bfb">80%</div></div>
-    </div>
-    <div class="bar" onclick="OM('s6c')">
-      <div class="bl"><span>C안 · 퇴직금 지급 ⭐ 압도적 유리</span><span class="amt">실수령 약 9,577만 원</span></div>
-      <div class="bt"><div class="bf bfc">96%</div></div>
-    </div>
-  </div>
-  <div class="g g2" style="margin-top:18px">
-    <div class="card" onclick="OM('s6d')"><span class="plus">+</span><span class="ico">🔁</span><h3>보험금 수령 → 지급 세금 흐름</h3><p>왜 법인은 세금 0원이고, 대표이사만 세금을 내는지 구조 이해</p></div>
-    <div class="card" onclick="OM('s6e')"><span class="plus">+</span><span class="ico">📋</span><h3>분할 지급 시 필수 서류 &amp; 리스크</h3><p>이사회 결의서·특별위로금 규정·의료비 연계 — 진단 "전"에 준비!</p></div>
-  </div>
-  <div class="note" style="margin-top:18px"><b>⚠️ 핵심</b> — 임원 특별위로금·퇴직금 지급 규정은 반드시 <b>암 진단 전에</b> 만들어져 있어야 합니다. <b>건강할 때 미리 준비!</b></div>
-</section>
-
 </div>
 
 <footer>
   본 자료는 이해를 돕기 위한 <b>교육용 요약 자료</b>입니다.<br>
-  실제 적용 전 반드시 <b>세무사 + 보험 전문가</b>의 사전 검토를 받으시기 바랍니다.<br>
-  © 현대해상 호남지역단 법인 컨설팅 가이드
+  © 스스로 학습하기
 </footer>
 
-<!-- 모달 -->
-<div id="MB" onclick="if(event.target===this||event.target.id==='MB')CM()">
-  <div class="mbox">
-    <div class="mh">
-      <h3 id="MT"></h3>
-      <button class="mcl" onclick="CM()">✕</button>
-    </div>
-    <div class="mb" id="MC"></div>
-  </div>
-</div>
-
-<script>
-/* ★ 모달 데이터 - 전역 window.MD 에 저장 */
-window.MD = {
-"s1a":{t:"① 당기순이익이란?",b:'<p>회계장부에 기록된 <b>1년 동안의 이익</b>입니다. 매출에서 각종 비용을 뺀 금액으로, 법인세 계산의 출발점입니다.</p><div class="ok">개인이 월급에서 소득세를 내듯, 법인도 이익이 생기면 법인세를 냅니다. 중요한 건 매출 전체가 아니라 <b>비용을 빼고 남은 순이익</b>에만 세금이 붙는다는 점입니다.</div>'},
-"s1b":{t:"② 세무조정 (익금·손금 가감)",b:'<h4>더하는 것 (+)</h4><ul><li>익금산입 — 세법상 수입으로 봐야 하는 항목</li><li>손금불산입 — 회계상 비용이지만 세법상 불인정 (예: 한도 초과 접대비)</li></ul><h4>빼는 것 (−)</h4><ul><li>익금불산입 — 세법상 과세 제외 수입</li><li>손금산입 — 세법상 추가 인정 비용</li></ul><p>이 조정을 거쳐 <b>각 사업연도 소득금액</b>이 확정됩니다.</p>'},
-"s1c":{t:"③ 과세표준 확정",b:'<p>각 사업연도 소득금액에서 아래를 차감하면 <b>세율을 곱할 금액(과세표준)</b>이 나옵니다.</p><ul><li><b>이월결손금</b> — 과거 적자를 최대 15년간 공제</li><li>비과세소득</li><li>소득공제</li></ul><div class="ok">💡 올해 적자가 났다면 버리지 마세요! 이월결손금으로 <b>미래 15년간</b> 세금을 줄일 수 있습니다.</div>'},
-"s1d":{t:"④ 세율 적용 → 산출세액",b:'<h4>2026년 법인세율</h4><table class="mt"><tr><th>과세표준</th><th>세율</th></tr><tr><td>2억 이하</td><td><b>10%</b></td></tr><tr><td>2억~200억</td><td><b>20%</b></td></tr><tr><td>200억~3000억</td><td>22%</td></tr><tr><td>3000억 초과</td><td>24%</td></tr></table><div class="note">2025년 대비 과세표준 5억 기준 법인세 <b>500만 원</b>, 지방소득세 포함 <b>550만 원</b> 세 부담 증가.</div>'},
-"s1e":{t:"⑤ 최종 납부세액 + 지방소득세",b:'<p>산출세액에서 아래를 빼면 최종 납부 법인세가 확정됩니다.</p><ul><li>세액공제 (R&D·고용증대·투자공제 — 세금을 직접 줄여줌)</li><li>감면</li><li>중간예납 (8월에 미리 낸 세금)</li></ul><div class="note"><b>지방소득세 10%</b> 별도 추가. 법인세 8,000만이면 지방소득세 800만 → 총 <b>8,800만 원</b>.</div><div class="bad">⚠️ 중간예납(8월) 안 내면 가산세 발생!</div>'},
-"s1f":{t:"🧮 과세표준 5억 원 누진세 계산",b:'<h4>방법 1 : 구간별 쪼개서 계산</h4><div class="calc">2억 원 이하 구간\n└ 2억 × 10% = 2,000만 원\n\n2억 초과 ~ 5억 (나머지 3억)\n└ 3억 × 20% = 6,000만 원\n─────────────────────\n합계 : 8,000만 원</div><h4>방법 2 : 누진공제 간편 계산</h4><div class="calc">5억 × 20% − 누진공제 4,000만\n= 1억 − 4,000만\n= 8,000만 원 ✅</div><div class="ok">💡 <b>누진공제 4,000만 원의 근거</b> — 2억 구간에서 10%와 20%의 세율 차이(10%)만큼, 2억 × 10% = 2,000만 원 공제.</div><p>지방소득세 10% 포함 시 실질 부담 : <b>8,800만 원</b></p>'},
-"s1g":{t:"⚠️ 절세 포인트 5 & 실수 TOP 3",b:'<h4>핵심 절세 포인트 5가지</h4><ul><li><b>증빙 철저히</b> — 영수증·세금계산서 없으면 비용 불인정</li><li><b>접대비 한도 체크</b> — 초과분은 세금 증가</li><li><b>중간예납 8월 납부</b> — 안 내면 가산세</li><li><b>이월결손금 활용</b> — 적자는 최대 15년간 공제</li><li><b>세액공제 챙기기</b> — R&D·고용증대·투자공제</li></ul><h4>자주 하는 실수 TOP 3</h4><ul><li class="x">대표이사 개인 경비를 법인 비용 처리 → 상여처분 + 소득세 추가</li><li class="x">신고기한 놓침 → 무신고 가산세 20% + 하루 0.022% 납부지연 가산세</li><li class="x">가지급금 방치 → 인정이자 계산되어 법인 소득 증가</li></ul>'},
-"s2a":{t:"💰 세금을 덜 낸다 (절세 효과)",b:'<p>개인사업자 소득세율은 최대 <b>45%</b>, 법인세율은 최대 <b>24%</b>로 훨씬 낮습니다.</p><div class="calc">연 이익 3억 원 기준\n개인사업자 → 약 8,800만 원\n법인사업자 → 약 3,900만 원\n─────────────────────\n차이 : 약 4,900만 원!</div><div class="ok">💡 연 이익이 <b>2억 원</b>을 넘어가면 법인 전환을 진지하게 고민하세요.</div>'},
-"s2b":{t:"🛡️ 개인 재산 보호 (유한책임)",b:'<p>개인사업자는 사업이 망하면 <b>집·자동차·통장</b>까지 모두 빚 갚는 데 쓰일 수 있습니다.</p><div class="ok">법인은 회사 재산과 개인 재산이 <b>분리</b>됩니다. 회사가 망해도 내가 투자한 금액(출자금) 범위 안에서만 책임집니다.</div>'},
-"s2c":{t:"📈 자금 조달이 쉬워진다",b:'<p>법인은 <b>회사 이름으로 대출</b>을 받거나, 투자자에게 <b>주식을 팔아</b> 자금을 모을 수 있습니다.</p><p>개인사업자는 결국 대표자 개인 신용에만 의존해야 하는 한계가 있습니다.</p>'},
-"s2d":{t:"🤝 운영이 체계적이 된다",b:'<p>대표이사·이사회·주주 구조가 생겨 여러 명이 함께 운영하기 좋습니다.</p><ul><li>지분(회사 소유권 비율) 매각이 쉬움</li><li>동업자 영입이 훨씬 수월</li></ul>'},
-"s2e":{t:"💸 비용 처리 범위 확대",b:'<p>법인은 <b>대표이사 본인 급여</b>가 비용으로 처리됩니다. 개인사업자는 사장 본인 급여를 비용으로 인정받지 못합니다.</p><ul><li>대표이사 급여 → 비용 인정 ✅</li><li>퇴직금(퇴직급여충당금 포함) → 비용 인정 ✅</li></ul>'},
-"s2f":{t:"🏠 승계·매각이 편하다",b:'<p>자녀에게 사업을 물려주거나 사업을 팔 때, <b>주식 양도</b> 방식으로 간단하게 처리할 수 있습니다.</p>'},
-"s3a":{t:"👤 인건비 (급여·상여·퇴직금)",b:'<p>급여, 상여금, 퇴직금 모두 비용 처리됩니다.</p><ul><li>개인사업자와 달리 <b>법인 대표이사 본인 월급도 비용 인정</b></li><li>퇴직급여충당금(퇴직금 미리 장부에 쌓는 것)도 비용 처리</li></ul><div class="ok">✅ 절세 포인트 — 대표이사 급여를 적절히 설정하면 법인 이익이 줄어 세금 절감 효과가 큽니다.</div>'},
-"s3b":{t:"🏢 임직원 4대 보험료",b:'<p>국민연금·건강보험·고용보험·산재보험 중 <b>회사 부담분(절반)이 전액 비용</b> 처리됩니다. 대표이사분도 포함됩니다.</p>'},
-"s3c":{t:"🏠 사무실·공장 임차료",b:'<p>사업용 공간의 <b>월세·관리비 전액</b> 비용 처리됩니다.</p><div class="bad">⚠️ 사업과 관계없는 공간(대표이사 개인 집 등)은 안 됩니다.</div>'},
-"s3d":{t:"🚗 업무용 차량 비용",b:'<p>구입비·보험료·주유비·수리비·주차비 등이 비용 처리됩니다.</p><ul><li class="w">운행기록부를 써야 전액 인정</li><li class="w">차량 1대당 <b>연 1,500만 원 한도</b> (초과분은 다음 해 이월)</li></ul>'},
-"s3e":{t:"🍽️ 접대비",b:'<p>거래처·고객 식사비, 선물, 경조사비가 비용 처리됩니다. 단, <b>한도</b>가 있습니다.</p><div class="bad">⚠️ 반드시 <b>법인카드</b>로 결제하고 영수증을 보관해야 합니다.</div>'},
-"s3f":{t:"📱 통신비·인터넷비",b:'<p>업무용 휴대폰 요금, 사무실 인터넷 요금 <b>전액 비용</b> 처리. 직원 수만큼 여러 대도 가능합니다.</p>'},
-"s3g":{t:"💻 소모품·비품 구입비",b:'<p>컴퓨터·프린터·책상·의자 등 업무용 물품 구입비.</p><ul><li><b>100만 원 미만</b> → 구입한 해에 바로 비용 처리 (즉시비용)</li><li><b>100만 원 이상</b> → 여러 해에 나눠 처리 (감가상각)</li></ul>'},
-"s3h":{t:"📚 교육훈련비",b:'<p>외부 교육비, 자격증 취득 비용, 온라인 강의비 등 <b>전액 비용</b> 처리.</p><div class="ok">✅ 중소기업은 교육훈련비 일부를 <b>세액공제</b>로도 받아 이중 혜택!</div>'},
-"s3i":{t:"🧳 출장비",b:'<p>업무 목적의 항공권·KTX·숙박비·식비가 비용 처리됩니다.</p><p>회사 내부 <b>출장비 규정</b>을 만들어두면 더 체계적으로 처리 가능합니다.</p>'},
-"s3j":{t:"💳 복리후생비",b:'<p>명절 선물, 회식비, 건강검진비, 경조사비 등 직원을 위한 지출.</p><div class="ok">✅ 직원 1인당 <b>월 10만 원 이내 식대</b>는 비과세 처리됩니다.</div>'},
-"s3k":{t:"🏗️ 감가상각비",b:'<p>건물·기계·설비처럼 오래 쓰는 자산은 가치가 떨어지는 만큼 비용 처리할 수 있습니다.</p><div class="calc">예) 1억짜리 기계, 10년 사용\n→ 매년 1,000만 원씩 비용 처리</div>'},
-"s3l":{t:"💰 대출 이자비용",b:'<p>사업 목적 은행 대출 이자는 <b>전액 비용</b> 처리됩니다.</p><div class="bad">⚠️ 대표이사 <b>가지급금</b>(회사 돈을 임시로 빌려 쓴 것)의 이자는 오히려 소득으로 잡혀 세금이 늘어납니다.</div>'},
-"s3m":{t:"🔬 연구개발비 (R&D)",b:'<p>신기술·신제품 개발 비용은 <b>비용 처리 + 세액공제</b>까지 추가로 받는 이중 혜택 항목입니다.</p>'},
-"s4a":{t:"🚗 업무용 차량 보험 — 임직원 전용 필수",b:'<p>법인차량은 <b>임직원 전용 보험</b>에 가입해야만 비용처리가 가능합니다.</p><h4>올바른 가입 방법</h4><ul><li>보험사에 "임직원 전용 특약(한정 운전자 특약)" 요청</li><li>보험증권에 "임직원 한정" 문구 확인</li><li>사업연도 전체 기간 유지 (중간에 끊기면 일수 비례만 인정)</li></ul><div class="ok">임직원 전용보험 가입 시 감가상각비 포함 차량 1대당 <b>연 1,500만 원 한도</b> 비용처리 가능.</div><div class="bad">❌ 임직원의 <b>가족</b>은 임직원 범위에 포함되지 않습니다!</div>'},
-"s4b":{t:"🏦 수익자 = 법인 (가장 유리)",b:'<p>법인이 임원·종업원을 피보험자로, <b>수익자를 법인으로</b> 보험 가입한 경우:</p><div class="calc">보험료 납입액\n├ 만기환급금 상당 부분 → 자산 계상\n└ 순수 보장 부분 → 비용(손금) 처리 ✅</div><div class="ok">이때 임직원의 <b>급여로 보지 않아</b> 직원에게 소득세가 추가로 붙지 않습니다.</div><h4>보험 종류별 처리</h4><ul><li><b>순수 보장성</b>(만기환급 없음) → 보험료 전액 비용</li><li><b>저축성</b>(만기환급 있음) → 적립 부분은 자산, 위험보험료만 비용</li></ul>'},
-"s4c":{t:"👥 수익자 = 임직원 개인 (조건부)",b:'<p>피보험자와 수익자를 임직원으로 하면 원칙적으로 <b>임직원 급여</b>로 보아 근로소득세 과세됩니다.</p><div class="calc">단체순수보장성 / 단체환급부보장성 보험\n├ 1인당 연 70만 원 이하 → 복리후생비 ✅\n└ 70만 원 초과 → 직원 급여 처리 (소득세 부과)</div>'},
-"s4d":{t:"🚫 절대 비용처리 안 되는 보험",b:'<p>법인이 임원의 퇴직금 지급 목적으로 <b>당해 임원을 수익자로</b> 가입한 저축성 보험은 <b>손금 불산입</b>됩니다.</p><ul><li class="x">퇴직금 목적 저축성보험 (임원 수익자)</li><li class="x">연금보험 (임원 수익자)</li></ul><div class="note">⚠️ 수익자를 법인으로 해 비용처리 받다가 퇴직 임원에게 계약을 넘기면, 납입한 보험료 전액이 해당 임원의 <b>퇴직소득</b>으로 처리됩니다. 반드시 세무사와 상담하세요.</div>'},
-"s5a":{t:"🏗️ 퇴직금 플랜 기본 구조",b:'<div class="calc">계약자(보험료 내는 사람)  → 법인\n피보험자(보험 대상자)     → 대표이사\n수익자(보험금 받는 사람)  → 법인\n\n보험 종류 : 손해보험 보장성보험\n보험료 구성 : 보장보험료 100% (저축 0%)\n해약환급금 : 거의 0원 or 0원</div><h4>담보 구성 예시</h4><ul><li>기본계약 : 재해사망 1억 원</li><li>질병사망 특약 1억 (암·뇌졸중·심근경색 포함)</li><li>암진단비 3,000만 / 뇌혈관 2,000만 / 심장질환 2,000만</li></ul><div class="ok">종신보험처럼 재해사망 + 질병사망을 모두 보장하면서, <b>저축 없이 보장보험료만</b> 납입하는 구조입니다.</div>'},
-"s5b":{t:"📜 전액 비용처리의 법적 근거",b:'<h4>법인세법 기본통칙 19-19···9</h4><p>"만기환급금을 지급하겠다는 <b>약정이 있는</b> 손해보험은 적립보험료 상당 부분은 자산으로 하고 기타 부분은 손금 산입"</p><div class="calc">자산처리 조건 = "만기환급금 약정"\n\n약정 있음 → 적립보험료 = 자산\n약정 없음 → 보험료 전액 = 비용 ✅</div><div class="ok">✅ <b>대법원 판결 (2015다56147)</b> — 순수보장성보험의 납입보험료 전액이 "비용의 성질을 가진다"고 판시.</div><div class="note">⚠️ 세무조사 시 국세청 해석이 다를 수 있으므로 세무사·보험사 <b>서면 확인서</b>를 보관하세요.</div>'},
-"s5c":{t:"🔄 퇴직 시 현물 지급 5단계",b:'<div class="calc">Step 1. 대표이사 퇴직 결정\n   ↓\nStep 2. 이사회에서 퇴직금 지급 결의\n   (정관 또는 임원퇴직금 지급규정 근거)\n   ↓\nStep 3. 보험계약의 계약자를\n   법인 → 대표이사 개인으로 변경\n   ↓\nStep 4. 보험계약 가치(해약환급금)를\n   퇴직금으로 인정\n   ↓\nStep 5. 부족한 퇴직금은 현금 추가 지급</div><div class="ok">퇴직금을 현금이 아닌 <b>보험계약 자체를 넘겨주는</b>(현물 지급) 방식. 대표이사는 퇴직소득세(낮은 세율)만 부담합니다.</div>'},
-"s5d":{t:"📈 완납 후 퇴직이 더 유리한 이유",b:'<h4>조건 : 월 100만 × 10년납 = 총 1억 2,000만</h4><h4>완납 후 퇴직 (20년차, 환급금 최고점)</h4><div class="calc">해지환급금 9,000만 (자산 계상)\n납입 합계 1억 2,000만 = 퇴직금\n\n자산 환입  +9,000만 (익금)\n퇴직금    -1억 2,000만 (손금)\n──────────────────────\n차액 -3,000만 → 추가 손금!\n→ 법인세 추가 절감 ✅</div><div class="ok">💡 자산(9,000만)보다 퇴직금(1억 2,000만)이 크므로 <b>차액 3,000만 원이 추가 손금</b>으로 처리되어 완납 후 퇴직이 법인에 더 유리합니다.</div>'},
-"s5e":{t:"🔑 핵심 결론 3줄 요약",b:'<div class="calc">① 손해보험 보장성보험은 해지환급금이\n   납입보험료의 100%를 절대 넘지 않는다\n   (위험보험료·사업비가 항상 소멸되기 때문)\n\n② 퇴직금 평가액\n   = MAX(납입보험료, 해지환급금)\n   = 항상 납입보험료 합계 (시점 무관)\n\n③ 납입 중 = 전액 비용\n   완납 후 = 해지환급금만 자산\n   퇴직 시 자산 &lt; 퇴직금 → 차액 추가 절세!</div>'},
-"s5f":{t:"✅ 가입 전 필수 체크리스트 7가지",b:'<ul><li><b>임원퇴직금 지급규정</b>이 정관에 명시되어 있는가?</li><li>손해보험 해당 상품에 <b>질병사망 특약</b> 부가 가능한가?</li><li>보장보험료와 저축보험료가 <b>완전히 분리</b>되어 있는가?</li><li>해약환급금 0원임을 <b>서면으로 확인</b>했는가?</li><li>계약자 변경 시 <b>증여세 이슈</b>는 없는가?</li><li>사망보험금 수익자가 법인인 경우 <b>법인세 과세 후 실질 수령액</b> 계산했는가?</li><li><b>세무사 + 보험 전문설계사</b> 사전 검토를 받았는가?</li></ul><div class="note">⚠️ 이 플랜은 세법 해석과 상품 구조 설계가 동시에 맞아야 합니다. 모든 내용을 <b>서면으로 확인</b>한 후 진행하세요.</div>'},
-"s6a":{t:"🔴 A안 · 일시 상여금 1억 지급",b:'<h4>법인 입장</h4><div class="calc">보험금 수령 +1억 / 상여금 -1억\n→ 법인세 추가 0원 ✅</div><h4>대표이사 입장 (연봉 6,000만 + 상여 1억)</h4><div class="calc">합산 소득 1억 6,000만\n과세표준 약 1억 1,000만\n세율 38~40% 구간 적용\n\n소득세        약 2,020만\n지방소득세    약   202만\n건강보험 정산 약   355만\n──────────────────\n총 세금  약 2,577만 원\n실수령   약 7,423만 원\n실효세율 약 25.7%</div><div class="ok">✅ 가장 단순·명확 — 세무조사 위험 최소. 세무 리스크를 피하고 싶다면 A안.</div>'},
-"s6b":{t:"🟡 B안 · 연도 분산 상여금 (12월/1월)",b:'<h4>법인 입장 (주의!)</h4><div class="calc">[당해년도]\n보험금 +1억 / 12월 상여 -5,000만\n→ 과세소득 +5,000만\n→ 법인세 약 500만 선납 필요!\n\n[다음 해]\n1월 상여 -5,000만 → 약 500만 환급\n2년 합산 = 0원 (유동성 부담만)</div><h4>대표이사 입장 (유리!)</h4><div class="calc">[올해 12월] 소득 1억 1,000만\n→ 세금 약 1,201만 / 실수령 3,799만\n\n[내년 1월] 소득 5,500만 (세율 구간 하락)\n→ 세금 약 772만 / 실수령 4,228만\n\n2년 합산 세금  약 1,973만 원\n총 실수령      약 8,027만 원 (실효 19.7%)\n→ A안 대비 약 604만 원 절세</div><div class="bad">❌ 반드시 임원 특별위로금 지급 규정 + 이사회 결의서 + 의료비 연계 증빙이 있어야 합니다. 진단 "전"에 미리 준비!</div>'},
-"s6c":{t:"🟢 C안 · 퇴직금 지급 (압도적 유리)",b:'<h4>법인 입장</h4><div class="calc">보험금 +1억 / 퇴직금 -1억\n→ 법인세 추가 0원 ✅</div><h4>대표이사 퇴직소득세 (근속 10년)</h4><div class="calc">① 근속연수공제 = 1,500만\n② 환산급여 = (1억-1,500만)×12÷10 = 1억 200만\n③ 환산급여공제 = 6,280만\n④ 환산과세표준 = 3,920만\n⑤ 환산산출세액 = 3,920만×15%-126만 = 462만\n⑥ 최종 = 462만×(10÷12) = 385만\n   + 지방소득세 38.5만\n──────────────────────\n총 세금  약 423만 원\n실수령   약 9,577만 원 (실효 4.2%!)</div><div class="ok">💡 퇴직소득은 <b>기존 연봉과 완전 분리 과세</b>. A안 대비 <b>약 2,154만 원 절세!</b></div><div class="note">⚠️ 실제 퇴직이 전제되어야 하고, 임원퇴직금 지급규정이 <b>사전에</b> 수립되어 있어야 합니다.</div>'},
-"s6d":{t:"🔁 보험금 수령 → 지급 세금 흐름",b:'<div class="calc">① 법인이 보험료 납입\n   → 전액 비용처리 → 법인세 절감\n② 대표이사 암 진단\n   → 보험사가 법인에 1억 지급\n③ 법인 : 1억 익금(수입) 계상\n④ 법인 → 대표이사에게 상여/퇴직금 1억\n⑤ 법인 : 1억 손금(비용) 계상 → 상쇄\n   대표 : 소득세 납부</div><div class="note">보험료 낼 때 <b>비용으로 처리해 세금을 줄였기 때문에</b>, 보험금 받을 때는 반대로 수입으로 잡습니다. "들어올 때 혜택 봤으면 나올 때 과세" — 세법의 원칙.</div><div class="calc">법인 손익 정리\n보험금 수령  +1억 (익금)\n지급        -1억 (손금)\n─────────────────\n법인 순손익  0원 → 법인세 추가 없음 ✅</div>'},
-"s6e":{t:"📋 분할 지급 필수 서류 & 리스크",b:'<h4>근거 ① 이사회 결의서 (가장 중요)</h4><ul><li>암 진단·장기 치료 필요 상황 명시</li><li>1차(12월)·2차(1월) 지급 일정과 치료비 지원 목적 명시</li><li>임원 특별위로금 지급 규정 근거 기재 + 이사 전원 서명</li></ul><h4>근거 ② 임원 특별위로금 지급 규정</h4><ul><li>지급 대상 : 암·뇌졸중·심근경색 등 중대 질병 임원</li><li>분할 지급 기준 조항 포함</li><li class="w"><b>반드시 암 진단 전에 만들어야 함!</b></li></ul><h4>익금 5,000만 잔여 해결법 3가지</h4><ul><li><b>방법 A</b> : 같은 해 다른 손금으로 상쇄 (급여인상·성과급·설비투자)</li><li><b>방법 B</b> : 법인세 약 500만 선납 후 다음 해 환급</li><li><b>방법 C</b> : 12월 15일 + 12월 31일, 같은 달 2회 분할 → 법인세 0원 (가장 안전)</li></ul>'}
-};
-</script>
 </body>
 </html>
