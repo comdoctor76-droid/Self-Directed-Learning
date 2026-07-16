@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>항암약물치료의 이해 | 스스로 학습하기</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+<!-- ★ 모달 제어 함수 - HEAD에 먼저 선언 (카카오 인앱브라우저 호환) -->
+<script>
+function OM(key){
+  var bg=document.getElementById('MB');
+  var title=document.getElementById('MT');
+  var body=document.getElementById('MC');
+  var data=window.MD?window.MD[key]:null;
+  if(!data||!bg||!title||!body)return;
+  title.innerHTML=data.t;
+  body.innerHTML=data.b;
+  body.scrollTop=0;
+  bg.style.cssText='display:block;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(20,25,38,0.75);z-index:9999;overflow-y:auto;-webkit-overflow-scrolling:touch;';
+}
+function CM(){
+  var bg=document.getElementById('MB');
+  if(bg)bg.style.display='none';
+}
+</script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#FBF8F5;color:#26282C;font-size:17px;line-height:1.65}
+:root{--or:#E8651A;--ord:#C94F0A;--ors:#FFF3EA;--navy:#1A2744;--navy2:#2C3F6E;--gray:#6B7078;--green:#1E8E5A;--red:#D6403A}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#1A2744 0%,#2C3F6E 60%,#3d5390 100%);color:#fff;padding:50px 20px 64px}
+.hero-in{max-width:1060px;margin:0 auto}
+.badge{display:inline-block;background:#E8651A;color:#fff;font-weight:700;font-size:14px;padding:7px 16px;border-radius:999px;margin-bottom:16px}
+.hero h1{font-size:32px;font-weight:900;line-height:1.3;margin-bottom:12px}
+.hero h1 span{color:#FFB37E}
+.hero p{font-size:17px;opacity:.9;max-width:640px}
+.tip{margin-top:22px;display:inline-block;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:11px 16px;font-size:14.5px}
+.tip b{color:#FFC79B}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.1);display:flex;align-items:center;gap:6px;padding:0 8px}
+.nav-back{flex:0 0 auto;display:flex;align-items:center;gap:5px;font-size:14px;font-weight:800;color:#1A2744;text-decoration:none;padding:9px 12px;border-radius:999px;white-space:nowrap}
+.nav-back:hover{background:#EBEFF8}
+.nav-sep{flex:0 0 auto;width:1px;height:22px;background:#EEE7DF}
+.nav-in{flex:1 1 auto;min-width:0;display:flex;overflow-x:auto;gap:4px;padding:9px 4px;scrollbar-width:none}
+.nav-in::-webkit-scrollbar{display:none}
+.nav a.navlink{flex:0 0 auto;font-size:14.5px;font-weight:700;color:#6B7078;text-decoration:none;padding:8px 14px;border-radius:999px;white-space:nowrap}
+.nav a.navlink:hover{background:#FFF3EA;color:#C94F0A}
+
+/* WRAP */
+.wrap{max-width:1060px;margin:0 auto;padding:0 16px}
+section{padding:52px 0 20px}
+.sh{margin-bottom:22px}
+.sh .no{display:block;color:#E8651A;font-weight:900;font-size:14px;letter-spacing:1.5px;margin-bottom:6px}
+.sh h2{font-size:26px;font-weight:900;color:#1A2744}
+.sh p{color:#6B7078;margin-top:7px;font-size:16px}
+.hint{display:inline-block;background:#FFF3EA;color:#C94F0A;font-size:14px;font-weight:700;border-radius:999px;padding:6px 14px;margin-top:10px}
+
+/* GRID */
+.g{display:grid;gap:14px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+
+/* CARD */
+.card{background:#fff;border:2px solid #EEE7DF;border-radius:16px;padding:22px 20px;cursor:pointer;position:relative;display:block;width:100%;text-align:left}
+.card:active{border-color:#E8651A;background:#FFF9F5}
+.ico{font-size:28px;margin-bottom:8px;display:block}
+.card h3{font-size:18px;font-weight:800;color:#1A2744;margin-bottom:6px;line-height:1.4}
+.card p{font-size:15px;color:#6B7078}
+.plus{position:absolute;top:16px;right:16px;width:28px;height:28px;border-radius:50%;background:#FFF3EA;color:#E8651A;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;line-height:1}
+.tag{display:inline-block;font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;margin-bottom:8px}
+.to{background:#FFF3EA;color:#C94F0A}
+.tg{background:#E7F5EE;color:#1E8E5A}
+.tr{background:#FCEBEA;color:#D6403A}
+.tn{background:#EBEFF8;color:#2C3F6E}
+
+/* FLOW */
+.flow{display:flex;flex-direction:column;max-width:640px;margin:0 auto}
+.step{background:#fff;border:2px solid #EEE7DF;border-radius:12px;padding:15px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;margin-bottom:4px}
+.step:active{border-color:#E8651A;background:#FFF9F5}
+.sn{flex:0 0 44px;height:44px;border-radius:10px;background:#E8651A;color:#fff;font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center}
+.g1 .sn{background:#6B7078}
+.g2s .sn{background:#2C3F6E}
+.g3s .sn{background:#1E8E5A}
+.g4s .sn{background:#E8651A}
+.step b{font-size:17px;color:#1A2744;display:block}
+.step small{font-size:13.5px;color:#6B7078;margin-top:2px;display:block}
+.arr{text-align:center;color:#E8651A;font-size:18px;font-weight:900;padding:2px 0;margin-bottom:4px}
+
+/* TABLE */
+.tbl-box{border-radius:12px;overflow:auto;box-shadow:0 3px 12px rgba(0,0,0,.07);margin-top:6px}
+.tbl{width:100%;border-collapse:collapse;background:#fff;font-size:15px;min-width:560px}
+.tbl th{background:#1A2744;color:#fff;font-weight:700;padding:12px 10px;font-size:14.5px}
+.tbl td{padding:12px 10px;border-bottom:1px solid #F0EAE2;text-align:center;vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td.hl{color:#C94F0A;font-weight:800}
+
+/* 경고/OK박스 */
+.bad{background:#FCEEED;border-left:4px solid #D6403A;border-radius:0 8px 8px 0;padding:12px 14px;margin:12px 0;font-size:15.5px}
+.ok{background:#E9F6EF;border-left:4px solid #1E8E5A;border-radius:0 8px 8px 0;padding:12px 14px;margin:12px 0;font-size:15.5px}
+.note{background:#FFF9E8;border-left:4px solid #E5A00D;border-radius:0 8px 8px 0;padding:12px 14px;margin:12px 0;font-size:15.5px}
+
+/* 메인/섹션 하단 돌아가기 */
+.back-bottom{text-align:right;margin-top:20px}
+.back-bottom a{display:inline-flex;align-items:center;gap:5px;font-size:14px;font-weight:800;color:#C94F0A;text-decoration:none;padding:8px 14px;border-radius:999px;background:#FFF3EA}
+.back-bottom a:hover{background:#FFE6D2}
+
+/* FOOTER */
+footer{background:#1A2744;color:rgba(255,255,255,.75);text-align:center;padding:34px 16px;margin-top:50px;font-size:14.5px;line-height:1.9}
+footer b{color:#FFB37E}
+
+/* MODAL */
+#MB{display:none;padding:20px 16px}
+.mbox{background:#fff;border-radius:18px;max-width:720px;margin:0 auto;overflow:hidden}
+.mh{background:linear-gradient(120deg,#E8651A,#C94F0A);color:#fff;padding:20px 22px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;position:sticky;top:0}
+.mh h3{font-size:19px;font-weight:900;line-height:1.4}
+.mcl{flex:0 0 36px;height:36px;border:none;border-radius:50%;background:rgba(255,255,255,.25);color:#fff;font-size:19px;font-weight:900;cursor:pointer;line-height:36px;text-align:center;padding:0}
+.mb{padding:20px 22px 26px;font-size:16.5px}
+.mb h4{color:#C94F0A;font-size:17.5px;font-weight:800;margin:20px 0 8px;padding-left:10px;border-left:4px solid #E8651A}
+.mb h4:first-child{margin-top:0}
+.mb p{margin-bottom:11px;color:#2E3238;line-height:1.75}
+.mb b{color:#1A2744}
+.mb ul{margin:6px 0 12px 2px;list-style:none}
+.mb li{padding:7px 0 7px 26px;position:relative;color:#2E3238;line-height:1.7}
+.mb li::before{content:'✓';position:absolute;left:2px;color:#E8651A;font-weight:900}
+.mb li.x::before{content:'✕';color:#D6403A}
+.mb li.w::before{content:'!';color:#E5A00D}
+.mb li.n::before{content:'•';color:#2C3F6E;font-size:20px;line-height:1}
+.calc{background:#FFF3EA;border:1.5px dashed #F6C9A8;border-radius:12px;padding:14px 16px;margin:10px 0;font-size:15.5px;line-height:1.9;white-space:pre-line;font-weight:500}
+.mb .ok{background:#E9F6EF;border-left:4px solid #1E8E5A;border-radius:0 8px 8px 0;padding:12px 14px;margin:11px 0;font-size:15.5px}
+.mb .note{background:#FFF9E8;border-left:4px solid #E5A00D;border-radius:0 8px 8px 0;padding:12px 14px;margin:11px 0;font-size:15.5px}
+.mb .bad{background:#FCEEED;border-left:4px solid #D6403A;border-radius:0 8px 8px 0;padding:12px 14px;margin:11px 0;font-size:15.5px}
+.mt-box{overflow:auto;margin:10px 0;border-radius:10px}
+.mt{width:100%;border-collapse:collapse;font-size:14.5px;min-width:520px}
+.mt th{background:#E8651A;color:#fff;padding:10px;font-weight:700}
+.mt td{padding:10px;border-bottom:1px solid #F0EAE2;text-align:left;vertical-align:top;line-height:1.6}
+.reflist{list-style:none;margin:0;padding:0}
+.reflist li{padding:8px 0;border-bottom:1px solid #F0EAE2;font-size:14.5px;line-height:1.6;color:#3A3E45}
+.reflist li::before{content:none}
+.reflist a{color:#2C3F6E;word-break:break-all}
+
+/* MOBILE */
+@media(max-width:760px){
+  .hero h1{font-size:25px}
+  .sh h2{font-size:22px}
+  .g2,.g3{grid-template-columns:1fr}
+  .card h3{font-size:17px}
+  .mb{padding:16px 16px 22px;font-size:16px}
+  .mh{padding:16px 18px}
+  .mh h3{font-size:17px}
+  .nav-back span.label{display:none}
+  body{font-size:16px}
+}
+@media(min-width:761px) and (max-width:960px){
+  .g3{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-in">
+    <span class="badge">스스로 학습하기 · 의학 교육자료</span>
+    <h1>항암약물치료의 이해<br><span>세대별 항암제 완전 가이드</span></h1>
+    <p>1세대 세포독성 항암제부터 2세대 표적항암제, 3세대 면역관문억제제, 4세대 대사항암제·CAR-T까지 — 작용 기전·부작용·치료 횟수·투여 경로·건강보험 비용을 정리했습니다.</p>
+    <div class="tip">👆 카드를 <b>터치(클릭)</b>하면 요약 내용 전체가 팝업으로 열립니다</div>
+  </div>
+</div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-back">← <span class="label">메인으로</span></a>
+  <div class="nav-sep"></div>
+  <div class="nav-in">
+    <a class="navlink" href="#s1">① 패러다임 전환</a>
+    <a class="navlink" href="#s2">② 1세대 세포독성</a>
+    <a class="navlink" href="#s3">③ 2세대 표적</a>
+    <a class="navlink" href="#s4">④ 3세대 면역관문</a>
+    <a class="navlink" href="#s5">⑤ 4세대 대사</a>
+    <a class="navlink" href="#s6">⑥ CAR-T</a>
+    <a class="navlink" href="#s7">⑦ 대사항암 파이프라인</a>
+    <a class="navlink" href="#s8">⑧ 투여 경로</a>
+    <a class="navlink" href="#s9">⑨ 안암 치료</a>
+    <a class="navlink" href="#s10">⑩ 건강보험 제도</a>
+    <a class="navlink" href="#s11">⑪ 결론</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- S1 서론 -->
+<section id="s1">
+  <div class="sh">
+    <span class="no">SECTION 01</span>
+    <h2>항암 치료 패러다임의 역사적 전환</h2>
+    <p>무차별 '융단 폭격'에서 '정밀 타격'으로 — 세대별 항암제의 진화 흐름입니다.</p>
+    <span class="hint">👇 각 세대를 터치하면 설명이 열립니다</span>
+  </div>
+  <div class="flow">
+    <div class="step g1" onclick="OM('gen1')"><span class="sn">1세대</span><div><b>세포독성 항암제</b><small>분열하는 모든 세포를 무차별 공격</small></div></div>
+    <div class="arr">▼</div>
+    <div class="step g2s" onclick="OM('gen2')"><span class="sn">2세대</span><div><b>표적항암제</b><small>특정 돌연변이·수용체만 정밀 타격</small></div></div>
+    <div class="arr">▼</div>
+    <div class="step g3s" onclick="OM('gen3')"><span class="sn">3세대</span><div><b>면역관문억제제</b><small>인체 면역 체계를 재활성화</small></div></div>
+    <div class="arr">▼</div>
+    <div class="step g4s" onclick="OM('gen4')"><span class="sn">4세대</span><div><b>대사항암제 · CAR-T</b><small>에너지 공급 차단 / 유전자 세포치료</small></div></div>
+  </div>
+  <div class="g g2" style="margin-top:24px">
+    <div class="card" onclick="OM('intro1')"><span class="plus">+</span><span class="ico">📜</span><h3>서론 : 패러다임의 역사적 전환</h3><p>작용 기전과 표적에 따라 1~4세대로 구분되는 현대 종양학의 발전사</p></div>
+    <div class="card" onclick="OM('intro2')"><span class="plus">+</span><span class="ico">💸</span><h3>재정적 독성 (Financial Toxicity)</h3><p>생존율 향상의 이면 — 고가 신약이 낳은 새로운 보건경제학적 난제</p></div>
+  </div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+<!-- S2 1세대 -->
+<section id="s2">
+  <div class="sh">
+    <span class="no">SECTION 02</span>
+    <h2>1세대 세포독성 항암제</h2>
+    <p>DNA 복제와 세포 분열을 방해해 빠르게 증식하는 세포를 직접 사멸시키는 전통적 화학요법입니다.</p>
+  </div>
+  <div class="g g2">
+    <div class="card" onclick="OM('c2_0')"><span class="plus">+</span><span class="tag tn">개요</span><span class="ico">💊</span><h3>1세대 항암제란?</h3><p>알킬화제·대사길항제·미세소관 억제제 — 정상 세포까지 공격하는 치명적 한계</p></div>
+    <div class="card" onclick="OM('c2_1')"><span class="plus">+</span><span class="tag tr">부작용</span><span class="ico">🩸</span><h3>정상세포 공격 부작용과 치료법</h3><p>골수 억제·오심구토(CINV)·탈모·구내염과 지지요법(Supportive care)</p></div>
+    <div class="card" onclick="OM('c2_2')"><span class="plus">+</span><span class="tag to">제형</span><span class="ico">💊</span><h3>제형의 발전 : 경구용 UFT</h3><p>정맥주사 5-FU를 대체한 경구 항암제 — 테가푸르+우라실의 시너지</p></div>
+    <div class="card" onclick="OM('c2_3')"><span class="plus">+</span><span class="tag tn">치료횟수</span><span class="ico">📋</span><h3>주요 5개 암종 선/후항암 치료 횟수</h3><p>유방암·대장암·위암·비소세포폐암·간암 표준 요법 (표)</p></div>
+    <div class="card" onclick="OM('c2_4')"><span class="plus">+</span><span class="tag tg">비용</span><span class="ico">🏥</span><h3>건강보험 기준 치료 비용</h3><p>급여·전액본인부담·비급여 3가지 분류와 산정특례 5% 부담</p></div>
+  </div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+<!-- S3 2세대 -->
+<section id="s3">
+  <div class="sh">
+    <span class="no">SECTION 03</span>
+    <h2>2세대 표적항암제</h2>
+    <p>정상 세포는 건드리지 않고 암세포의 특정 돌연변이·과발현 단백질(바이오마커)만 정밀 타격합니다.</p>
+  </div>
+  <div class="g g2">
+    <div class="card" onclick="OM('c3_1')"><span class="plus">+</span><span class="tag tn">기전</span><span class="ico">🎯</span><h3>핵심 기전 용어 해설</h3><p>단일클론항체 vs 저분자 화합물(-닙), 티로신 키나아제 억제제(TKI)</p></div>
+    <div class="card" onclick="OM('c3_2')"><span class="plus">+</span><span class="tag tn">치료횟수</span><span class="ico">📋</span><h3>주요 5개 암종 선/후항암 치료 횟수</h3><p>허셉틴·타그리소·넥사바·아바스틴 등 장기 유지요법 (표)</p></div>
+    <div class="card" onclick="OM('c3_3')"><span class="plus">+</span><span class="tag tg">비용</span><span class="ico">🏥</span><h3>표적항암제 치료 비용 분석</h3><p>고가 약가지만 급여 진입 시 산정특례로 부담 급감 (페스코·타그리소·렉라자)</p></div>
+    <div class="card" onclick="OM('c3_4')"><span class="plus">+</span><span class="tag tr">재정독성</span><span class="ico">⚠️</span><h3>보조요법 비급여의 치명적 재정 독성</h3><p>타그리소 수술 후 보조요법 3년 — 순수 약제비 2억 원 상회</p></div>
+  </div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+<!-- S4 3세대 -->
+<section id="s4">
+  <div class="sh">
+    <span class="no">SECTION 04</span>
+    <h2>3세대 면역관문억제제</h2>
+    <p>암세포가 면역을 회피하는 기전을 무력화해, 환자 본연의 T세포가 스스로 암을 파괴하도록 유도합니다.</p>
+  </div>
+  <div class="g g2">
+    <div class="card" onclick="OM('c4_1')"><span class="plus">+</span><span class="tag tn">기전</span><span class="ico">🛡️</span><h3>생물학적 기전 : 면역 브레이크 해제</h3><p>암세포가 악용하는 면역관문(Immune Checkpoint) 브레이크 시스템</p></div>
+    <div class="card" onclick="OM('c4_2')"><span class="plus">+</span><span class="tag tn">기전</span><span class="ico">🤝</span><h3>PD-1 · PD-L1 결합 차단의 직관적 이해</h3><p>'죽음의 악수'를 가로막는 키트루다·옵디보의 작동 원리</p></div>
+    <div class="card" onclick="OM('c4_3')"><span class="plus">+</span><span class="tag tr">병용/비용</span><span class="ico">🎗️</span><h3>병용투여 선/후항암 횟수 & 비용</h3><p>조기 삼중음성 유방암 키트루다 병용(총 17주기)과 7천만 원대 비급여</p></div>
+    <div class="card" onclick="OM('c4_4')"><span class="plus">+</span><span class="tag to">참고</span><span class="ico">🧬</span><h3>참고 : CAR-T 세포치료제</h3><p>3세대 면역항암제의 진화 형태 — '원샷' 치료제 개요 (상세는 ⑥장)</p></div>
+  </div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+<!-- S5 4세대 대사 -->
+<section id="s5">
+  <div class="sh">
+    <span class="no">SECTION 05</span>
+    <h2>4세대 대사항암제</h2>
+    <p>암세포 고유의 기형적 에너지 대사만 정밀 차단해, 암세포를 '굶겨 죽이는(Starvation)' 전략입니다.</p>
+  </div>
+  <div class="g g3">
+    <div class="card" onclick="OM('c5_1')"><span class="plus">+</span><span class="tag tn">기전</span><span class="ico">⚡</span><h3>대사항암제 핵심 기전 & 용어</h3><p>정상 세포와 암세포의 '발전소 가동 방식' 차이</p></div>
+    <div class="card" onclick="OM('c5_2')"><span class="plus">+</span><span class="tag tn">이론</span><span class="ico">🔬</span><h3>바르부르크 효과 (Warburg Effect)</h3><p>산소가 넘쳐도 무산소 저효율 공장을 가동하는 암세포 (PET-CT 원리)</p></div>
+    <div class="card" onclick="OM('c5_3')"><span class="plus">+</span><span class="tag to">이론</span><span class="ico">🇰🇷</span><h3>킴 효과 (Kim Effect)</h3><p>국립암센터가 세계 최초 규명 — 이화대사의 절대적 지방산 의존성</p></div>
+    <div class="card" onclick="OM('c5_4')"><span class="plus">+</span><span class="tag tg">전망</span><span class="ico">🌐</span><h3>파이프라인 & 임상 개발 동향</h3><p>전체 암 95% 이상에 적용 가능한 범용성과 낮은 독성·내성</p></div>
+  </div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+<!-- S6 CAR-T -->
+<section id="s6">
+  <div class="sh">
+    <span class="no">SECTION 06</span>
+    <h2>4세대 CAR-T 세포치료제</h2>
+    <p>환자 본인의 T세포를 추출·유전자 조작·배양 후 다시 주입하는 개인 맞춤형 '살아있는 약'입니다.</p>
+  </div>
+  <div class="g g3">
+    <div class="card" onclick="OM('c6_1')"><span class="plus">+</span><span class="tag tn">개요</span><span class="ico">🧬</span><h3>등장 배경과 임상적 의의</h3><p>입양세포전달 기반 유전자 세포치료 — 단 1회 투여로 완전관해</p></div>
+    <div class="card" onclick="OM('c6_2')"><span class="plus">+</span><span class="tag tn">과정</span><span class="ico">🔄</span><h3>전 주기 과정 : 채집부터 타격까지</h3><p>7단계 프로세스와 면역학적 시냅스 타격 기전 (표)</p></div>
+    <div class="card" onclick="OM('c6_3')"><span class="plus">+</span><span class="tag to">인프라</span><span class="ico">🏭</span><h3>배양 기간 & 장소 구조</h3><p>정맥 대 정맥 시간 — 수입산 4주 이상 vs 국산 림카토 2~3주</p></div>
+    <div class="card" onclick="OM('c6_4')"><span class="plus">+</span><span class="tag tr">전처치</span><span class="ico">💉</span><h3>림프구 고갈(Lymphodepletion) 전처치</h3><p>플루다라빈+시클로포스파미드와 출혈성 방광염 등 부작용 관리</p></div>
+    <div class="card" onclick="OM('c6_5')"><span class="plus">+</span><span class="tag tr">부작용</span><span class="ico">🌪️</span><h3>면역 과잉반응 : CRS & ICANS</h3><p>사이토카인 폭풍과 신경독성 — 토실리주맙·덱사메타손 처치 알고리즘</p></div>
+    <div class="card" onclick="OM('c6_6')"><span class="plus">+</span><span class="tag tn">약제</span><span class="ico">🧾</span><h3>상용화 약제 적응증 & 투여 기준</h3><p>킴리아·예스카타·카빅티·림카토 (표)</p></div>
+    <div class="card" onclick="OM('c6_7')"><span class="plus">+</span><span class="tag tg">비용</span><span class="ico">💰</span><h3>초고가 약가(3.6~5억)와 급여 체계</h3><p>'1개의 배치(Batch of One)' 원가와 산정특례 598만 원</p></div>
+  </div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+<!-- S7 파이프라인 -->
+<section id="s7">
+  <div class="sh">
+    <span class="no">SECTION 07</span>
+    <h2>4세대 대사항암제 파이프라인 심층 분석</h2>
+    <p>퍼스트 무버(First Mover) 전략으로 개발 중인 국내외 대사항암 신약들입니다.</p>
+  </div>
+  <div class="g g2">
+    <div class="card" onclick="OM('c7_1')"><span class="plus">+</span><span class="tag to">국내</span><span class="ico">🧪</span><h3>스타베닙 (Starvanip / NYH817100)</h3><p>하임바이오 — 고시폴+펜포르민으로 ALDH·LDH 동시 억제, FDA 임상 2상 앞</p></div>
+    <div class="card" onclick="OM('c7_2')"><span class="plus">+</span><span class="tag to">국내</span><span class="ico">🐴</span><h3>KAT-101 (3-Bromopyruvate, 3-BP)</h3><p>뉴지랩파마 — '트로이의 목마' 전략, 간세포암 1차 적응증 임상 1/2a상</p></div>
+  </div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+<!-- S8 투여 경로 -->
+<section id="s8">
+  <div class="sh">
+    <span class="no">SECTION 08</span>
+    <h2>항암제 투여 경로의 차이</h2>
+    <p>같은 성분이라도 전달 체계(주사제 vs 경구제)에 따라 효능과 삶의 질이 달라집니다.</p>
+  </div>
+  <div class="g g2">
+    <div class="card" onclick="OM('c8_1')"><span class="plus">+</span><span class="tag tn">약리</span><span class="ico">🔀</span><h3>흡수율 차이에도 경구를 선호하는 이유</h3><p>간 초회통과효과 vs 삶의 질(QoL)과 치료 스케줄의 독립성</p></div>
+    <div class="card" onclick="OM('c8_2')"><span class="plus">+</span><span class="tag tn">비교</span><span class="ico">⚖️</span><h3>주사제 vs 경구제 장단점 비교</h3><p>비침습성·복약순응도·약동학적 안정성 등 항목별 정리 (표)</p></div>
+  </div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+<!-- S9 안암 -->
+<section id="s9">
+  <div class="sh">
+    <span class="no">SECTION 09</span>
+    <h2>안암(안구종양) 근접방사선치료</h2>
+    <p>안구 적출 없이 시력을 보존하며 암세포만 파괴하는 국소 치료(Brachytherapy)입니다.</p>
+  </div>
+  <div class="g g3">
+    <div class="card" onclick="OM('c9_1')"><span class="plus">+</span><span class="tag tn">원리</span><span class="ico">☢️</span><h3>방사선 동위원소 판(Plaque)의 원리</h3><p>루테늄-106 베타선으로 정상 시력 조직 피폭 차단</p></div>
+    <div class="card" onclick="OM('c9_2')"><span class="plus">+</span><span class="tag tn">시술</span><span class="ico">👁️</span><h3>적용 암종 및 외과적 사용법</h3><p>맥락막흑색종·망막모세포종 — 공막 봉합 고정 후 2차 수술로 제거</p></div>
+    <div class="card" onclick="OM('c9_3')"><span class="plus">+</span><span class="tag tg">비용</span><span class="ico">🏥</span><h3>치료 비용 & 건강보험 적용 변화</h3><p>2021년 12월 급여 신설 — 산정특례 5%와 MRI 유도 방사선치료</p></div>
+  </div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+<!-- S10 건강보험 -->
+<section id="s10">
+  <div class="sh">
+    <span class="no">SECTION 10</span>
+    <h2>대한민국 항암 약제비용 건강보험 제도</h2>
+    <p>'급여 · 전액본인부담 · 비급여'의 경계선 — 환자의 경제적 생존권과 직결됩니다.</p>
+  </div>
+  <div class="g g3">
+    <div class="card" onclick="OM('c10_1')"><span class="plus">+</span><span class="tag tg">급여</span><span class="ico">✅</span><h3>건강보험 급여 (Covered)</h3><p>암질심·약평위 인정 → 재정 95% 지원, 산정특례 본인부담 5%</p></div>
+    <div class="card" onclick="OM('c10_2')"><span class="plus">+</span><span class="tag to">전액</span><span class="ico">⚖️</span><h3>전액본인부담 (100분의 100)</h3><p>목록엔 등재됐으나 인정 기준 미충족 — 단, 국가 상한가로 전국 동일</p></div>
+    <div class="card" onclick="OM('c10_3')"><span class="plus">+</span><span class="tag tr">비급여</span><span class="ico">🚫</span><h3>비급여 (Non-covered)</h3><p>상한 금액 규제 없음 → 병원별 진료비 편차 (리브리반트·임델트라 등)</p></div>
+  </div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+<!-- S11 결론 -->
+<section id="s11">
+  <div class="sh">
+    <span class="no">SECTION 11</span>
+    <h2>결론 및 제언</h2>
+    <p>임상적 진보의 이면에 놓인 의료 불평등, 그리고 제도의 포용적 혁신에 대한 제언입니다.</p>
+  </div>
+  <div class="g g2">
+    <div class="card" onclick="OM('c11_1')"><span class="plus">+</span><span class="tag tn">결론</span><span class="ico">🧭</span><h3>결론 및 제언 전문</h3><p>세대별 진화의 요약과 재정적 독성 극복을 위한 정책 제언</p></div>
+    <div class="card" onclick="OM('refs')"><span class="plus">+</span><span class="tag to">출처</span><span class="ico">📚</span><h3>통합 참고자료</h3><p>보고서 전문에 인용된 모든 출처 (장별 정리)</p></div>
+  </div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+</div>
+
+<footer>
+  본 보고서는 <b>정보 제공을 목적</b>으로 작성된 교육용 요약 자료입니다.<br>
+  의학적 조언이나 진단을 위해서는 반드시 전문가와 상담하십시오.<br>
+  <span style="opacity:.7">This is for informational purposes only. For medical advice or diagnosis, consult a professional.</span>
+</footer>
+
+<!-- 모달 -->
+<div id="MB" onclick="if(event.target===this||event.target.id==='MB')CM()">
+  <div class="mbox">
+    <div class="mh">
+      <h3 id="MT"></h3>
+      <button class="mcl" onclick="CM()">✕</button>
+    </div>
+    <div class="mb" id="MC"></div>
+  </div>
+</div>
+
+<script>
+window.MD={
+"gen1":{t:"1세대 · 세포독성 항암제",b:'<p>정상 세포와 암세포를 구분하지 못하고 분열하는 모든 세포를 무차별적으로 공격하던 세대입니다. 초기의 암 치료가 단순히 빠르게 분열하는 세포를 무차별적으로 파괴하는 이른바 <b>&lsquo;융단 폭격&rsquo;</b>의 양상이었습니다.</p><p>DNA 복제 및 세포 분열 과정을 물리적·화학적으로 방해하여 무분별하게 빠르게 증식하는 세포를 직접 사멸시키는 전통적인 개념의 화학요법입니다.</p>'},
+"gen2":{t:"2세대 · 표적항암제",b:'<p>암세포의 특정 돌연변이나 수용체만을 정밀하게 표적으로 삼는 세대입니다. 정상 세포에는 손상을 주지 않고, 오직 암세포의 생존·증식·혈관 신생에 필수적인 특정 유전자 돌연변이나 과발현된 단백질(바이오마커)만을 표적으로 삼아 결합함으로써 암세포의 성장 신호를 원천적으로 차단합니다.</p><p>1세대가 무차별적인 융단폭격이었다면, 2세대 표적항암제는 <b>정밀 유도 미사일</b>로 비유할 수 있습니다.</p>'},
+"gen3":{t:"3세대 · 면역관문억제제",b:'<p>인체의 면역 체계를 재활성화하여 암을 억제하는 세대입니다. 기존 항암제들처럼 화학 물질이나 항체가 암세포를 직접 공격하여 사멸시키는 방식이 아니라, 암세포가 인체의 면역 체계를 속이고 회피하는 교묘한 기전을 무력화시켜, 환자 본연의 면역 세포(T세포)가 스스로 암세포를 적으로 인식하고 강력하게 파괴하도록 유도하는 혁신적인 생물학적 치료제입니다.</p>'},
+"gen4":{t:"4세대 · 대사항암제 및 CAR-T 세포치료제",b:'<p>암세포의 고유한 에너지 대사 과정을 차단하여 암세포를 아사(餓死)시키는 <b>대사항암제</b>, 그리고 환자 본인의 면역세포를 추출·유전자 조작 후 다시 주입하는 <b>CAR-T 세포치료제</b>에 이르는 세대입니다.</p><p>암세포 고유의 비정상적인 &lsquo;기형적 에너지 대사 과정&rsquo;만을 정밀하게 표적으로 삼아 에너지 공급을 원천 차단, 궁극적으로 암세포를 굶겨 죽이는(Starvation) 혁신적인 전략을 취합니다.</p>'},
+"intro1":{t:"제1장. 서론 : 항암 치료 패러다임의 역사적 전환",b:'<p>항암 약물 치료의 역사는 암세포의 생물학적, 유전학적, 대사적 특성을 규명해 온 현대 의학의 발전사와 궤를 같이합니다. 초기의 암 치료가 단순히 빠르게 분열하는 세포를 무차별적으로 파괴하는 이른바 &lsquo;융단 폭격&rsquo;의 양상이었다면, 현대의 항암 치료는 특정 유전자 변이를 억제하거나 환자의 면역 체계를 활성화하고, 나아가 암세포 고유의 에너지 공급망을 차단하는 정밀 타격의 형태로 진화하였습니다.</p><p>이러한 약물들은 작용 기전(Mechanism of Action)과 표적(Target)의 특성에 따라 1세대부터 4세대까지 명확히 구분되며, 각각의 세대는 고유한 임상적 유용성과 한계를 동시에 내포하고 있습니다.</p><h4>세대별 진화 요약</h4><p>현대 종양학은 지난 수십 년간 괄목할 만한 발전을 이룩해 왔습니다. 정상 세포와 암세포를 구분하지 못하고 분열하는 모든 세포를 무차별적으로 공격하던 <b>1세대 세포독성 항암제</b>에서 출발하여, 암세포의 특정 돌연변이나 수용체만을 정밀하게 표적으로 삼는 <b>2세대 표적항암제</b>, 인체의 면역 체계를 재활성화하여 암을 억제하는 <b>3세대 면역관문억제제</b>, 그리고 암세포의 고유한 에너지 대사 과정을 차단하여 암세포를 아사(餓死)시키는 <b>4세대 대사항암제 및 CAR-T 세포치료제</b>에 이르기까지 패러다임이 급격히 전환되고 있습니다.</p>'},
+"intro2":{t:"재정적 독성 (Financial Toxicity)",b:'<p>치료제의 진화는 환자의 생존율을 비약적으로 향상시켰으나, 동시에 고가 신약의 등장으로 인한 <b>&lsquo;재정적 독성(Financial Toxicity)&rsquo;</b>이라는 새로운 보건경제학적 난제를 제시하고 있습니다.</p><div class="note">본 보고서는 1세대부터 4세대 항암제에 이르는 작용 기전, 부작용 관리, 임상적 치료 횟수, 항암제 투여 경로의 차이, 안암에 적용되는 특수 치료법, 그리고 대한민국 건강보험 체계 내에서의 비용 구조를 심층적으로 분석합니다.</div>'},
+
+"c2_0":{t:"1세대 세포독성 항암제란?",b:'<p>1세대 항암제는 DNA 복제 및 세포 분열 과정을 물리적, 화학적으로 방해하여 무분별하게 빠르게 증식하는 세포를 직접 사멸시키는 전통적인 개념의 화학요법입니다.</p><p><b>알킬화제, 대사길항제, 미세소관 억제제</b> 등으로 분류되는 이 약물들은 분열 주기가 짧은 종양 세포를 효과적으로 파괴하지만, 골수의 조혈모세포, 위장관 점막 세포, 모근 세포 등 정상적으로 빠르게 분열하는 세포까지 공격한다는 치명적인 한계를 지닙니다.</p>'},
+"c2_1":{t:"제2.1절 정상세포 공격 부작용의 발현 기전과 치료법",b:'<p>1세대 항암제의 전신 독성은 환자의 삶의 질을 심각하게 저하시키며, 임상 현장에서는 이를 통제하기 위한 고도화된 지지요법(Supportive care)이 필수적으로 병행됩니다.</p><h4>① 골수 기능 억제</h4><p>가장 치명적인 부작용은 <b>골수 기능 억제</b>로 인한 조혈모세포의 손상입니다. 골수 억제는 백혈구, 특히 호중구의 급격한 감소를 유발하여 환자를 패혈증 등 치명적인 감염 위험에 노출시킵니다. 이를 예방하고 치료하기 위해 임상에서는 과립구 집락 자극 인자(G-CSF)를 피하 주사하여 골수 내 백혈구의 증식과 분화를 강력하게 촉진합니다. 빈혈이나 혈소판 감소증이 심각할 경우에는 적혈구 조혈 자극제 투여나 직접적인 성분 수혈이 시행되어 환자의 체력을 유지시킵니다.</p><h4>② 오심 및 구토 (CINV)</h4><p>위장관 점막의 파괴와 연수(Medulla)에 위치한 구토 중추의 자극은 극심한 오심과 구토를 유발합니다. 항암화학요법 유발 구역 및 구토(CINV)는 환자가 치료를 포기하게 만드는 주요 원인이므로, 투약 전후로 5-HT3 수용체 길항제, NK1 수용체 길항제, 그리고 덱사메타손과 같은 강력한 부신피질호르몬제(스테로이드)를 복합적으로 전처치하여 구토 반사를 원천적으로 차단합니다. 특히 덱사메타손은 염증 억제 작용을 통해 부종을 가라앉히고 항구토제의 효과를 극대화하는 핵심 약제입니다.</p><h4>③ 탈모증 및 구내염</h4><p>이 외에도 모근 세포의 파괴로 인한 <b>탈모증</b>과 구강 점막의 궤양인 <b>구내염</b>이 빈번하게 발생합니다. 최근에는 항암제 투여 중 의료용 냉각 모자(Scalp cooling)를 착용하여 두피의 혈관을 수축시키고 모낭으로 전달되는 항암제의 농도를 최소화함으로써 탈모를 방지하는 기법이 도입되고 있으며, 구내염 예방을 위해서는 특수 가글액과 국소 마취제, 진통제가 적극적으로 처방됩니다.</p>'},
+"c2_2":{t:"제2.2절 제형의 발전 및 투여 방식의 진화",b:'<p>초기의 1세대 항암제는 체내 반감기가 짧아 약효를 유지하기 위해 환자가 병원에 입원하여 수 시간에서 수일에 걸쳐 중심정맥관(포트)을 통해 정맥주사(IV)로 투여받아야만 했습니다. 그러나 약물 전달 및 제제 기술의 발전으로 기존 정맥주사제를 경구용으로 변형한 혁신적인 제형들이 등장하면서 복약 편의성과 환자의 삶의 질이 크게 개선되었습니다.</p><h4>경구용 항암제의 대표 : UFT</h4><p>경구용 세포독성 항암제의 대표적인 성공 사례는 테가푸르(Tegafur)와 우라실(Uracil)을 1대 4의 분자 비율로 혼합한 <b>&lsquo;UFT&rsquo;</b>입니다. 이 약제는 1980년대 일본에서 지속적인 정맥주사가 필요한 5-플루오로우라실(5-FU)을 대체하기 위해 개발되었습니다.</p><p>테가푸르는 체내에 흡수된 후 간에서 대사되어 강력한 세포 독성 물질인 5-FU로 분해되는 전구약물(Prodrug)입니다. 여기에 함께 배합된 우라실은 체내에 머물면서 5-FU를 분해해버리는 디하이드로피리미딘 탈수소효소(DPD)의 활성을 억제합니다.</p><div class="ok">결과적으로 이 두 성분의 시너지를 통해 종양 세포 내의 5-FU 농도가 장기간 높게 유지되며, 환자는 집에서 알약을 복용하는 것만으로도 정맥주사와 유사한 항암 효과를 누릴 수 있게 되었습니다.</div>'},
+"c2_3":{t:"제2.3절 주요 5개 암종의 선/후항암 표준 치료 횟수",b:'<p>암 수술 전 종양의 크기를 줄여 절제 가능성을 높이는 <b>선행항암요법(Neoadjuvant)</b>과 수술 후 체내에 남아있을지 모르는 미세 잔존암을 제거하여 완치율을 높이는 <b>보조항암요법(Adjuvant)</b>은 임상 종양학의 핵심 전략입니다.</p><div class="mt-box"><table class="mt"><tr><th>주요 암종</th><th>대표적 1세대 표준 요법</th><th>선/후항암 치료 횟수(주기) 및 기간</th><th>비고</th></tr><tr><td>유방암</td><td>AC-T 요법 (아드리아마이신+사이클로포스파마이드 후 탁솔)</td><td>주로 총 8주기 (수술 전 4~8회 또는 수술 후 시행)</td><td>2~3주 간격 투여로 약 4~6개월 소요</td></tr><tr><td>대장암</td><td>FOLFOX 또는 FOLFIRI 요법</td><td>최대 12주기 (약 6개월)</td><td>수술 후 보조요법 12주기가 글로벌 표준</td></tr><tr><td>위암</td><td>젤록스(XELOX) 또는 TS-1(경구제) 요법</td><td>XELOX 8주기 또는 TS-1 1년간 복용</td><td>수술 후 보조요법으로 6개월~1년 적용</td></tr><tr><td>비소세포폐암</td><td>백금 기반 항암화학요법 (시스플라틴 + 페메트렉시드 등)</td><td>4주기 (약 3개월)</td><td>수술 후 보조요법으로 짧고 집중적으로 시행</td></tr><tr><td>간암</td><td>TACE(경동맥 화학색전술) 등 국소 투여</td><td>환자의 간 기능 및 종양 반응에 따라 1회~수회 가변적</td><td>전신 1세대 항암제의 효과가 낮아 색전술 위주 시행</td></tr></table></div>'},
+"c2_4":{t:"제2.4절 건강보험 체계 기준 1세대 항암 치료 비용",b:'<p>대한민국의 항암 치료 비용은 건강보험심사평가원의 엄격한 기준에 따라 <b>&lsquo;급여&rsquo;</b>, <b>&lsquo;전액본인부담(100분의 100)&rsquo;</b>, <b>&lsquo;비급여&rsquo;</b>의 세 가지 형태로 분류됩니다.</p><h4>급여 항목</h4><p>&lsquo;급여&rsquo; 항목에 해당하는 경우 암 환자는 &lsquo;중증질환 산정특례&rsquo; 제도의 혜택을 받아 고시된 약가 및 진료비의 단 <b>5%</b>만을 본인부담금으로 지불합니다. 1세대 항암제는 이미 특허가 만료되어 복제약(제네릭)이 널리 보급되어 있으므로 원 약가 자체가 매우 저렴합니다.</p><div class="calc">급여 적용 1세대 표준 항암치료 예시\n(유방암 AC-T 8주기, 대장암 FOLFOX 12주기)\n\n1주기당 순수 약제비 : 수만 원 ~ 십여만 원 내외\n전체 치료(4~6개월) 총 본인부담금\n(조제료·주사료·진찰료 포함) : 300만 ~ 800만 원 수준</div><h4>전액본인부담 (100분의 100)</h4><p>&lsquo;전액본인부담&rsquo; 제도는 약제가 건강보험 급여 목록에는 등재되어 있지만, 환자의 구체적인 상병이 정부가 정한 급여 인정 기준을 충족하지 못해 건강보험공단의 지원 없이 100%를 환자 본인이 전액 부담해야 하는 경우를 의미합니다. 이 경우 국가가 정한 상한가가 적용되므로 전국 어느 요양기관을 방문하든 동일한 금액이 청구됩니다.</p><h4>비급여</h4><p>&lsquo;비급여&rsquo; 항목은 아직 국민건강보험 체계 내로 진입하지 못한 신약이거나, 허가 사항을 초과하여 사용하는 오프라벨(Off-label) 처방, 또는 일상생활에 지장이 없는 질환에 대한 치료 등을 일컫습니다. 비급여는 보건복지부가 정한 상한 금액 자체가 존재하지 않으므로, 의료기관이 자율적으로 가격을 책정할 수 있어 병원별로 청구 금액이 수 배까지 상이할 수 있습니다.</p>'},
+
+"c3_1":{t:"제3.1절 표적항암제의 핵심 기전 용어 해설",b:'<p>1세대 항암제가 무차별적인 융단폭격이었다면, 2세대 표적항암제는 정밀 유도 미사일로 비유할 수 있습니다. 정상 세포에는 손상을 주지 않고, 오직 암세포의 생존·증식·혈관 신생에 필수적인 특정 유전자 돌연변이나 과발현된 단백질(바이오마커)만을 표적으로 삼아 결합함으로써 암세포의 성장 신호를 원천적으로 차단합니다.</p><p>표적항암제는 약물의 크기와 작용 위치에 따라 크게 대분자 단백질인 <b>&lsquo;단일클론항체(Monoclonal Antibody)&rsquo;</b>와 세포 내부로 침투하는 <b>&lsquo;저분자 화합물(Small Molecule Compounds)&rsquo;</b>로 양분됩니다.</p><h4>저분자 화합물 (-닙, -nib)</h4><p>&lsquo;저분자 화합물&rsquo;은 화학적으로 합성된 매우 작은 분자량의 약물로, 일반적으로 성분명이 <b>&lsquo;-닙(-nib)&rsquo;</b>으로 끝나는 특징이 있습니다(예: 이매티닙, 오시머티닙). 대분자인 항체 약물이 세포막을 통과하지 못해 세포 외벽의 수용체에만 결합하는 것과 달리, 저분자 화합물은 미세한 크기 덕분에 지질 이중층인 세포막을 쉽게 통과하여 세포 내부로 침투할 수 있습니다.</p><h4>티로신 키나아제 억제제 (TKI)</h4><p>이러한 저분자 화합물의 대표적인 기전이 바로 <b>&lsquo;티로신 키나아제 억제제(Tyrosine Kinase Inhibitor, TKI)&rsquo;</b>입니다. &lsquo;키나아제(Kinase)&rsquo;는 세포가 언제 분열하고 언제 성장을 멈춰야 할지를 결정하는 생체 내 스위치 역할을 하는 효소입니다.</p><p>정상적인 세포에서는 필요할 때만 이 스위치가 켜지지만, 암세포에서는 유전자 돌연변이로 인해 이 티로신 키나아제 스위치가 고장 나 항상 &lsquo;켜짐(ON)&rsquo; 상태로 고정되어 버립니다. 티로신 키나아제 억제제는 세포 내로 침투하여 이 고장 난 스위치의 ATP 결합 부위에 결합, 스위치를 강제로 &lsquo;꺼짐(OFF)&rsquo; 상태로 만들어버리는 저분자 화합물입니다.</p><div class="ok">스위치가 꺼진 암세포는 더 이상 증식 명령을 받지 못해 성장을 멈추고 최종적으로 사멸에 이르게 됩니다.</div>'},
+"c3_2":{t:"제3.2절 주요 5개 암종의 표적항암제 선/후항암 치료 횟수",b:'<p>표적항암제는 정상 세포 독성이 상대적으로 적어 1세대 항암제처럼 정해진 짧은 주기 내에 치료를 종료하기보다는, 질환의 재발 방지를 위해 장기간 유지요법으로 투여되거나 표적 물질에 내성이 발생하여 병이 다시 진행될 때까지 무기한 투여되는 특징을 갖습니다.</p><div class="mt-box"><table class="mt"><tr><th>주요 암종</th><th>대표적 표적항암제</th><th>선/후항암 치료 횟수 및 기간</th><th>비고</th></tr><tr><td>유방암</td><td>허셉틴(트라스투주맙) / 퍼제타(퍼투주맙)</td><td>수술 전/후 합쳐 총 18주기 (1년간 투여)</td><td>HER2 양성 조기 유방암의 글로벌 표준 보조요법</td></tr><tr><td>비소세포폐암</td><td>타그리소(오시머티닙)</td><td>수술 후 보조요법으로 3년간 매일 1회 복용</td><td>EGFR 돌연변이 양성 환자 대상 (ADAURA 임상 기준)</td></tr><tr><td>간암</td><td>넥사바(소라페닙), 렌비마(렌바티닙)</td><td>질병이 진행되거나 감당할 수 없는 독성 발생 전까지 지속 복용</td><td>간세포암 1차 전신치료제로, 명확한 횟수 제한 없음</td></tr><tr><td>대장암</td><td>아바스틴(베바시주맙), 얼비툭스(세툭시맙)</td><td>주로 1세대 항암제(FOLFOX/FOLFIRI)와 병용 투여</td><td>병용요법 주기에 맞춰 최대 12주기 또는 전이 시 지속 투여</td></tr><tr><td>위암</td><td>허셉틴(트라스투주맙)</td><td>1세대 화학요법과 병용하여 6주기 이후 단독으로 최대 1년 유지</td><td>HER2 과발현 전이성 위암 및 위식도접합부 선암</td></tr></table></div>'},
+"c3_3":{t:"제3.3절 표적항암제 치료 비용 분석",b:'<p>표적항암제는 혁신적인 기전과 막대한 연구개발 비용으로 인해 원 약가가 1세대 항암제보다 수십 배 이상 고가로 형성되어 있습니다. 그러나 급여권에 진입한 약제의 경우 건강보험 산정특례(5% 본인부담)가 적용되어 환자의 경제적 부담이 기적적으로 줄어듭니다.</p><h4>HER2 양성 유방암 : 허셉틴·퍼제타·페스코</h4><p>HER2 양성 유방암 치료제인 허셉틴과 퍼제타는 과거 비급여 시절 1년 투약 시 수천만 원에 달하는 비용이 발생했으나, 현재는 폭넓게 건강보험 급여가 적용되어 1년간 총 18회를 투약하더라도 환자의 순수 본인 부담금은 연간 <b>수백만 원 수준</b>으로 현저히 감소하였습니다.</p><p>최근에는 허셉틴과 퍼제타를 하나로 섞어 정맥주사 대신 5분 만에 허벅지에 피하주사할 수 있는 <b>&lsquo;페스코&rsquo;</b>라는 개량 신약까지 급여가 적용되어 치료 편의성마저 극대화되었습니다.</p><h4>비소세포폐암 : 타그리소·렉라자</h4><p>비소세포폐암 분야에서도 EGFR 변이 양성 전이성/진행성 환자의 1차 치료제로 고가의 표적항암제인 &lsquo;타그리소&rsquo;와 &lsquo;렉라자(레이저티닙)&rsquo;가 건강보험 급여권에 진입하였습니다.</p><div class="ok">이로 인해 한 달에 수백만 원에 달하던 약제비가 산정특례 적용을 받아 환자 본인부담금 기준 <b>연간 약 300만~400만 원, 1개월 기준 약 30만 원 내외</b>로 크게 낮아졌습니다.</div>'},
+"c3_4":{t:"제3.4절 보조요법 전액본인부담/비급여 사용 시의 치명적 재정 독성",b:'<p>대규모 글로벌 임상 시험을 통해 수술 후 생존율 향상과 재발 방지 효과가 명백히 입증되었음에도 불구하고, 아직 대한민국의 건강보험 재정 한계와 약가 협상의 어려움으로 인해 급여 문턱을 넘지 못한 표적항암제가 다수 존재합니다.</p><h4>대표 사례 : 타그리소 수술 후 보조요법 (ADAURA)</h4><p>가장 대표적인 사례가 비소세포폐암 EGFR 돌연변이 환자의 <b>수술 후 보조요법</b>으로 사용되는 타그리소(오시머티닙)입니다. 글로벌 3상 임상인 ADAURA 연구를 통해, 1B~3A기 폐암 환자가 수술 후 타그리소를 3년간 보조요법으로 복용할 경우 위약군 대비 재발 위험을 무려 80% 이상 극적으로 낮추고 생존율을 획기적으로 개선한다는 사실이 증명되었습니다. 이는 미국 종합암네트워크(NCCN) 등 글로벌 표준 진료 지침에서 가장 강력하게 권고하는 치료법입니다.</p><p>그러나 현재 대한민국에서 타그리소의 1차 전이성 폐암 치료는 급여가 되지만, 완치율을 끌어올리는 &lsquo;수술 후 보조요법&rsquo; 적응증은 전액본인부담(100/100) 또는 비급여 상태로 머물러 있습니다.</p><div class="bad">타그리소의 1개월치 약제비는 약 <b>600만 원에서 700만 원</b> 선에 이릅니다. 의료진의 임상적 판단과 ADAURA 임상 프로토콜에 따라 환자가 표준 연장 치료 기간인 3년간(36개월) 이 약을 지속 복용할 경우, 환자가 감당해야 하는 순수 약제비만 무려 <b>2억 원을 상회</b>하게 됩니다.</div><p>이러한 막대한 비용 장벽 때문에 임상 현장에서는 환자의 실손보험 가입 여부나 가계의 경제적 여력에 따라 생사가 갈리는 심각한 의료 양극화 현상이 발생하고 있습니다.</p>'},
+
+"c4_1":{t:"제4.1절 3세대 면역관문억제제의 생물학적 기전",b:'<p>3세대 면역항암제는 기존 항암제들처럼 화학 물질이나 항체가 암세포를 직접 공격하여 사멸시키는 방식이 아닙니다. 대신, 암세포가 인체의 면역 체계를 속이고 회피하는 교묘한 기전을 무력화시켜, 환자 본연의 면역 세포(T세포)가 스스로 암세포를 적으로 인식하고 강력하게 파괴하도록 유도하는 혁신적인 생물학적 치료제입니다.</p><h4>면역 브레이크 시스템 (면역관문)</h4><p>인체는 외부 침입자나 내부에서 발생한 비정상 세포를 제거하는 강력한 군대인 면역 T세포를 보유하고 있습니다. 평소 T세포는 체내를 순찰하며 암세포를 발견하면 즉각 파괴합니다. 하지만 T세포가 너무 과도하게 활성화되면 정상 세포까지 공격하여 류마티스 관절염 같은 치명적인 자가면역질환을 유발할 수 있으므로, 우리 몸은 T세포의 공격을 적절한 시점에 멈추게 하는 일종의 자가 관용 <b>&lsquo;브레이크&rsquo; 시스템(면역관문, Immune Checkpoint)</b>을 진화시켜 왔습니다.</p><h4>암세포의 브레이크 악용</h4><p>문제는 영악한 암세포가 생존을 위해 이 브레이크 시스템을 악용한다는 점입니다. 암세포는 자신을 정상 세포인 것처럼 위장하는 가짜 신분증을 내밀어 다가오는 T세포의 브레이크를 강제로 밟아버리고, T세포를 극도의 피로 상태(Exhaustion)와 깊은 수면에 빠지게 만듭니다.</p><div class="ok">면역관문억제제는 암세포가 밟고 있는 이 T세포의 &lsquo;브레이크&rsquo;를 물리적으로 해제해버리는 약물입니다. 약물에 의해 억제 신호가 차단되어 브레이크가 풀린 T세포는 다시 잠에서 깨어나 본연의 강력한 전투력을 회복하고 종양 미세환경으로 침투하여 암세포를 무자비하게 공격하게 됩니다.</div>'},
+"c4_2":{t:"제4.2절 PD-1과 PD-L1 결합 차단 기전의 직관적 이해",b:'<p>면역 브레이크 시스템의 생물학적 실체가 바로 <b>PD-1과 PD-L1</b>이라는 면역관문 단백질입니다.</p><ul><li class="n"><b>PD-1 (Programmed Cell Death Protein 1):</b> 면역 T세포의 표면에 솟아 있는 단백질 수용체로, T세포의 공격성을 억제하는 일종의 &lsquo;정지 버튼&rsquo;입니다.</li><li class="n"><b>PD-L1 (Programmed Death-Ligand 1):</b> 암세포 표면에 다량으로 발현되어 있는 단백질로, T세포의 정지 버튼을 직접 누르는 &lsquo;손가락&rsquo; 역할을 합니다.</li></ul><h4>죽음의 악수</h4><p>무장한 T세포가 암세포를 공격하려 다가가면, 암세포는 생존을 위해 표면의 PD-L1(손가락)을 뻗어 T세포의 PD-1(정지 버튼)과 결합해버립니다. 이 세포 간의 &ldquo;죽음의 악수&rdquo;가 성사되는 순간, T세포 내부로 강력한 억제 신호가 전달되어 T세포의 활성이 꺼져버립니다.</p><h4>키트루다·옵디보의 차단</h4><p>대표적인 3세대 면역관문억제제인 <b>키트루다(펨브롤리주맙)</b>나 <b>옵디보(니볼루맙)</b>는 이 치명적인 악수를 가로막는 단일클론항체 약물입니다. 이 항체 약물은 정맥으로 투여되어 암세포의 PD-L1이나 T세포의 PD-1 중 어느 한 곳에 먼저 강력하게 들러붙어 캡을 씌워버립니다. 이로 인해 T세포와 암세포 간의 결합 자체가 원천 차단됩니다.</p>'},
+"c4_3":{t:"제4.3절 3세대 병용투여 선/후항암 기준 횟수 및 비용 분석",b:'<p>최근 임상 종양학에서는 면역항암제를 단독으로 쓰기보다는, 종양 세포를 파괴하여 항원을 다량 노출시킴으로써 면역 반응을 극대화할 수 있는 1세대 세포독성 항암제와 병용 투여하는 요법이 획기적인 생존율 향상을 입증하며 새로운 글로벌 표준 트렌드로 자리 잡았습니다. 그 중 가장 파급력이 큰 성공 사례가 바로 난치성 암인 <b>조기 삼중음성 유방암(TNBC)에서의 키트루다 병용요법</b>입니다.</p><p>삼중음성 유방암은 에스트로겐, 프로게스테론 등 호르몬 수용체와 HER2 수용체가 모두 발현되지 않아 기존의 유방암 표적 치료제나 호르몬 치료제를 전혀 쓸 수 없는 악성 종양입니다. 암세포의 성장 속도가 매우 빠르고 수술 후 3년 내 내장 기관이나 뇌로 전이 및 재발할 확률이 극도로 높은 고위험군 암입니다.</p><h4>선/후항암 기준 치료 횟수 (KEYNOTE-522 기준)</h4><ul><li class="n"><b>수술 전 선행항암요법 (Neoadjuvant):</b> 종양 크기가 2cm 이상이거나 림프절 전이가 있는 고위험 조기 환자에게, 키트루다를 1세대 화학항암제(파클리탁셀, 카보플라틴 복합 4주기 이후 안트라사이클린계 복합 4주기)와 병용하여 <b>총 8주기</b> 투여합니다. 이를 통해 수술 전 유방 조직 내의 암세포를 완전히 궤멸시켜 병리학적 완전관해(pCR)율을 비약적으로 끌어올립니다.</li><li class="n"><b>수술 후 보조항암요법 (Adjuvant):</b> 수술 후 조직 검사 결과와 무관하게 미세 잔존암의 완전한 박멸을 위해 키트루다 단독으로 <b>총 9주기</b>를 추가 투여합니다.</li><li class="n">환자는 수술을 기점으로 선항암 8주기, 후항암 9주기 등 <b>총 17주기</b>, 약 1년에 걸친 장기 치료를 수행해야 합니다.</li></ul><h4>대한민국 기준 치료 비용의 현실</h4><p>키트루다는 수술이 불가능한 국소 재발성 또는 원격 전이성 삼중음성 유방암의 1차 치료 목적으로 사용될 때, 그리고 PD-L1 발현 비율(CPS 수치)이 10 이상이라는 까다로운 조건을 만족할 경우에만 건강보험 급여가 제한적으로 적용됩니다. 급여 적용 시 1주기 투여당 환자 본인 부담금은 약 420만 원에서 21만 원 수준으로 획기적으로 줄어듭니다.</p><div class="bad">그러나, 젊은 여성의 생명을 위협하는 삼중음성 유방암을 완전히 뿌리 뽑을 수 있는 가장 확실한 무기인 &lsquo;고위험 조기&rsquo; 삼중음성 유방암의 수술 전/후 보조요법에 대해서는 현재 대한민국 건강보험 적용이 전혀 되지 않는 <b>100% 비급여(또는 전액본인부담) 상태</b>입니다. 현재 비급여 기준 키트루다 1회 투여 순수 약제비는 약 420만 원에서 430만 원 선으로 형성되어 있습니다. 환자가 완치를 위해 글로벌 표준 요법인 총 17주기를 모두 비급여로 투여받을 경우, 약 <b>7,000만 원에서 7,300만 원 이상</b>의 천문학적인 약제비를 온전히 사비로 부담해야 합니다.</div>'},
+"c4_4":{t:"참고 : CAR-T 세포치료제 (3세대 면역항암제의 진화 형태)",b:'<p>3세대 면역항암제의 또 다른 진화 형태인 CAR-T(키메라 항원 수용체 T세포) 세포치료제의 경우, 환자의 혈액에서 T세포를 채취하여 암세포를 인지하도록 유전자를 조작한 뒤 체외 대량 배양을 거쳐 다시 환자에게 주입하는 개인 맞춤형 유전자 세포치료제입니다.</p><p>노바티스의 &lsquo;킴리아&rsquo;, 길리어드의 &lsquo;예스카타&rsquo; 등이 국내 허가를 받았으며, 국내 기업 큐로셀이 개발한 국산 1호 CAR-T 치료제 &lsquo;림카토&rsquo;도 허가를 획득하였습니다.</p><div class="ok">CAR-T는 단 1회 투약으로 림프종 등을 완치시키는 &lsquo;원샷&rsquo; 치료제이나 1회 약제비가 3억 6천만 원에서 5억 원에 달했으나, 2022년부터 킴리아 등이 건강보험 급여권에 진입하여 환자는 본인부담금 5%인 최대 598만 원만 부담하게 되었습니다.</div><p>CAR-T의 세부 내용은 SECTION 06에서 심층적으로 다룹니다.</p>'},
+
+"c5_1":{t:"제5.1절 대사항암제의 핵심 기전 및 용어 해설",b:'<p>면역항암제가 종양학의 판도를 바꾼 것은 사실이나, 암종과 환자에 따라 반응률이 20~30%에 그치는 경우가 많고, 면역계 과활성화로 인한 치명적 자가면역 독성(폐렴, 대장염, 내분비 교란 등)이라는 피할 수 없는 한계가 존재합니다. 글로벌 제약 바이오 업계는 이를 극복하기 위해 제4의 물결인 <b>&lsquo;대사항암제(Metabolic Anticancer Drug)&rsquo;</b> 연구에 막대한 자본을 투입하고 있습니다.</p><p>대사항암제는 유전자 돌연변이나 면역계가 아닌, 암세포 고유의 비정상적인 &lsquo;기형적 에너지 대사 과정&rsquo;만을 정밀하게 표적으로 삼아 에너지 공급을 원천 차단, 궁극적으로 암세포를 굶겨 죽이는(Starvation) 혁신적인 전략을 취합니다.</p><div class="note">생명체를 구성하는 모든 세포가 생존하고 무한 증식하기 위해서는 막대한 양의 에너지(ATP)가 필요합니다. 정상 세포와 암세포는 에너지를 만들어내는 &lsquo;발전소 가동 방식&rsquo;이 생물학적으로 완전히 다르며, 암세포는 진화의 산물인 고효율 시스템을 버리고 극도로 기형적인 방식을 채택합니다.</div>'},
+"c5_2":{t:"바르부르크 효과 (Warburg Effect)",b:'<h4>산소가 넘쳐도 무산소 공장 가동</h4><p>정상 세포는 주변에 산소가 충분할 때 &lsquo;미토콘드리아&rsquo;라는 고효율 발전소를 가동하여 포도당 1분자당 36개의 ATP를 생성합니다(산화적 인산화). 산소가 극도로 부족한 비상 상황에서만 임시방편으로 세포질에서 효율이 낮은 &lsquo;해당 과정(Glycolysis, 포도당 1분자당 2 ATP 생성)&rsquo;을 사용합니다.</p><p>그러나 암세포는 산소가 충분히 공급되는 환경임에도 불구하고 고효율 발전소인 미토콘드리아를 의도적으로 멈추고, 굳이 에너지 효율이 극히 떨어지는 낡은 공장인 &lsquo;해당 과정&rsquo;만을 미친 듯이 가동하여 에너지를 생산합니다. 1931년 노벨생리의학상을 수상한 독일의 오토 바르부르크(Otto Warburg)가 발견한 이 기이한 현상을 종양학에서는 &lsquo;바르부르크 효과&rsquo;라 명명합니다.</p><h4>저효율 공장을 돌리는 이유</h4><p>암세포가 굳이 저효율 공장을 돌리는 이유는 맹렬한 세포 분열에 필요한 세포막과 DNA의 재료(아미노산, 핵산, 지질 등 바이오매스)를 해당 과정의 중간 산물로부터 빠르게 뽑아내기 위함입니다. 저효율 공장으로 막대한 에너지를 충당해야 하므로, 암세포는 생존을 위해 정상 세포보다 포도당을 <b>10배 이상</b> 게걸스럽게 흡수해야만 합니다.</p><div class="ok">이 포도당 폭식 원리를 이용해 암의 위치를 찾는 영상 진단법이 바로 <b>PET-CT</b>입니다.</div><p>또한, 무산소 공장을 돌린 후 발생하는 엄청난 양의 독성 매연인 &lsquo;젖산(Lactate)&rsquo;을 종양 주변으로 대량 배출하여 주변 미세환경을 강력한 산성으로 만들어버리는데, 이 산성 환경은 면역 세포의 침투와 활동을 마비시켜 암세포의 완벽한 요새를 구축하는 데 기여합니다.</p>'},
+"c5_3":{t:"킴 효과 (Kim Effect)",b:'<h4>이화대사에서의 절대적 지방산 의존성</h4><p>바르부르크 효과가 탄수화물을 이용해 덩치를 키우는 동화대사(Anabolism)에 국한된 이론이었다면, 최근 대한민국 국립암센터 연구진에 의해 완전히 새로운 암 대사 기전이 세계 최초로 규명되었습니다.</p><p>복잡한 물질을 쪼개어 에너지를 방출하는 이화대사(Catabolism) 과정에서, 암세포는 포도당이 아닌 전적으로 <b>&lsquo;지방산 산화(Fatty Acid Oxidation)&rsquo;</b>에만 절대적으로 의존하여 에너지를 창출한다는 사실을 입증한 것입니다. 이 발견을 연구진은 <b>&lsquo;킴 효과(Kim Effect)&rsquo;</b>라고 명명하였습니다.</p><div class="ok">이 파격적인 이론에 따르면, 체내에 포도당이 충분히 존재하는 상황이라 하더라도 대사항암제를 투여하여 암세포의 &lsquo;지방산 연소 루트&rsquo;만을 핀셋처럼 차단해 버리면 암세포의 ATP(에너지)가 급격히 고갈되어 오직 암세포만이 선택적으로 굶어 죽게 됩니다.</div><p>동물 실험에서도 고지방 식이를 한 암 모델이 저지방(고탄수화물) 모델보다 암 성장이 <b>5배</b>나 폭발적으로 일어남을 증명하여 지방산이 암의 핵심 동력임을 재차 확인하였습니다.</p>'},
+"c5_4":{t:"제5.2절 대사항암제의 파이프라인 및 임상 개발 동향",b:'<p>대사항암제는 특정 유전자 돌연변이 단백질을 억제하는 표적항암제와 달리, 바르부르크 효과나 킴 효과와 같은 비정상적인 에너지 통로의 핵심 효소 자체를 억제하는 물질을 투여합니다.</p><div class="ok">이는 돌연변이의 종류와 무관하게 거의 모든 악성 종양(전체 암의 약 95% 이상)이 공유하는 대사적 특성이므로 극소수의 특정 암종이 아닌 범용적인 항암제로 기능할 수 있으며, 정상 세포는 이 기형적 대사 경로를 사용하지 않으므로 전신 독성과 약물 내성 발생 확률이 기적적으로 낮다는 가장 이상적인 장점을 지닙니다.</div><p>국내 바이오텍 기업들도 글로벌 패권 경쟁에서 괄목할 만한 파이프라인을 구축하며 임상을 전개하고 있습니다. 세부 파이프라인의 기전 및 임상 현황은 SECTION 07에서 상세히 다룹니다.</p>'},
+
+"c6_1":{t:"제6.1절 4세대 항암제의 등장 배경과 CAR-T의 임상적 의의",b:'<p>4세대 항암제는 크게 두 가지 갈래로 나뉩니다. 첫째는 암세포 특유의 에너지 대사 과정(바르부르크 효과)을 차단하여 암세포를 굶겨 죽이는 대사항암제(예: 하임바이오의 스타베닙 등)입니다. 둘째는 환자 본인의 면역세포를 추출하여 유전자를 직접 조작한 뒤 다시 주입하는 <b>입양세포전달(Adoptive Cell Transfer)</b> 기술 기반의 유전자 세포치료제입니다.</p><p>이 중에서도 <b>CAR-T(Chimeric Antigen Receptor-T cell, 키메라 항원 수용체 T세포) 치료제</b>는 4세대 항암 기술의 결정체로 평가받습니다. CAR-T 세포치료제는 암세포 표면의 특징적인 항원을 정확히 인지하도록 T세포에 유전적 정보를 융합 도입한 맞춤형 치료제입니다.</p><div class="ok">기존 치료제에 전혀 반응하지 않는 재발성 및 불응성 혈액암 환자에게 단 <b>1회 투여(One-shot)</b>만으로 극적인 완전관해(Complete Remission)를 유도한다는 점에서 종양학의 새로운 지평을 열었습니다.</div>'},
+"c6_2":{t:"제6.2절 CAR-T 세포치료의 전 주기적 과정",b:'<p>CAR-T 세포치료제는 공장에서 일괄적으로 대량 생산되는 기성품 형태의 의약품이 아닙니다. 환자 자신의 살아있는 면역세포를 원료로 사용하여 체외에서 복잡한 공정을 거친 후 다시 체내로 주입되는 고도의 맞춤형 <b>&lsquo;살아있는 약(Living drug)&rsquo;</b>입니다.</p><div class="mt-box"><table class="mt"><tr><th>단계</th><th>프로세스 명칭</th><th>세부 생물학적 기전</th></tr><tr><td>제1단계</td><td>세포 채집 (Leukapheresis)</td><td>성분채집기를 이용해 환자의 정맥에서 혈액을 빼내어 단핵구(백혈구 및 T세포 포함)만을 원심분리로 걸러내고, 나머지 혈액 성분은 체내로 즉시 반환한다.</td></tr><tr><td>제2단계</td><td>동결 및 이송 (Cryopreservation)</td><td>채취된 면역세포는 세포보호제를 첨가한 후 영하 150도 이하의 극저온 상태로 동결되어 엄격한 콜드체인을 통해 제조 시설로 운송된다.</td></tr><tr><td>제3단계</td><td>유전자 재조합 (Viral Transduction)</td><td>해동 및 T세포 선별 후, 렌티바이러스(Lentivirus) 등 무해하게 조작된 바이러스 벡터를 이용해 암세포 인지 수용체(CAR)를 만드는 유전자를 T세포의 DNA에 끼워 넣는다.</td></tr><tr><td>제4단계</td><td>세포 배양 (Expansion)</td><td>유전자가 성공적으로 도입된 CAR-T 세포를 생물학적 반응기 안에서 수억~수십억 개 단위로 대량 증식시킨다.</td></tr><tr><td>제5단계</td><td>품질 검사 및 반송 (QC &amp; Return)</td><td>세포의 활성도, CAR 단백질 발현율, 미생물 오염 여부를 철저히 검사한 후 다시 극저온으로 동결하여 의료기관으로 반송한다.</td></tr><tr><td>제6단계</td><td>전처치 항암화학요법 (Lymphodepletion)</td><td>환자에게 플루다라빈과 시클로포스파미드를 투여하여 체내의 기존 림프구를 고갈시킨다. 새롭게 주입될 CAR-T 세포가 체내에 자리 잡을 공간을 확보하기 위함이다.</td></tr><tr><td>제7단계</td><td>투여 및 암세포 타격 (Infusion &amp; Attack)</td><td>해동된 CAR-T 세포를 정맥 주사한다. 체내로 들어간 CAR-T 세포는 암세포 표면의 항원과 결합하여 그랜자임(세포자멸사 유도 효소)과 퍼포린(세포막 천공 단백질)을 분비해 암세포를 즉각적으로 사멸시킨다.</td></tr></table></div><h4>암세포 타격 기전의 심층 역학</h4><p>주입된 CAR-T 세포가 암세포를 파괴하는 과정은 면역학적 시냅스(Immunological synapse)의 형성을 통해 이루어집니다. CAR(키메라 항원 수용체)는 외부의 항원 결합부(주로 암세포의 CD19 항원을 인식)와 T세포 내부의 신호 전달부(CD3-zeta 및 4-1BB 등 보조자극인자)로 구성되어 있습니다.</p><p>CAR-T 세포가 혈류를 타고 이동하다가 암세포 표면의 CD19 항원을 발견하면 자석처럼 강력하게 결합하며, 이 결합은 즉각적으로 T세포 내부로 활성화 신호를 보내어 퍼포린과 그랜자임을 방출합니다.</p><div class="ok">더욱 놀라운 점은, CAR-T 세포가 암세포를 타격한 후 소멸하는 것이 아니라 면역 기억을 형성하고 체내에서 지속적으로 자기 복제를 하여 증식한다는 것입니다. 이로 인해 환자는 단 한 번의 투여만으로도 수년 이상 암의 재발을 막는 지속적인 항암 효과를 얻게 됩니다.</div>'},
+"c6_3":{t:"제6.3절 유전자 재조합·세포 배양 단계의 기간과 배양 장소",b:'<p>CAR-T 치료의 가장 큰 물리적 제약은 환자의 혈액에서 세포를 추출해 유전자를 조작하고 다시 주입하기까지 소요되는 절대적인 시간과 공간의 문제입니다. 이를 <b>&lsquo;정맥 대 정맥 시간(Vein-to-Vein Time)&rsquo;</b>이라 부르며, 진행 속도가 매우 빠른 급성 혈액암 환자들에게 이 기간을 단축하는 것은 생존과 직결된 치명적인 과제입니다.</p><h4>수입산 약제(킴리아, 예스카타)의 해외 제조 인프라</h4><ul><li class="n"><b>킴리아(노바티스):</b> 미국 뉴저지주 모리스플레인스의 본사 시설 또는 아시아 지역 수요를 감당하기 위해 일본 고베에 위치한 임상제조시설(FBRI)로 세포를 보내 배양 공정을 진행한다.</li><li class="n"><b>예스카타(길리어드):</b> 네덜란드 암스테르담에 위치한 약 3,300평 규모의 대규모 생산 시설 등으로 세포를 이송하여 배양한다.</li><li class="n"><b>소요 기간:</b> 세포 채취 후 극저온 포장, 국제 항공 운송, 수출입 세관 통관, 해외 제조소에서의 유전자 조작 및 세포 증식 배양, 엄격한 품질 관리(QC) 테스트, 그리고 다시 국내로 반입되어 병원으로 이송되기까지 통상적으로 <b>4주 이상</b>의 긴 기간이 소요된다.</li></ul><h4>국산 약제(림카토)의 국내 제조 인프라와 병참학적 혁신</h4><ul><li class="n"><b>배양 장소:</b> 환자의 세포를 해외로 반출할 필요 없이, 국내에 자체적으로 구축된 첨단바이오의약품 GMP 시설에서 즉각적으로 유전자 재조합 및 배양 공정을 수행한다.</li><li class="n"><b>소요 기간:</b> 해외 운송 및 통관 절차가 생략됨으로써, 환자 면역세포 채취부터 재조합, 배양, 병원으로의 회송 및 최종 투여까지 소요되는 시간이 약 <b>2주에서 3주</b>가량으로 대폭 단축된다.</li></ul><div class="ok">이는 수입산 치료제 대비 치료 대기 시간을 1주 이상 앞당긴 것으로, 급격히 악화되는 병세를 방어해야 하는 환자들에게 임상적으로 매우 큰 이점을 제공합니다.</div>'},
+"c6_4":{t:"제6.4절 림프구 고갈(Lymphodepletion) 전처치 화학요법",b:'<p>유전자 조작을 마치고 증식된 CAR-T 세포가 환자의 병원에 도착하더라도 즉시 투여할 수는 없습니다. 환자는 CAR-T 투여 며칠 전부터 반드시 <b>&lsquo;전처치(Pre-conditioning)&rsquo;</b>라 불리는 항암화학요법을 받아야 합니다. 이는 환자 몸속의 암세포 크기를 줄이기 위함이 아니라, 체내의 정상 림프구를 인위적으로 완전히 고갈(Lymphodepletion)시키기 위한 특수한 과정입니다.</p><p>환자의 혈액과 림프절에 기존의 면역세포가 가득 차 있으면, 외부에서 배양되어 들어온 소수의 CAR-T 세포가 활착하여 폭발적으로 증식할 생물학적 &lsquo;공간&rsquo;이 없습니다. 전처치 항암제를 투여해 기존 림프구를 궤멸시키면, 체내에서 면역세포의 생존과 증식을 돕는 핵심 영양분인 사이토카인(IL-7, IL-15 등)을 소비하던 기존 세포들이 사라지게 됩니다. 결과적으로 사이토카인 농도가 급증한 빈 공간에 CAR-T 세포가 투입되면, CAR-T 세포가 이 영양분들을 독식하며 체내에서 폭발적으로 자기 복제를 하는 항상성 증식(Homeostatic expansion) 현상이 일어납니다.</p><h4>전처치 항암제의 종류 및 약리기전</h4><p>전 세계적으로 표준화된 전처치 요법은 플루다라빈(Fludarabine)과 시클로포스파미드(Cyclophosphamide)를 <b>3~5일간 병용 투여</b>하는 방식입니다.</p><ul><li class="n"><b>플루다라빈:</b> 퓨린 유도체 항대사물질이다. 특히 림프구는 특정 대사 효소가 부족하여 플루다라빈을 밖으로 배출하지 못하고 축적하므로, 림프구에 극도의 세포독성을 발휘하여 T세포와 B세포를 완벽하게 사멸시킨다.</li><li class="n"><b>시클로포스파미드:</b> 알킬화제의 일종으로, DNA의 이중 나선 구조에 직접 결합하여 사슬을 끊거나 비정상적으로 엉키게 만들어 세포 분열을 물리적으로 차단한다. 강력한 면역 억제 효과를 나타내어 광범위한 골수 억제 및 림프구 고갈을 유도한다.</li></ul><h4>주요 부작용 및 임상적 해결방법</h4><ul><li class="w"><b>골수 억제 및 호중구 감소증(Neutropenia):</b> 백혈구의 일종인 호중구가 급감하여 감염 저항성이 0에 가깝게 떨어지며, 열성 호중구 감소증 및 패혈증이 발생할 수 있다. 예방적 광범위 항생제 및 항진균제를 투여하며, 과립구 집락 자극 인자(G-CSF)를 매일 피하 주사하여 골수 기능을 회복시킨다.</li><li class="w"><b>출혈성 방광염(Hemorrhagic cystitis):</b> 시클로포스파미드가 간에서 대사되면서 &lsquo;아크롤레인(Acrolein)&rsquo;이라는 맹독성 대사 물질이 생성되는데, 이 물질이 소변을 통해 배출되면서 방광 점막을 심하게 부식시켜 혈뇨와 극심한 통증을 유발한다. 이를 방지하기 위해 약물 투여 전후로 대량의 정맥 수액(Hydration)을 공급하여 방광을 지속적으로 씻어내고, 필요한 경우 해독제인 메스나(Mesna)를 병용 투여한다.</li><li class="w"><b>심독성(Cardiotoxicity) 및 간질성 폐렴:</b> 고용량의 시클로포스파미드는 환자의 약 10~43%에서 심근 손상이나 심기능 이상을 유발할 수 있다. 따라서 투여 전후로 심장 초음파 모니터링을 실시하며, 호흡 곤란이나 폐 섬유화 조짐이 보일 경우 즉각적인 흉부 영상 검사와 산소 치료를 병행해야 한다.</li></ul>'},
+"c6_5":{t:"제6.5절 면역 과잉 반응(CRS 및 신경독성)의 병태생리와 처치",b:'<p>전처치를 통해 준비된 체내에 CAR-T 세포가 주입되고 나면, CAR-T 세포가 암세포를 탐색하고 결합하여 대량으로 파괴하는 일련의 과정이 시작됩니다. 이때 면역체계가 극도로 활성화되면서 생명을 위협하는 치명적인 두 가지 합병증이 발생합니다.</p><h4>사이토카인 방출 증후군 (CRS)</h4><p>CAR-T 투여 환자의 50~70% 이상이 경험하는 가장 대표적인 부작용으로, 이른바 &lsquo;사이토카인 폭풍(Cytokine storm)&rsquo;으로도 불립니다. 종양세포가 파괴되면서 인터루킨-6(IL-6), 인터페론-감마(IFN-γ) 등의 염증 물질이 혈액을 타고 전신으로 퍼집니다.</p><p>통상적으로 CAR-T 투여 후 <b>1~10일 내에 발생</b>하며, 초기에는 39도 이상의 고열, 극심한 오한 및 근육통으로 시작됩니다. 증상이 중증(Grade 3 이상)으로 진행되면 전신의 모세혈관이 느슨해져 혈관 누출 증후군이 발생하며, 급격한 저혈압, 폐 침윤(호흡 곤란 및 저산소증), 다발성 장기부전으로 악화되어 중환자실 치료가 요구됩니다.</p><ul><li class="n"><b>경증 관찰(Grade 1):</b> 발열과 식욕부진 등 가벼운 전구 증상만 보일 때는 대증 요법(해열제 투여, 산소 공급, 정맥내 수액 보충)을 실시하며 혈역학적 수치를 면밀히 모니터링한다.</li><li class="n"><b>강력한 중재(Grade 2~4):</b> 혈압이 떨어져 승압제가 필요해지거나 호흡 곤란으로 산소 요구량이 급증할 경우, 즉각적으로 <b>토실리주맙(Tocilizumab)</b>을 정맥 투여한다. 토실리주맙은 본래 류마티스 관절염 치료에 쓰이는 단일클론항체로, 염증 폭풍의 핵심 원인 물질인 IL-6가 수용체에 결합하는 것을 물리적으로 차단하여 연쇄적인 염증 반응을 강력하게 진화하는 &lsquo;해독제&rsquo; 역할을 한다.</li></ul><h4>면역세포 연관 신경독성증후군 (ICANS)</h4><p>ICANS(Immune Effector Cell-Associated Neurotoxicity Syndrome)는 CRS와 동반되거나 시차를 두고 독립적으로 발생하는 중추신경계의 심각한 합병증입니다. 과도한 염증 반응으로 인해 뇌를 보호하는 혈액-뇌 장벽(BBB)이 손상되고, 면역 물질과 세포들이 뇌척수액으로 침투하여 뇌부종과 신경 염증을 일으킵니다.</p><p>초기에는 환자가 시간과 장소를 착각하는 섬망, 불안, 어지러움증을 보이며, 특징적으로 글씨를 제대로 쓰지 못하는 미세운동 장애나 말을 유창하게 하지 못하는 실어증이 발생합니다. 중증화될 경우 극심한 의식 저하, 혼수 상태, 또는 전신 경련(발작)을 동반합니다.</p><p>앞서 CRS 치료에 쓰이는 토실리주맙은 분자량이 커서 뇌혈관 장벽을 원활히 통과하지 못하므로, 신경독성이 징후를 보이거나 CRS가 토실리주맙에 불응할 경우, 의료진은 <b>덱사메타손(Dexamethasone)</b>과 같은 고강도 합성 부신피질호르몬제(스테로이드)를 투여합니다. 덱사메타손은 뇌부종을 빠르게 감소시키고 전신 면역 세포의 활성을 광범위하게 억제하여 신경계 염증을 가라앉힙니다.</p><div class="bad">그러나 스테로이드의 장기 또는 고용량 사용은 암세포와 싸우는 CAR-T 세포 자체의 항암 기능마저 억제하여 치료 실패를 유발할 수 있으며, 환자의 감염 저항성을 완전히 바닥으로 떨어뜨릴 수 있으므로, 의료진은 부작용 억제와 CAR-T 효과 유지 사이에서 극도로 섬세한 용량 조절 줄타기를 해야 합니다.</div>'},
+"c6_6":{t:"제6.6절 상용화된 CAR-T 약제의 적응증 및 투여 기준",b:'<p>현재 국내 보건 당국의 승인을 받거나 상용화 단계를 밟고 있는 핵심 CAR-T 치료제는 글로벌 제약사의 킴리아, 예스카타, 카빅티와 더불어 국산 신약인 림카토가 있습니다. 이들 약제는 환자에게 CAR-T 세포만을 단 <b>1회(One-shot) 단독으로 주입</b>하는 단독요법(Monotherapy)으로 식약처의 허가를 받았습니다.</p><div class="mt-box"><table class="mt"><tr><th>약제명 (제조사)</th><th>주요 적응증</th><th>KCD 코드</th><th>식약처 기준 투여 차수</th></tr><tr><td>킴리아 (노바티스)</td><td>1. 미만성 거대 B세포 림프종 (DLBCL): 백혈구의 일종인 B세포가 림프절 등에서 악성 종양으로 변해 전신으로 퍼지는 가장 흔하고 공격적인 림프종 / 2. B세포 급성 림프성 백혈병 (ALL): 주로 25세 이하 소아·청소년에서 발생하며, 골수에서 미성숙한 백혈구 암세포가 대량 증식해 정상 혈액 생성을 막는 질환</td><td>C83.3 (DLBCL) / C91.0 (ALL)</td><td>DLBCL: 3차 치료 이상 / ALL: 2차 또는 3차 치료 이상 (이식 후 재발 등)</td></tr><tr><td>예스카타 (길리어드)</td><td>1. 미만성 거대 B세포 림프종 (DLBCL) / 2. 원발성 종격동 B세포 림프종 (PMBCL): 가슴 중앙 부위(종격동)의 흉선에 있는 림프절에서 기원하여 거대한 덩어리를 형성해 기도와 혈관을 압박하는 희귀 림프종 아형</td><td>C83.3 (DLBCL) / C83.3 (PMBCL)</td><td>DLBCL: 2차 및 3차 치료 이상 / PMBCL: 2차 이상 (킴리아가 3차 이상인 것에 반해 조기 적용 가능)</td></tr><tr><td>카빅티 (얀센)</td><td>다발골수종 (Multiple Myeloma): 뼈 내부의 골수에서 항체를 생산하는 형질세포가 암세포로 변이하여 비정상적으로 증식하고, 뼈를 녹이거나 신장을 손상시키는 난치성 혈액암 (BCMA라는 특수 항원을 표적으로 함)</td><td>C90.0</td><td>4차 치료 이상 (기존 허가 기준)</td></tr><tr><td>림카토 (큐로셀)</td><td>1. 미만성 거대 B세포 림프종 (DLBCL) / 2. 원발성 종격동 B세포 림프종 (PMBCL): 기존 수입산 CAR-T와 달리, 암세포가 면역 공격을 회피하지 못하도록 PD-1과 TIGIT라는 면역관문수용체(면역 브레이크) 발현을 유전자 수준에서 억제하도록 설계되어 완전관해율(67.1%)을 극대화한 차세대 치료제</td><td>C83.3 (DLBCL) / C83.3 (PMBCL)</td><td>DLBCL 및 PMBCL: 두 가지 이상의 전신 치료 후 재발성 또는 불응성인 경우 (3차 치료 이상)</td></tr></table></div><div class="note">모든 약제는 타 항암제와 혼합 투여하지 않는 <b>단독요법(Monotherapy)</b>으로 시행됩니다.</div>'},
+"c6_7":{t:"제6.7절 초고가 비급여 약가(3.6~5억)의 원인과 급여 체계",b:'<p>CAR-T 치료제의 가장 큰 장벽은 환자 1인당 3억 6,000만 원에서 최고 5억 원에 육박하는 천문학적인 약가입니다. 기존의 화학항암제나 3세대 면역항암제는 제약사의 거대한 바이오리액터에서 수만~수십만 명 분의 약물이 규격화된 기성품(Vial)으로 대량 생산되어 환자의 체중(kg) 또는 체표면적(㎡)에 비례하여 투여 용량이 결정됩니다.</p><h4>1개의 배치(Batch of One)</h4><p>그러나 CAR-T 세포치료제는 체중에 비례해 용량을 계산하여 여러 병을 뜯는 약이 아닙니다. CAR-T는 환자 단 한 명만을 위한 고유한 유전자 공학 프로젝트입니다. 세포 성분채집, 전용 콜드체인을 통한 항공 이송, 개별적인 바이러스 벡터 제작 및 유전자 삽입, 고도화된 무균실에서의 수억 개 세포 배양, 개별 품질관리(QC) 검사 등 모든 과정이 오직 단 한 명의 환자만을 위해 <b>1개의 배치(Batch of One)</b>로 독립 구동되어야 합니다.</p><div class="note">대량 생산을 통한 원가 절감(규모의 경제)이 원천적으로 불가능하기 때문에 3.6억~5억 원이라는 초고가가 책정되는 것입니다.</div><h4>보건의료체계 내 급여 및 환자 본인부담 체계</h4><ul><li class="n"><b>비급여 (Non-reimbursed):</b> 건강보험이 전혀 적용되지 않아 병원이 자율적으로 정한 가격을 환자가 100% 지불하는 상태다. 킴리아 도입 초기, 환자들은 약 4억 원을 전액 본인 부담해야 했다.</li><li class="n"><b>건강보험 급여 (Reimbursed):</b> 2022년 4월, 킴리아가 성과기반 위험분담제를 조건으로 급여권에 진입하였다. 중증 암환자 산정특례 제도에 따라 환자는 약값의 단 <b>5%</b>만 본인 부담률로 지불하게 되며, 소득 수준에 따른 본인부담상한제까지 적용되어 실제 환자가 내는 최대 치료비는 약 <b>598만 원</b> 선으로 대폭 하락했다.</li><li class="n"><b>100분의 100 전액본인부담:</b> 건강보험 요양급여 대상으로는 규정되어 있으나, 심사평가원이 고시한 까다로운 &lsquo;급여 인정 기준&rsquo;을 충족하지 못해 급여 혜택(5% 부담)을 받지 못하는 경우다. 비급여와 달리 국가가 가격 상한선을 법으로 통제하므로 어느 병원에서나 징수 금액이 동일하다.</li></ul>'},
+
+"c7_1":{t:"제7.1절 스타베닙 (Starvanip, NYH817100) — 하임바이오",b:'<p>글로벌 항암제 시장 규모가 2021년 기준 1,400억 달러에 육박하는 가운데, 대한민국 제약바이오 기업들은 기존 블록버스터를 모방하던 패스트 팔로워(Fast Follower)의 지위를 탈피해 새로운 분자생물학적 패러다임을 여는 퍼스트 무버(First Mover) 전략을 취하고 있습니다.</p><p>스타베닙은 대한민국 벤처 하임바이오가 국립암센터 및 연세의료원으로부터 학술적 원천 기술을 이전받아 치열하게 개발 중인 선도적인 4세대 대사항암 물질입니다.</p><h4>작용 기전</h4><p>스타베닙은 단순히 하나의 효소만을 저해하는 데 그치지 않고 암세포 에너지 대사의 중추를 전방위적으로 끊어버립니다. 활성 물질인 <b>고시폴(Gossypol)</b>과 당뇨병 치료제 성분인 <b>펜포르민(Phenformin)</b>을 결합하여, 암세포 해당과정에 치명적인 관여를 하는 <b>알데히드 탈수소효소(ALDH)</b>와 <b>젖산 탈수소효소(LDH)</b>의 활성을 동시에 강력하게 표적 억제합니다. 이를 통해 암세포 내부의 젖산 배출 기전이 마비되고 극심한 에너지 고갈에 빠져 자가 사멸에 이르게 됩니다.</p><h4>타겟 암종 및 임상 단계</h4><p>특정 유전자의 돌연변이 발현 유무와 무관하게 무산소 대사 특성을 공유하는 사실상 &lsquo;모든 악성 종양(고형암)&rsquo;을 포괄적으로 타겟팅할 수 있다는 막강한 범용성을 지닙니다. 세브란스병원에서 표준 화학치료에 실패한 시한부 고형암 말기 환자들을 대상으로 진행된 <b>임상 1상을 부작용 없이 성공적으로 마무리</b>하였으며, 단일 물질 투여만으로도 종양 크기가 유의미하게 붕괴하는 부분관해(Partial Response)의 쾌거를 이루었습니다. 회사는 이를 바탕으로 글로벌 임상 컨설팅 기관인 엑셀리드(Axcelead)와 공조하여 미국 <b>FDA 임상 2상</b> 진입을 앞두고 있습니다.</p><h4>예상 가격 및 상업적 가치</h4><p>아직 상업화 인가 전이므로 최종 소비자 약가가 확정된 바는 없으나, 범용적인 적용 범위를 고려할 때 기존 수백만 원 대의 2, 3세대 표적·면역 항암제를 완벽히 대체할 경우 블록버스터급 신약으로 분류되어 대규모 다국적 제약사로의 높은 마일스톤 가치의 기술 이전(License-out)과 파격적인 약가 프리미엄 형성이 기정사실화되고 있습니다.</p>'},
+"c7_2":{t:"제7.2절 KAT-101 (3-Bromopyruvate, 3-BP) — 뉴지랩파마",b:'<p>KAT-101은 뉴지랩파마가 미국의 원천 연구자들로부터 글로벌 권리를 도입하여 신약 가치를 극대화하고 있는 차세대 대사항암제 파이프라인입니다.</p><h4>작용 기전</h4><p>암세포가 생존을 위해 대량으로 흡수하는 포도당 대사 물질인 피루브산(Pyruvate)과 분자 구조가 극도로 유사한 <b>&lsquo;3-BP&rsquo;</b> 성분을 트로이의 목마처럼 투입하는 전략입니다. 암세포 내로 흡수된 3-BP는 즉각적으로 해당과정의 첫 단추를 꿰는 <b>헥소키나아제(Hexokinase)</b> 효소의 작용을 교란하고, 나아가 미토콘드리아 내부의 산화적 인산화 기전까지 다중으로 억제하여 암세포의 산소/무산소 대사 에너지 창출을 동시에 완벽하게 봉쇄합니다.</p><h4>타겟 암종 및 임상 단계</h4><p>젖산 수송체(MCT) 막단백질이 발현된 거의 모든 암에 적용되어 이론상 지구상 <b>전체 암종의 95%</b>가 잠재적 타겟에 해당합니다. 전략적으로 유병률이 극히 높고 면역항암제 이외의 미충족 의료 수요가 폭발적인 <b>&lsquo;간세포암(Hepatocellular Carcinoma, HCC)&rsquo;</b>을 1차 적응증으로 설정하여 한국과 미국 FDA에서 동시에 임상 <b>1/2a상 허가</b>를 득하였습니다.</p><div class="ok">전임상 동물 모델에서의 탁월한 유효성 입증은 물론, 응급 임상 제도를 통해 16세 소년의 다발성 간암 덩어리를 완치시킨 실증적 데이터가 학계에 보고되며 신약 상용화의 청신호가 켜진 상태입니다.</div>'},
+
+"c8_1":{t:"제8장. 흡수율 차이에도 경구투여를 선호하는 이유",b:'<p>항암 치료의 효능을 결정짓는 것은 약물의 성분뿐만 아니라 약물이 체내로 전달되는 <b>전달 체계(Drug Delivery System)</b>입니다. 과거 항암제는 거의 전적으로 정맥주사(IV) 형태에 의존했으나, 제약 기술의 고도화로 경구용 항암제(Oral Chemotherapy) 개발이 비약적으로 증가하며 환자의 투약 패러다임을 변화시키고 있습니다.</p><h4>간 초회통과효과 (Hepatic First-Pass Effect)</h4><p>약리학적으로 정맥주사제는 소화 및 흡수 과정을 생략하기 때문에 생체이용률(Bioavailability)이 사실상 <b>100%</b>에 달하여 즉각적이고 정확한 용량 전달이 보장됩니다. 반면 경구용 항암제는 위장관을 거치며 산성 환경과 소화 효소에 의해 일부가 소실되며, 흡수된 이후에도 장간막 정맥을 타고 반드시 간(Liver)의 문맥을 거치게 됩니다. 이때 간에 고도로 밀집된 대사 효소들에 의해 약물 성분의 상당 부분이 전신으로 퍼지기도 전에 대사되어 약효가 급감하는 이른바 <b>&lsquo;간 초회통과효과&rsquo;</b>를 피할 수 없습니다.</p><h4>그럼에도 경구제를 도입하는 이유 : 삶의 질(QoL)</h4><p>그럼에도 불구하고 임상 현장에서 경구투여제를 적극적으로 도입하는 결정적인 이유는 <b>환자의 삶의 질(Quality of Life, QoL) 증진</b>과 치료 스케줄의 독립성 확보 때문입니다.</p><p>대다수의 세포독성 항암제는 체내에서 약효가 반감되는 시간(Half-life)이 매우 짧아 치료 농도를 유지하기 위해 수 시간에서 며칠에 걸쳐 지속적으로 주사를 맞아야 합니다. 이는 환자의 잦은 병원 방문이나 입원, 정맥 천자 또는 케모포트(Chemoport) 삽입 시술에 따른 극심한 육체적 고통을 수반합니다.</p><div class="ok">반면 경구제는 병원 방문 없이 자택, 직장, 심지어 여행 중에도 스스로 약물을 복용할 수 있어 일상생활의 중단을 방지합니다.</div>'},
+"c8_2":{t:"주사제 vs 경구투여제 장단점 비교",b:'<div class="mt-box"><table class="mt"><tr><th>구분</th><th>장점 (Pros)</th><th>단점 (Cons)</th></tr><tr><td><b>경구투여제</b><br>(정제, 캡슐, 과립 등)</td><td>· 비침습성: 바늘 찔림이나 IV 라인, 중심정맥관 삽입에 따른 통증과 감염 위험이 원천 차단됨<br>· 높은 편의성: 정기적인 외래 방문 없이 장소 제약 없이 복용 가능하여 사회생활 복귀가 용이함<br>· 장기 지속성: 반감기가 짧은 약물이라도 가정 내에서 규칙적인 복용을 통해 안정적인 체내 농도 유지가 가능함</td><td>· 복약순응도 의존성: 환자가 스스로 복용 시간을 놓치거나 임의로 용량을 조절할 경우 치료 실패 확률이 기하급수적으로 증가함<br>· 위장관 부작용: 약물이 점막에 직접 닿아 복통, 설사, 심한 구내염 및 장마비를 유발할 위험 존재<br>· 건강보험 혜택 장애물: 정책에 따라 일부 경구제는 주사제에 비해 보험 혜택이 적어 환자 본인 부담금이 가중될 수 있음</td></tr><tr><td><b>주사제</b><br>(정맥주사, 피하주사 등)</td><td>· 약동학적 안정성: 혈류로 약물이 직접 전달되어 흡수 과정의 변수가 배제되며, 100% 흡수를 통해 정밀한 용량 통제가 가능함<br>· 의료진 밀착 모니터링: 종양내과 전문의와 간호사의 철저한 관리 감독 하에 투약되어 아나필락시스 등 급성 부작용에 즉각 대처할 수 있음</td><td>· 침습적 고통 수반: 반복적인 혈관 천자로 인한 혈관 손상, 극심한 피로도, 정맥염 발생<br>· 시간적 제약: 치료 시마다 수시간의 수액 투여 및 입원으로 인해 일상과 업무의 심각한 방해 초래</td></tr></table></div>'},
+
+"c9_1":{t:"제9.1절 방사선 동위원소 판(Plaque)의 종류 및 원리",b:'<p>일반적인 고형암과 달리 눈이라는 고도의 정밀한 감각 기관 내부에 발생하는 안암은 기존의 항암 요법이나 외과적 절제술을 적용하기에 막대한 위험이 따릅니다. 특히 안구 내벽에 발생하는 희귀 악성 종양인 <b>맥락막흑색종(Choroidal Melanoma)</b>, 소아에게 빈발하는 <b>망막모세포종(Retinoblastoma)</b> 등은 과거 안구 자체를 적출(Enucleation)하여 영구적인 시력 상실과 안면 변형을 초래하는 광범위 절제술이 불가피했습니다.</p><p>종양이 안구 내에만 국한되어 있다면 안구를 보존하면서도 암세포만을 파괴하는 국소 <b>&lsquo;근접방사선치료(Brachytherapy)&rsquo;</b>가 핵심적인 대안으로 부상하였습니다.</p><h4>루테늄-106 (Ruthenium-106)</h4><p>안구 근접방사선치료의 기전은 체외에서 조사하는 일반 방사선과 달리, 에너지를 방출하는 방사성 동위원소를 종양과 직접 맞닿게 하여 짧은 거리에서 초고선량의 방사선을 조사하는 방식입니다. 이 목적으로 안과 영역에서 가장 널리 쓰이는 물질은 <b>&lsquo;루테늄-106(Ruthenium-106)&rsquo;</b> 동위원소입니다.</p><div class="ok">루테늄-106이 얇게 코팅된 안과용 방사선 판(Plaque)은 조직 투과 깊이가 얕고 입자 질량이 작은 <b>베타선(Beta ray)</b>을 주로 방출합니다. 따라서 종양 덩어리에만 에너지를 집중시키고 그 반대편에 위치한 황반(Macula)이나 시신경(Optic Nerve) 등 핵심적인 정상 시력 조직의 방사선 피폭을 획기적으로 차단할 수 있습니다.</div>'},
+"c9_2":{t:"제9.2절 적용 암종 및 외과적 사용법",b:'<p>해당 방사선 판은 성인 안구종양의 대부분을 차지하는 흑색종(Melanoma)을 비롯해 망막모세포종 환자의 치료에 적극적으로 적용됩니다.</p><h4>수술적 사용법</h4><p>안과 전문의가 미세 현미경 수술을 통해 안구를 덮고 있는 공막(Sclera, 흰자위)을 노출시킨 후, 초음파 및 영상 장비를 이용해 안구 내부의 종양 기저부 위치를 정확히 맵핑합니다.</p><p>이후 종양의 크기와 두께를 고려하여 방사선 조사량이 치밀하게 계산된 루테늄 방사선 판을 종양 바로 위쪽 공막 표면에 직접 봉합사로 고정합니다.</p><p>환자는 목표한 누적 방사선량이 암세포에 완전히 전달될 때까지 며칠 동안 이 판을 안구에 부착한 상태로 입원하며, 계획된 치료가 종료되면 다시 2차 수술을 통해 안전하게 판을 제거하게 됩니다.</p>'},
+"c9_3":{t:"제9.3절 치료 비용 및 건강보험 적용 체계의 변화",b:'<p>과거 루테늄 방사선 판을 이용한 안구 종양 치료는 수입에 의존하는 고가의 재료대와 특수 수술 기법으로 인해 환자가 전액 비용을 지불해야 하는 심각한 경제적 장벽이 존재했습니다.</p><h4>2021년 12월 1일 급여 신설</h4><p>그러나 <b>2021년 12월 1일</b>을 기점으로 대한민국 보건복지부가 제19차 건강보험정책심의위원회를 거쳐 &lsquo;안구 내 종양 근접방사선치료계획(Ruthenium-106 이용)&rsquo;에 대한 신규 급여 기준을 신설 고시하였습니다.</p><div class="ok">이러한 정책 변화를 통해 안암 환자들은 중증질환자 산정특례(본인부담률 5%) 혜택을 적용받게 되어, 수천만 원을 상회하던 시술 및 재료 비용의 부담에서 벗어나 실질적으로 안구 보존의 희망을 가질 수 있게 되었습니다.</div><p>뿐만 아니라 엘렉타 유니티(Elekta Unity) 등을 활용하여 방사선 조사 중 실시간으로 종양의 위치 변화를 추적하는 최신 기술인 <b>&lsquo;자기공명영상(MRI) 유도 정위적 방사선 분할치료&rsquo;</b> 역시 급여 항목 신설을 통해 입체조형치료 5만 4,460원, 정위적 방사선 분할치료 16만 3,380원 등으로 보험 수가가 확정되어 항암 방사선 치료의 재정적 장벽이 대폭 허물어졌습니다.</p>'},
+
+"c10_1":{t:"제10.1절 건강보험 급여 (Health Insurance Covered)",b:'<p>항암 신약의 눈부신 발전 이면에는 천문학적인 연구개발비(R&amp;D)가 투영된 초고가 약가라는 냉혹한 현실이 자리합니다. 이에 따라 환자 중심의 의료 복지를 실현하기 위해 대한민국 건강보험심사평가원(HIRA)과 보건복지부는 엄격한 기준을 통해 보험 재정을 분배하고 있으며, &lsquo;급여&rsquo;, &lsquo;100분의 100 본인부담&rsquo;, &lsquo;비급여&rsquo; 간의 법적·행정적 차이는 환자의 경제적 생존권과 직결되는 중대한 사안입니다.</p><h4>급여의 정의</h4><p>건강보험 &lsquo;급여&rsquo; 항목은 특정 항암제가 암질환심의위원회(암질심)와 약제급여평가위원회(약평위)를 거쳐 임상적 유용성, 질환의 중증도, 비용 대비 효과성(Cost-effectiveness)을 국가로부터 공식 인정받아 건강보험 재정으로 치료 비용의 <b>95%를 지원</b>받는 최상의 상태를 의미합니다.</p><div class="ok">중증 암 환자로 등록된 경우 산정특례 제도가 발동하여, 고가의 화학/면역 항암제라도 환자는 법정 상한금액의 <b>5%만</b>을 본인부담금으로 납부하면 됩니다. 이는 국가가 암 환자를 재난적 의료비로부터 보호하는 가장 강력한 기전입니다.</div>'},
+"c10_2":{t:"제10.2절 전액본인부담 (100분의 100 본인부담)",b:'<p>&lsquo;100분의 100 본인부담&rsquo;은 그 개념의 모호성으로 인해 흔히 &lsquo;비급여&rsquo;와 혼용되나 법적으로 완전히 상이한 궤를 갖습니다.</p><p>전액본인부담 약제는 해당 의약품 자체가 이미 국가의 건강보험 &lsquo;법정 요양급여 목록&rsquo;에 공식적으로 등재되어 있으며, 보건복지부 장관이 제약사와의 협상을 통해 명확한 <b>&lsquo;상한 금액(Maximal Pricing Limit)&rsquo;</b>을 고시해 놓은 상태를 전제로 합니다.</p><p>그러나 환자의 구체적인 상병이나 투여 시점이 정부가 정한 좁은 의미의 &lsquo;급여 인정 기준&rsquo;에 부합하지 않을 경우 발생합니다. 예를 들어 비소세포폐암 표적항암제인 타그리소(Osimertinib)가 일부 중증 환자에게는 급여(5% 부담)로 인정되나, 이를 급여 기준 외인 수술 후 보조요법으로 투여할 경우 보험 재정 지출이 거부되어 환자가 약값의 <b>100% 전액</b>을 부담해야 합니다.</p><div class="note">이 제도의 가장 중대한 임상 경제적 특징은, 비록 환자가 돈을 다 내더라도 &lsquo;국가가 지정한 상한 금액 제한&rsquo;이 강력하게 작동한다는 점입니다. 따라서 환자가 전국의 어떤 요양기관에서 투약을 받더라도 동일한 질환과 조건이라면 청구되는 진료비와 약가가 <b>1원 단위까지 100% 동일</b>하게 통제되어 과잉 청구가 원천적으로 불가능합니다.</div>'},
+"c10_3":{t:"제10.3절 비급여 (Non-covered)",b:'<p>&lsquo;비급여&rsquo;는 업무나 일상생활에 지장이 없는 질환에 대한 성형·미용 목적의 치료이거나, 혹은 글로벌 제약사가 새롭게 개발한 신약이 아직 건강보험 등재 절차(약가 협상 등)를 밟지 않아 요양급여 목록 자체에 아예 존재하지 않는 항목을 의미합니다.</p><div class="bad">비급여의 가장 큰 맹점은 정부가 정해놓은 &lsquo;상한 금액&rsquo; 규제가 아예 없다는 데 있습니다. 즉, 의료기관이 자체적인 정책과 수요에 따라 자율적으로 약가 및 진료비를 책정할 수 있으므로, 동일한 신약이나 방사선 치료라 할지라도 <b>병원에 따라 수십에서 수백만 원의 진료비 편차</b>가 발생할 수 있습니다.</div><p>대표적으로 존슨앤드존슨의 이중항체 비소세포폐암 치료제 리브리반트(Rybrevant)나 암젠의 소세포폐암 치료제 임델트라(Imdelltra)는 혁신적인 효과에도 불구하고 암질환심의위원회의 급여 첫 관문을 돌파하지 못해 철저히 비급여 상태로 남아 환자들에게 막대한 경제적 절망감을 안겨주고 있습니다.</p><p>신약이 개발되어 환자에게 도달하기까지, 비급여 단계에서 100분의 100 본인부담을 거쳐 완전한 5% 급여로 진입하는 과정은 지난한 재정 협상의 결과물인 셈입니다.</p>'},
+
+"c11_1":{t:"제11장. 결론 및 제언",b:'<p>항암 화학요법의 치열한 역사는 환자 전신의 정상 세포 파괴라는 참혹한 손상을 감내해야만 했던 1세대 세포독성 항암제에서 시작하여, 암세포의 분자생물학적 아킬레스건만을 정밀 타격하는 2세대 표적항암제, 그리고 무력화된 인체 면역계의 족쇄를 풀어 스스로 암을 극복하게 만드는 3세대 면역관문억제제로 끊임없이 진화해왔습니다. 더 나아가 미래의 종양학은 암세포가 에너지를 착취하는 기형적인 대사 방식 자체를 원천 봉쇄하여 암을 굶겨 죽이는 4세대 대사항암제 및 개인 맞춤형 CAR-T 세포치료제의 상용화를 목전에 두고 있습니다.</p><h4>진보의 이면 : 재정적 독성과 의료 불평등</h4><p>이러한 눈부신 임상적 효용의 진보 이면에는 필연적으로 &lsquo;기하급수적인 치료 비용의 상승&rsquo;이라는 거대한 보건경제학적 난제가 도사리고 있습니다. 앞서 상세히 분석한 바와 같이, 조기 삼중음성 유방암 환자를 완치로 이끌 수 있는 키트루다 병용요법(총 17주기, 약 <b>7천만 원 이상</b>)이나, 폐암 환자의 재발의 공포를 끊어낼 수 있는 타그리소 보조요법(3년, 약 <b>2억 원</b>)과 같이 글로벌 임상(KEYNOTE-522, ADAURA)을 통해 극적인 생존 연장 효과가 명백히 입증된 최첨단 의학 기술들이 여전히 국내에서는 &lsquo;비급여&rsquo; 또는 &lsquo;전액본인부담&rsquo;이라는 육중한 제도적 장벽에 가로막혀 있습니다. 이는 결국 환자 개개인의 재정적 능력이 수명과 직결되는 안타깝고 잔혹한 의료 불평등으로 이어지고 있습니다.</p><h4>제언</h4><p>초고가 약제의 무분별한 급여 진입은 대한민국 건강보험 재정의 고갈을 초래할 수 있으나, 임상적 가치가 절대적으로 입증된 필수 보조요법에 대해서는 환자의 생명권 보장이 우선되어야 합니다. 향후 보건의료 당국과 제약업계는 건강보험 급여 진입 장벽을 의학적 타당성에 기반하여 유연하게 조정하는 동시에, 환자 단위 <b>성과 기반 위험분담제(Risk Sharing Agreement)</b>, 총액 제한 등 다각화된 재정 분담 모델을 적극적으로 고도화하여 신약에 대한 환자들의 접근성을 혁신적으로 보장해야 할 것입니다.</p><div class="ok">인류의 과학적 진보가 빚어낸 생명의 희망이 환자와 그 가족에게 파멸적인 경제적 짐(재정적 독성)으로 변질되지 않도록, 제도의 포용적 혁신이 과학의 발전 속도를 따라잡아야 할 중차대한 시점입니다.</div><div class="note">본 보고서는 정보 제공을 목적으로 작성되었습니다. 의학적 조언이나 진단을 위해서는 전문가와 상담하십시오.<br><i>This is for informational purposes only. For medical advice or diagnosis, consult a professional.</i></div>'},
+
+"refs":{t:"통합 참고자료",b:'<p>하단의 참고자료는 본 보고서 전문에 걸쳐 인용된 모든 출처를 장별 흐름에 따라 통합 정리한 것입니다. 중복 URL은 단일 항목으로 통합하였습니다.</p><h4>제2~4장 : 세대별 항암제 기전 및 비용 관련</h4><ul class="reflist"><li>복용 편의성 높인 &lsquo;경구용 세포독성 항암제&rsquo; 알아보기 — healtho.co.kr<br><a href="https://healtho.co.kr/news/view.php?idx=97378&mcode=m54f2jm&page=24">링크</a></li><li>경구 화학 요법 vs. 정맥 화학 요법 — 효과 비교 — EdhaCare<br><a href="https://www.edhacare.com/ko/blogs/oral-vs-iv-chemotherapy-effectiveness/">링크</a></li><li>암 환자의 경구용 항암제 복용이행 영향요인 — KoreaMed Synapse<br><a href="https://synapse.koreamed.org/upload/synapsedata/pdfdata/1139aon/aon-13-201.pdf">링크</a></li><li>덱사메타손(dexamethasone) — 약학정보원<br><a href="https://common.health.kr/shared/healthkr/pharmreview/%EB%8D%B1%EC%82%AC%EB%A9%94%ED%83%80%EC%86%90.pdf">링크</a></li><li>부광덱사메타손정 허가사항 변경 — 부광약품</li><li>사이클로포스파마이드 부작용 개선 또는 억제용 조성물 — Google Patents<br><a href="https://patents.google.com/patent/KR20180015449A/ko">링크</a></li><li>종근당시클로포스파미드정 복약안내문 — 약학정보원<br><a href="https://health.kr/searchDrug/result_take.asp?drug_cd=A11A0120B0031">링크</a></li><li>골수이식과 약물요법 — 한국병원약사회지</li><li>유방암 치료비, 비급여 부담 증가로 표적항암 치료 시 최대 1억 원 발생 — 에너지뉴스<br><a href="https://www.2news.co.kr/news/articleView.html?idxno=8151">링크</a></li><li>&ldquo;유방암 평균 치료비 750만 원…비급여 장기 이용시 1억까지 불어나&rdquo; — 뉴스1<br><a href="https://www.news1.kr/finance/insurance-card/6183362">링크</a></li><li>유방암 치료에 드는 비용 — 힐오<br><a href="https://www.heal-o.io/consultation/cancer/1142">링크</a></li><li>표적항암치료비용, 보험으로 이렇게 줄이세요 — 뱅크샐러드</li><li>[유방센터] 표적치료 — 대림성모병원</li><li>허셉틴-퍼제타 병용 비급여 오해 &ldquo;1년간 사용 필수&rdquo; — 팜뉴스<br><a href="https://www.pharmnews.com/news/articleView.html?idxno=300075">링크</a></li><li>한국로슈 퍼제타-페스코, HER2 양성 조기 유방암 수술 전 보조요법 투여 대상 확대 — MEDI:GATE NEWS<br><a href="https://medigatenews.com/news/1809639810">링크</a></li><li>페스코, 조기·전이 HER2 양성 유방암 치료 보험급여 적용 — 히트뉴스<br><a href="https://www.hitnews.co.kr/news/articleView.html?idxno=56596">링크</a></li><li>허셉틴 항암화학요법, 급여기준 개선 &lsquo;성공&rsquo; — 병원신문<br><a href="https://www.khanews.com/news/articleView.html?idxno=233073">링크</a></li><li>EGFR 변이 폐암 타그리소 &lsquo;완치&rsquo; 가능성 열다 — 의학신문<br><a href="https://www.bosa.co.kr/news/articleView.html?idxno=2256570">링크</a></li><li>EGFR 변이 조기 폐암 치료의 전환점…이젠 &lsquo;수술 이후&rsquo;가 승부처 — 청년의사<br><a href="http://www.docdocdoc.co.kr/news/articleView.html?idxno=3039057">링크</a></li><li>&lsquo;타그리소 병용요법&rsquo; 급여 처방 2개월…&ldquo;가격 부담 줄고, 치료 효과 개선&rdquo; — 더바이오<br><a href="https://www.thebionews.net/news/articleView.html?idxno=16885">링크</a></li><li>렉라자ㆍ타그리소 병용요법, 부분급여 적용… 처방 경쟁 초읽기 — 히트뉴스<br><a href="https://www.hitnews.co.kr/news/articleView.html?idxno=65128">링크</a></li><li>아스트라제네카 &lsquo;타그리소&rsquo;, 한국서 5년만에 급여 적용 — 메디포뉴스<br><a href="https://www.medifonews.com/news/article.html?no=186599">링크</a></li><li>(약제) 비소세포폐암 환자에게 투여된 타그리소정 — 건강보험심사평가원</li><li>&lsquo;면역항암제 키트루다와 삼중음성 유방암&rsquo; (강남세브란스병원 유방외과 안성귀) — YouTube<br><a href="https://www.youtube.com/watch?v=xG87XgVP37M">링크</a></li><li>키트루다 보험 적용 (2026년 1월) : 유방암에 대한 설명 — 바로브레스트</li><li>&ldquo;고위험 조기 삼중음성 유방암에선 키트루다가 표준요법...3년 뒤 10명 더 살려&rdquo; — 팜뉴스<br><a href="https://www.pharmnews.com/news/articleView.html?idxno=231379">링크</a></li><li>[ASCO 2026] 키트루다 삼중음성 유방암 수술 전·후 보조요법, 7년 무사건생존율 78.3% — 뉴스엠피<br><a href="https://www.newsmp.com/news/articleView.html?idxno=254001">링크</a></li><li>&ldquo;삼중음성유방암, 치료제 비용 앞에서 포기하는 환자 없도록&rdquo; — 뉴스더보이스헬스케어</li><li>키트루다, 4개→13개 암종 급여적용...3년만의 확대 — 히트뉴스<br><a href="https://www.hitnews.co.kr/news/articleView.html?idxno=72186">링크</a></li></ul><h4>제5~7장 : 4세대 대사항암제 관련</h4><ul class="reflist"><li>[주목! e기술] 암 정복 꿈꾸는 4세대 항암제 &lsquo;대사항암제&rsquo; — 팜이데일리<br><a href="https://pharm.edaily.co.kr/news/read?newsId=01551446628955112&mediaCodeNo=257">링크</a></li><li>키트루다 다음은 &lsquo;대사항암제&rsquo;…4세대 항암제로 자리매김할까? — 약업신문</li><li>4세대 &lsquo;대사항암제&rsquo; 어디까지 왔을까 — 헬스경향<br><a href="https://www.k-health.com/news/articleView.html?idxno=51619">링크</a></li><li>면역항암제 다음으로 떠오른 대사항암제, 주요 개발 기업은? — 메디파나뉴스<br><a href="https://www.medipana.com/news/articleView.html?idxno=309380">링크</a></li><li>암세포 굶겨죽이는 &lsquo;대사항암제 무럭무럭&rsquo; — 머니투데이<br><a href="https://www.mt.co.kr/thebio/2021/04/13/2021041218300695846">링크</a></li><li>바르부르크 효과와 암세포의 대사 작용 — 해피캠퍼스</li><li>암치료 새로운 길 열리나…&ldquo;암세포 에너지대사, 지방산에 의존&rdquo; — 청년의사<br><a href="http://www.docdocdoc.co.kr/news/articleView.html?idxno=2025944">링크</a></li><li>보도자료 상세보기 (킴 효과 관련) — 국립암센터<br><a href="https://www.ncc.re.kr/prBoardView1.ncc?nwsId=7956">링크</a></li><li>보도자료 상세보기 (대사항암 연구) — 국립암센터<br><a href="https://www.ncc.re.kr/prBoardView1.ncc?nwsId=10316">링크</a></li><li>&ldquo;국산 4세대 &lsquo;대사 항암제&rsquo; 개발해 세계 최초로 상용화 할 것&rdquo; — 동아일보<br><a href="https://www.donga.com/news/Economy/article/all/20220919/115519908/1">링크</a></li><li>하임바이오, 4세대 대사항암제 &lsquo;스타베닙&rsquo; 임상 1상 중간결과 발표 — 헬스경향<br><a href="https://www.k-health.com/news/articleView.html?idxno=48966">링크</a></li><li>[하임바이오] 올해 대규모 투자받고 대박나는 하임바이오 — 38커뮤니케이션</li><li>서울과기대 환경기술연구소 환경정보 수집 사이트 (바르부르크/대사항암 관련)</li><li>뉴지랩파마, 국내 첫 대사항암제 신약가능성 입증 — 인포스탁데일리<br><a href="https://www.infostockdaily.co.kr/news/articleView.html?idxno=155874">링크</a></li><li>뉴지랩파마(214870) 기업분석 — 삼성증권</li><li>헬스케어 섹터 리포트 (OVERWEIGHT) — 삼성증권</li><li>제약/바이오 종합 리포트 — 키움증권</li></ul><h4>제6장 : CAR-T 세포치료제 관련</h4><ul class="reflist"><li>CAR-T 세포를 이용한 항암요법 (상세 기전) — 한국병원약사회지<br><a href="https://www.jkshp.or.kr/journal/download_pdf.php?spage=241&volume=38&number=2">링크</a></li><li>CAR-T 세포를 이용한 항암요법 (요약본) — 한국병원약사회지<br><a href="https://www.jkshp.or.kr/journal/view.html?uid=1667&vmd=Full">링크</a></li><li>CAR-T 세포 치료 — 서울대학교암병원</li><li>CAR-T 세포 치료제 개요 — 약학정보원</li><li>[질환포커스] CAR-T 세포 치료에 대한 대표 궁금증 3가지! — YouTube<br><a href="https://www.youtube.com/watch?v=aMzl2s9ozdw">링크</a></li><li>[혈액] 60대 노신사의 카티(CAR-T) 세포 치료 경험기 — 한국혈액암협회</li><li>급성 림프모구백혈병 — 항암제 — 국가암정보센터</li><li>내가 알고 싶은 암 — 안종양 — 국가암정보센터</li><li>C83 — 질병분류기호<br><a href="https://www.kcdcode.kr/mobile/index/6?type=detail&code=C83.3">링크</a></li><li>첫 국산 CAR-T 치료제 &lsquo;림카토&rsquo; 허가… 가격은 얼마? — 헬스조선<br><a href="https://health.chosun.com/site/data/html_dir/2026/04/30/2026043001280.html">링크</a></li><li>큐로셀 CAR-T 신약 &lsquo;림카토&rsquo;, 암질심 통과…하반기 급여·출시 기대 — Daum</li><li>국산 1호 CAR-T &lsquo;림카토&rsquo;, 급여 검증대 선다 — 팜뉴스<br><a href="https://www.pharmnews.com/news/articleView.html?idxno=304008">링크</a></li><li>큐로셀 &lsquo;림카토&rsquo; 9월 출시 불발···&lsquo;킴리아&rsquo; 3.6억 비해 얼마 떨어질까 — 시사저널이코노미<br><a href="https://www.sisajournal-e.com/news/articleView.html?idxno=421357">링크</a></li><li>큐로셀에 대한 분석 (2026년 주식시장 관점) — 상상인투자증권</li><li>CAR-T 치료제 &lsquo;킴리아&rsquo;, 일본에서 제조된다‥생산 한계 극복 — 메디파나뉴스<br><a href="https://www.medipana.com/news/articleView.html?idxno=265291">링크</a></li><li>노바티스, &lsquo;아시아 첫&rsquo; 킴리아 생산시설 &ldquo;日 승인&rdquo; — 바이오스펙테이터<br><a href="https://www.biospectator.com/news/view/11690">링크</a></li><li>&lsquo;예스카타&rsquo;, CAR-T 치료 앞당긴다…&ldquo;림프종 재발 환자에 새 선택지&rdquo; — 더바이오<br><a href="https://www.thebionews.net/news/articleView.html?idxno=17557">링크</a></li><li>CAR-T &lsquo;예스카타&rsquo; 2차 치료에 급여 미설정... 리브리반트도 — 히트뉴스<br><a href="https://www.hitnews.co.kr/news/articleView.html?idxno=73100">링크</a></li><li>억대 원샷 CAR-T 항암제 킴리아 vs 예스카타 급여경쟁 예고 — 스카이데일리<br><a href="https://www.skyedaily.com/news/news_view.html?ID=296238">링크</a></li><li>1인 맞춤형 CAR-T 치료제 &lsquo;킴리아&rsquo; 국내 허가 — 히트뉴스<br><a href="https://www.hitnews.co.kr/news/articleView.html?idxno=33096">링크</a></li><li>CAR-T 세포치료제 &lsquo;킴리아&rsquo;, 1회 투여 3억6000만원 — 청년의사<br><a href="http://www.docdocdoc.co.kr/news/articleView.html?idxno=2021410">링크</a></li><li>1회 5억 킴리아 내일부터 최대 598만원...CAR-T 의료비도 10만원으로 — 머니투데이<br><a href="https://www.mt.co.kr/thebio/2022/03/31/2022033116491625515">링크</a></li><li>5억짜리 혈액암 치료제 &lsquo;킴리아&rsquo;, 건보 적용돼 600만원 — KCRS</li><li>&lsquo;CAR-T 원샷&rsquo; 킴리아 급여기준 신설…4월 등재 예고 — 데일리팜<br><a href="https://dailypharm.com/user/news/41675">링크</a></li><li>킴리아 급여기준 혼란 지적에 심평원 급여기준 안내 — 메디칼타임즈</li><li>킴리아 보험 적용 CAR T세포치료제 행위 수가도 신설 — 약사공론<br><a href="https://www.kpanews.co.kr/news/articleView.html?idxno=231418">링크</a></li><li>단 1회 투여 CAR-T 시대 열렸지만…급여·인프라 장벽 여전 — 약사공론<br><a href="https://www.kpanews.co.kr/news/articleView.html?idxno=537380">링크</a></li></ul><h4>제9장 : 안암 근접방사선치료 관련</h4><ul class="reflist"><li>안구종양, &lsquo;근접방사선치료&rsquo;로 적출 없이 치료 가능 — healtho.co.kr<br><a href="http://healtho.co.kr/news/view.php?idx=98849">링크</a></li><li>&lsquo;안구 내 종양 근접 방사선 치료&rsquo; 급여 기준 신설 — 메디소비자뉴스<br><a href="http://www.medisobizanews.com/news/articleView.html?idxno=63813">링크</a></li><li>안과질환 등 건강보험 적용...보장성 강화 후속조치 — 히트뉴스<br><a href="https://www.hitnews.co.kr/news/articleView.html?idxno=30674">링크</a></li><li>엘렉타, MRI 기반 방사선치료 이달부터 보험급여 확정 — 메디포뉴스<br><a href="https://www.medifonews.com/news/article.html?no=207734">링크</a></li></ul><h4>제10장 : 건강보험 제도 관련</h4><ul class="reflist"><li>암환자에게 처방·투여하는 약제에 대한 요양급여 적용기준 및 방법에 관한 세부사항 — 건강보험심사평가원</li><li>제도·정책 약제기준정보 암질환 사용약제 및 요법 FAQ — 건강보험심사평가원</li><li>요양급여비용 청구길라잡이 (2021) — 건강보험심사평가원</li><li>요양급여비용 청구길라잡이 (2022) — 건강보험심사평가원</li><li>요양급여비용 청구길라잡이 — HIRA OAK Repository</li><li>의료급여 실무편람 (2025) — 건강보험심사평가원</li><li>알기 쉬운 의료급여제도 (2020) — 건강보험심사평가원</li><li>2026 알기 쉬운 의료급여제도 — 건강보험심사평가원</li><li>자주하는 질문 — 내진료정보열람 — 건강보험심사평가원</li><li>보도자료 — HIRA 소식 — 건강보험심사평가원</li></ul>'}
+};
+</script>
+</body>
+</html>
