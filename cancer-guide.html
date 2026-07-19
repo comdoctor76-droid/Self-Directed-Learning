@@ -23,6 +23,58 @@ function CM(){
   var bg=document.getElementById('MB');
   if(bg)bg.style.display='none';
 }
+
+/* ★ 인포그래픽 라이트박스 */
+window.IMGDATA={
+  s2:{src:'assets/infographics/s2.png',name:'1세대_세포독성_항암제.png'},
+  s3:{src:'assets/infographics/s3.png',name:'2세대_표적항암제.png'},
+  s4:{src:'assets/infographics/s4.png',name:'3세대_면역항암제.png'},
+  s5:{src:'assets/infographics/s5.png',name:'4세대_대사항암제_CAR-T.png'},
+  s6:{src:'assets/infographics/s6.png',name:'CAR-T_세포치료제.png'}
+};
+window.__curImg=null;
+function OI(key){
+  var d=window.IMGDATA?window.IMGDATA[key]:null;
+  var bg=document.getElementById('IMB');
+  var img=document.getElementById('IMG_IMG');
+  if(!d||!bg||!img)return;
+  window.__curImg=d;
+  img.src=d.src;
+  img.alt=d.name;
+  bg.style.display='block';
+  bg.scrollTop=0;
+}
+function CI(){
+  var bg=document.getElementById('IMB');
+  if(bg)bg.style.display='none';
+}
+function DLI(){
+  var d=window.__curImg;
+  if(!d)return;
+  fetch(d.src).then(function(res){return res.blob();}).then(function(blob){
+    var file=null;
+    try{file=new File([blob],d.name,{type:blob.type||'image/png'});}catch(e){}
+    /* 모바일: Web Share API로 카카오톡 등 공유 시트 */
+    if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
+      navigator.share({files:[file],title:d.name}).catch(function(err){
+        if(err&&err.name==='AbortError')return;
+        __saveBlob(blob,d.name);
+      });
+      return;
+    }
+    /* 데스크톱 등: 직접 다운로드 */
+    __saveBlob(blob,d.name);
+  }).catch(function(){
+    window.open(d.src,'_blank');
+  });
+}
+function __saveBlob(blob,name){
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;a.download=name;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(url);},1500);
+}
 </script>
 
 <style>
@@ -145,6 +197,24 @@ footer b{color:#FFB37E}
 .diagram svg{width:100%;height:auto;display:block;font-family:'Noto Sans KR',sans-serif}
 .diagram-cap{text-align:center;font-size:13px;color:#6B7078;margin-top:10px;font-weight:700;letter-spacing:.2px}
 
+/* 섹션 제목 + 인포그래픽 버튼 */
+.sh-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.info-btn{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;background:#FFF3EA;color:#C94F0A;border:1.5px solid #F6C9A8;border-radius:999px;font-family:'Noto Sans KR',sans-serif;font-size:13.5px;font-weight:800;padding:8px 15px;cursor:pointer;white-space:nowrap;line-height:1}
+.info-btn:hover{background:#FFE6D2}
+.info-btn:active{transform:scale(.96)}
+
+/* 인포그래픽 라이트박스 */
+#IMB{display:none;position:fixed;inset:0;z-index:10000;background:rgba(20,25,38,.88);padding:14px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.imb-box{max-width:1400px;margin:0 auto}
+.imb-bar{position:sticky;top:0;display:flex;justify-content:flex-end;gap:8px;padding:2px 0 12px;z-index:2}
+.imb-btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:10px;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:800;padding:11px 18px;cursor:pointer;line-height:1;box-shadow:0 3px 10px rgba(0,0,0,.25)}
+.imb-btn:active{transform:scale(.96)}
+.imb-dl{background:#E8651A;color:#fff}
+.imb-dl:hover{background:#C94F0A}
+.imb-cl{background:rgba(255,255,255,.92);color:#1A2744}
+.imb-cl:hover{background:#fff}
+#IMG_IMG{width:100%;height:auto;display:block;border-radius:12px;box-shadow:0 12px 44px rgba(0,0,0,.45);background:#fff}
+
 /* MOBILE */
 @media(max-width:760px){
   .hero h1{font-size:25px}
@@ -156,6 +226,8 @@ footer b{color:#FFB37E}
   .mh h3{font-size:17px}
   .nav-back span.label{display:none}
   body{font-size:16px}
+  .info-btn{font-size:13px;padding:7px 13px}
+  .imb-btn{font-size:13.5px;padding:11px 15px}
 }
 @media(min-width:761px) and (max-width:960px){
   .g3{grid-template-columns:1fr 1fr}
@@ -221,7 +293,7 @@ footer b{color:#FFB37E}
 <section id="s2">
   <div class="sh">
     <span class="no">SECTION 02</span>
-    <h2>1세대 세포독성 항암제</h2>
+    <div class="sh-row"><h2>1세대 세포독성 항암제</h2><button class="info-btn" onclick="OI('s2')">📊 인포그래픽 보기</button></div>
     <p>DNA 복제와 세포 분열을 방해해 빠르게 증식하는 세포를 직접 사멸시키는 전통적 화학요법입니다.</p>
   </div>
   <div class="g g2">
@@ -238,7 +310,7 @@ footer b{color:#FFB37E}
 <section id="s3">
   <div class="sh">
     <span class="no">SECTION 03</span>
-    <h2>2세대 표적항암제</h2>
+    <div class="sh-row"><h2>2세대 표적항암제</h2><button class="info-btn" onclick="OI('s3')">📊 인포그래픽 보기</button></div>
     <p>정상 세포는 건드리지 않고 암세포의 특정 돌연변이·과발현 단백질(바이오마커)만 정밀 타격합니다.</p>
   </div>
   <div class="g g2">
@@ -254,7 +326,7 @@ footer b{color:#FFB37E}
 <section id="s4">
   <div class="sh">
     <span class="no">SECTION 04</span>
-    <h2>3세대 면역관문억제제</h2>
+    <div class="sh-row"><h2>3세대 면역관문억제제</h2><button class="info-btn" onclick="OI('s4')">📊 인포그래픽 보기</button></div>
     <p>암세포가 면역을 회피하는 기전을 무력화해, 환자 본연의 T세포가 스스로 암을 파괴하도록 유도합니다.</p>
   </div>
   <div class="g g2">
@@ -270,7 +342,7 @@ footer b{color:#FFB37E}
 <section id="s5">
   <div class="sh">
     <span class="no">SECTION 05</span>
-    <h2>4세대 대사항암제</h2>
+    <div class="sh-row"><h2>4세대 대사항암제</h2><button class="info-btn" onclick="OI('s5')">📊 인포그래픽 보기</button></div>
     <p>암세포 고유의 기형적 에너지 대사만 정밀 차단해, 암세포를 '굶겨 죽이는(Starvation)' 전략입니다.</p>
   </div>
   <div class="g g3">
@@ -286,7 +358,7 @@ footer b{color:#FFB37E}
 <section id="s6">
   <div class="sh">
     <span class="no">SECTION 06</span>
-    <h2>4세대 CAR-T 세포치료제</h2>
+    <div class="sh-row"><h2>4세대 CAR-T 세포치료제</h2><button class="info-btn" onclick="OI('s6')">📊 인포그래픽 보기</button></div>
     <p>환자 본인의 T세포를 추출·유전자 조작·배양 후 다시 주입하는 개인 맞춤형 '살아있는 약'입니다.</p>
   </div>
   <div class="g g3">
@@ -389,6 +461,17 @@ footer b{color:#FFB37E}
       <button class="mcl" onclick="CM()">✕</button>
     </div>
     <div class="mb" id="MC"></div>
+  </div>
+</div>
+
+<!-- 인포그래픽 라이트박스 -->
+<div id="IMB" onclick="if(event.target===this)CI()">
+  <div class="imb-box">
+    <div class="imb-bar">
+      <button class="imb-btn imb-dl" onclick="DLI()">⬇ 다운로드</button>
+      <button class="imb-btn imb-cl" onclick="CI()">✕ 닫기</button>
+    </div>
+    <img id="IMG_IMG" src="" alt="인포그래픽">
   </div>
 </div>
 
