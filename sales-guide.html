@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>만능화법 니즈환기를 통한 상품제안 | 스스로 학습하기</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+<!-- ★ 모달 제어 함수 - HEAD에 먼저 선언 (카카오 인앱브라우저 호환) -->
+<script>
+function OM(key){
+  var bg=document.getElementById('MB');
+  var title=document.getElementById('MT');
+  var body=document.getElementById('MC');
+  var data=window.MD?window.MD[key]:null;
+  if(!data||!bg||!title||!body)return;
+  title.innerHTML=data.t;
+  body.innerHTML=data.b;
+  body.scrollTop=0;
+  bg.style.cssText='display:block;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(20,25,38,0.75);z-index:9999;overflow-y:auto;-webkit-overflow-scrolling:touch;';
+}
+function CM(){
+  var bg=document.getElementById('MB');
+  if(bg)bg.style.display='none';
+}
+</script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#FBF8F5;color:#26282C;font-size:17px;line-height:1.65}
+:root{--or:#E8651A;--ord:#C94F0A;--ors:#FFF3EA;--navy:#1A2744;--navy2:#2C3F6E;--gray:#6B7078;--green:#1E8E5A;--red:#D6403A}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#1A2744 0%,#2C3F6E 60%,#3d5390 100%);color:#fff;padding:50px 20px 64px}
+.hero-in{max-width:1060px;margin:0 auto}
+.badge{display:inline-block;background:#E8651A;color:#fff;font-weight:700;font-size:14px;padding:7px 16px;border-radius:999px;margin-bottom:16px}
+.hero h1{font-size:32px;font-weight:900;line-height:1.3;margin-bottom:12px}
+.hero h1 span{color:#FFB37E}
+.hero p{font-size:17px;opacity:.9;max-width:660px}
+.tip{margin-top:22px;display:inline-block;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:11px 16px;font-size:14.5px}
+.tip b{color:#FFC79B}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.1);display:flex;align-items:center;gap:6px;padding:0 8px}
+.nav-back{flex:0 0 auto;display:flex;align-items:center;gap:5px;font-size:14px;font-weight:800;color:#1A2744;text-decoration:none;padding:9px 12px;border-radius:999px;white-space:nowrap}
+.nav-back:hover{background:#EBEFF8}
+.nav-sep{flex:0 0 auto;width:1px;height:22px;background:#EEE7DF}
+.nav-in{flex:1 1 auto;min-width:0;display:flex;overflow-x:auto;gap:4px;padding:9px 4px;scrollbar-width:none}
+.nav-in::-webkit-scrollbar{display:none}
+.nav a.navlink{flex:0 0 auto;font-size:14.5px;font-weight:700;color:#6B7078;text-decoration:none;padding:8px 14px;border-radius:999px;white-space:nowrap}
+.nav a.navlink:hover{background:#FFF3EA;color:#C94F0A}
+
+/* WRAP */
+.wrap{max-width:1060px;margin:0 auto;padding:0 16px}
+section{padding:52px 0 20px}
+.sh{margin-bottom:22px}
+.sh .no{display:block;color:#E8651A;font-weight:900;font-size:14px;letter-spacing:1.5px;margin-bottom:6px}
+.sh h2{font-size:26px;font-weight:900;color:#1A2744}
+.sh p{color:#6B7078;margin-top:7px;font-size:16px}
+.hint{display:inline-block;background:#FFF3EA;color:#C94F0A;font-size:14px;font-weight:700;border-radius:999px;padding:6px 14px;margin-top:10px}
+
+/* GRID */
+.g{display:grid;gap:14px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+
+/* CARD */
+.card{background:#fff;border:2px solid #EEE7DF;border-radius:16px;padding:22px 20px;cursor:pointer;position:relative;display:block;width:100%;text-align:left}
+.card:active{border-color:#E8651A;background:#FFF9F5}
+.ico{font-size:28px;margin-bottom:8px;display:block}
+.card h3{font-size:18px;font-weight:800;color:#1A2744;margin-bottom:6px;line-height:1.4}
+.card p{font-size:15px;color:#6B7078}
+.plus{position:absolute;top:16px;right:16px;width:28px;height:28px;border-radius:50%;background:#FFF3EA;color:#E8651A;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;line-height:1}
+.tag{display:inline-block;font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;margin-bottom:8px}
+.to{background:#FFF3EA;color:#C94F0A}
+.tg{background:#E7F5EE;color:#1E8E5A}
+.tr{background:#FCEBEA;color:#D6403A}
+.tn{background:#EBEFF8;color:#2C3F6E}
+
+/* FLOW */
+.flow{display:flex;flex-direction:column;max-width:640px;margin:0 auto}
+.step{background:#fff;border:2px solid #EEE7DF;border-radius:12px;padding:15px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;margin-bottom:4px}
+.step:active{border-color:#E8651A;background:#FFF9F5}
+.sn{flex:0 0 40px;height:40px;border-radius:10px;color:#fff;font-weight:900;font-size:16px;display:flex;align-items:center;justify-content:center}
+.s1 .sn{background:#D6403A}.s2 .sn{background:#E5A00D}.s3 .sn{background:#C94F0A}.s4 .sn{background:#2C3F6E}.s5 .sn{background:#1E8E5A}
+.step b{font-size:17px;color:#1A2744;display:block}
+.step small{font-size:13.5px;color:#6B7078;margin-top:2px;display:block}
+.arr{text-align:center;color:#E8651A;font-size:18px;font-weight:900;padding:2px 0;margin-bottom:4px}
+
+/* TABLE */
+.tbl-box{border-radius:12px;overflow:auto;box-shadow:0 3px 12px rgba(0,0,0,.07);margin-top:6px}
+.tbl{width:100%;border-collapse:collapse;background:#fff;font-size:15px;min-width:640px}
+.tbl th{background:#1A2744;color:#fff;font-weight:700;padding:12px 12px;font-size:14.5px;text-align:left}
+.tbl td{padding:12px 12px;border-bottom:1px solid #F0EAE2;text-align:left;vertical-align:top;line-height:1.6}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td.rowh{background:#FBF8F5;font-weight:800;color:#1A2744;white-space:nowrap}
+.tbl td.hl{color:#C94F0A;font-weight:700}
+
+/* 경고/OK박스 */
+.bad{background:#FCEEED;border-left:4px solid #D6403A;border-radius:0 8px 8px 0;padding:12px 14px;margin:12px 0;font-size:15.5px}
+.ok{background:#E9F6EF;border-left:4px solid #1E8E5A;border-radius:0 8px 8px 0;padding:12px 14px;margin:12px 0;font-size:15.5px}
+.note{background:#FFF9E8;border-left:4px solid #E5A00D;border-radius:0 8px 8px 0;padding:12px 14px;margin:12px 0;font-size:15.5px}
+
+/* 도식 */
+.diagram{background:#FBF8F5;border:1.5px solid #EEE7DF;border-radius:14px;padding:16px 14px 12px;margin:4px 0 16px}
+.diagram svg{width:100%;height:auto;display:block;font-family:'Noto Sans KR',sans-serif}
+.diagram-cap{text-align:center;font-size:13px;color:#6B7078;margin-top:10px;font-weight:700;letter-spacing:.2px}
+
+/* 하단 돌아가기 */
+.back-bottom{text-align:right;margin-top:20px}
+.back-bottom a{display:inline-flex;align-items:center;gap:5px;font-size:14px;font-weight:800;color:#C94F0A;text-decoration:none;padding:8px 14px;border-radius:999px;background:#FFF3EA}
+.back-bottom a:hover{background:#FFE6D2}
+
+/* FOOTER */
+footer{background:#1A2744;color:rgba(255,255,255,.75);text-align:center;padding:34px 16px;margin-top:50px;font-size:14.5px;line-height:1.9}
+footer b{color:#FFB37E}
+
+/* MODAL */
+#MB{display:none;padding:20px 16px}
+.mbox{background:#fff;border-radius:18px;max-width:760px;margin:0 auto;overflow:hidden}
+.mh{background:linear-gradient(120deg,#E8651A,#C94F0A);color:#fff;padding:20px 22px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;position:sticky;top:0}
+.mh h3{font-size:19px;font-weight:900;line-height:1.4}
+.mcl{flex:0 0 36px;height:36px;border:none;border-radius:50%;background:rgba(255,255,255,.25);color:#fff;font-size:19px;font-weight:900;cursor:pointer;line-height:36px;text-align:center;padding:0}
+.mb{padding:20px 24px 28px;font-size:16.5px}
+.mb h4{color:#C94F0A;font-size:17.5px;font-weight:800;margin:20px 0 8px;padding-left:10px;border-left:4px solid #E8651A}
+.mb h4:first-child{margin-top:0}
+.mb p{margin-bottom:13px;color:#2E3238;line-height:1.85}
+.mb b{color:#1A2744}
+.mb sup{color:#C94F0A;font-weight:700;font-size:11.5px;vertical-align:super;margin:0 1px}
+.mb ul{margin:6px 0 14px 2px;list-style:none}
+.mb li{padding:7px 0 7px 26px;position:relative;color:#2E3238;line-height:1.8}
+.mb li::before{content:'✓';position:absolute;left:2px;color:#E8651A;font-weight:900}
+.mb li.n::before{content:'•';color:#2C3F6E;font-size:20px;line-height:1}
+.mb .ok{background:#E9F6EF;border-left:4px solid #1E8E5A;border-radius:0 8px 8px 0;padding:12px 14px;margin:12px 0;font-size:15.5px}
+.mb .note{background:#FFF9E8;border-left:4px solid #E5A00D;border-radius:0 8px 8px 0;padding:12px 14px;margin:12px 0;font-size:15.5px}
+.mb .bad{background:#FCEEED;border-left:4px solid #D6403A;border-radius:0 8px 8px 0;padding:12px 14px;margin:12px 0;font-size:15.5px}
+.mb .quote{background:#EBEFF8;border-left:4px solid #2C3F6E;border-radius:0 8px 8px 0;padding:13px 16px;margin:12px 0;font-size:16px;color:#1A2744;font-weight:500;font-style:normal}
+.mt-box{overflow:auto;margin:12px 0;border-radius:10px}
+.mt{width:100%;border-collapse:collapse;font-size:14.5px;min-width:560px}
+.mt th{background:#E8651A;color:#fff;padding:10px;font-weight:700;text-align:left}
+.mt td{padding:10px;border-bottom:1px solid #F0EAE2;text-align:left;vertical-align:top;line-height:1.6}
+.mt td.rowh{background:#FFF7F1;font-weight:800;color:#C94F0A;white-space:nowrap}
+.reflist{list-style:none;margin:0;padding:0}
+.reflist li{padding:9px 0;border-bottom:1px solid #F0EAE2;font-size:14.5px;line-height:1.6;color:#3A3E45}
+.reflist li::before{content:none}
+.reflist a{color:#2C3F6E;word-break:break-all}
+.reflist .num{display:inline-block;min-width:26px;font-weight:800;color:#C94F0A}
+
+/* MOBILE */
+@media(max-width:760px){
+  .hero h1{font-size:24px}
+  .sh h2{font-size:21px}
+  .g2,.g3{grid-template-columns:1fr}
+  .card h3{font-size:17px}
+  .mb{padding:16px 16px 22px;font-size:16px}
+  .mh{padding:16px 18px}
+  .mh h3{font-size:16.5px}
+  .nav-back span.label{display:none}
+  body{font-size:16px}
+}
+@media(min-width:761px) and (max-width:960px){
+  .g3{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-in">
+    <span class="badge">스스로 학습하기 · 영업 교육자료</span>
+    <h1>만능화법<br><span>니즈환기를 통한 상품제안</span></h1>
+    <p>특약 나열식 영업의 한계를 넘어, 생애주기 니즈환기로 — 행동경제학·초고령사회 통계 기반 손해보험 영업 패러다임 전환</p>
+    <div class="tip">👆 카드를 <b>터치(클릭)</b>하면 항목별 상세 내용이 팝업으로 열립니다</div>
+  </div>
+</div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-back">← <span class="label">메인으로</span></a>
+  <div class="nav-sep"></div>
+  <div class="nav-in">
+    <a class="navlink" href="#s1">① 서론</a>
+    <a class="navlink" href="#s2">② 나열식의 한계</a>
+    <a class="navlink" href="#s3">③ 초고령 의료비</a>
+    <a class="navlink" href="#s4">④ 은퇴 후 이중고</a>
+    <a class="navlink" href="#s5">⑤ 니즈환기 대안</a>
+    <a class="navlink" href="#s6">⑥ 10년납 솔루션</a>
+    <a class="navlink" href="#s7">⑦ 교육 4모듈</a>
+    <a class="navlink" href="#s8">⑧ 결론</a>
+    <a class="navlink" href="#s9">⑨ 참고자료</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- 논리 흐름 -->
+<section id="flow">
+  <div class="sh">
+    <span class="no">LOGIC FLOW</span>
+    <h2>영업 패러다임 전환의 논리 흐름</h2>
+    <p>현행 방식의 문제부터 대안까지 — 각 단계를 터치하면 핵심 설명이 열립니다.</p>
+    <span class="hint">👇 단계를 터치하세요</span>
+  </div>
+  <div class="flow">
+    <div class="step s1" onclick="OM('c2_1')"><span class="sn">1</span><div><b>현행 특약 나열식 영업</b><small>기능 중심(Feature) 판매의 고착화</small></div></div>
+    <div class="arr">▼</div>
+    <div class="step s2" onclick="OM('c2_1')"><span class="sn">2</span><div><b>정보 과부하 · 선택의 역설</b><small>니즈 휘발, 가성비 소비재로 전락</small></div></div>
+    <div class="arr">▼</div>
+    <div class="step s3" onclick="OM('c3_1')"><span class="sn">3</span><div><b>초고령 의료비 폭발</b><small>고령층이 전체 진료비의 44.9% 잠식</small></div></div>
+    <div class="arr">▼</div>
+    <div class="step s4" onclick="OM('c4_1')"><span class="sn">4</span><div><b>은퇴 후 소득절벽 · 건보료 이중고</b><small>장기 납입 → 노후 강제 해지</small></div></div>
+    <div class="arr">▼</div>
+    <div class="step s5" onclick="OM('c6_1')"><span class="sn">5</span><div><b>니즈환기 + 10년납 완납 솔루션</b><small>은퇴 전 완납, 3대 질병·장기요양 집중</small></div></div>
+  </div>
+</section>
+
+<!-- S1 서론 -->
+<section id="s1">
+  <div class="sh">
+    <span class="no">SECTION 01</span>
+    <h2>서론</h2>
+    <p>왜 손해보험 영업은 '특약 나열'에서 '생애주기 니즈환기'로 전환해야 하는가.</p>
+  </div>
+  <div class="g g3">
+    <div class="card" onclick="OM('c1_1')"><span class="plus">+</span><span class="tag tn">배경</span><span class="ico">🏛️</span><h3>손해보험의 구조와 기능 중심 영업</h3><p>모듈형 특약 상품이 낳은 '기능 중심(Feature-focused)' 판매의 고착화</p></div>
+    <div class="card" onclick="OM('c1_2')"><span class="plus">+</span><span class="tag tr">문제</span><span class="ico">⚠️</span><h3>나열식 영업의 구조적 모순</h3><p>정보 과부하 → 니즈 휘발 → 은퇴 후 가장 먼저 해지</p></div>
+    <div class="card" onclick="OM('c1_3')"><span class="plus">+</span><span class="tag to">목적</span><span class="ico">🎯</span><h3>본 연구의 목적</h3><p>행동경제학+의료비 통계 융합, 10년납 단기완납의 전략적 우위 규명</p></div>
+  </div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+<!-- S2 -->
+<section id="s2">
+  <div class="sh">
+    <span class="no">SECTION 02</span>
+    <h2>특약 나열식 영업의 행동경제학적 한계</h2>
+    <p>'정보의 양이 곧 컨설팅의 질'이라는 맹신이 어떻게 상품 가치를 훼손하는가.</p>
+  </div>
+  <div class="g g3">
+    <div class="card" onclick="OM('c2_1')"><span class="plus">+</span><span class="tag tn">인지</span><span class="ico">🧠</span><h3>인지 과부하와 선택의 역설</h3><p>배리 슈워츠의 '선택의 역설' — 데이팅 앱 매칭 사례로 본 가치 훼손</p></div>
+    <div class="card" onclick="OM('c2_2')"><span class="plus">+</span><span class="tag tn">신뢰재</span><span class="ico">🔍</span><h3>신뢰재 시장의 역선택·정보 혼탁</h3><p>정보 비대칭을 해소하기는커녕 '정보의 혼탁함'을 가중</p></div>
+    <div class="card" onclick="OM('c2_3')"><span class="plus">+</span><span class="tag tn">휴리스틱</span><span class="ico">⏱️</span><h3>집중도 하락과 휴리스틱 고착화</h3><p>5분을 못 넘기는 집중도, 얕은 동기 → 재정 위기 시 최우선 해약</p></div>
+  </div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+<!-- S3 -->
+<section id="s3">
+  <div class="sh">
+    <span class="no">SECTION 03</span>
+    <h2>초고령사회 진입과 고령층 의료비 폭발</h2>
+    <p>설계사가 방어해야 할 핵심은 자잘한 수술비 특약이 아니라 파멸적 의료비 리스크입니다.</p>
+  </div>
+  <div class="diagram">
+    <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg">
+      <text x="320" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#1A2744">인구 비중 vs 진료비 점유 — 기형적 쏠림</text>
+      <text x="150" y="58" text-anchor="middle" font-size="12.5" font-weight="700" fill="#2C3F6E">65세 이상 인구 비중</text>
+      <rect x="40" y="68" width="220" height="26" rx="6" fill="#EBEFF8"/>
+      <rect x="40" y="68" width="41.6" height="26" rx="6" fill="#2C3F6E"/>
+      <text x="270" y="86" font-size="13" font-weight="800" fill="#2C3F6E">18.9%</text>
+      <text x="150" y="128" text-anchor="middle" font-size="12.5" font-weight="700" fill="#C94F0A">고령층 건강보험 진료비 점유</text>
+      <rect x="40" y="138" width="220" height="26" rx="6" fill="#FFF3EA"/>
+      <rect x="40" y="138" width="98.8" height="26" rx="6" fill="#E8651A"/>
+      <text x="270" y="156" font-size="13" font-weight="800" fill="#C94F0A">44.9%</text>
+      <line x1="400" y1="60" x2="400" y2="172" stroke="#EEE7DF" stroke-width="1.5"/>
+      <text x="520" y="86" text-anchor="middle" font-size="30" font-weight="900" fill="#D6403A">52조 원</text>
+      <text x="520" y="108" text-anchor="middle" font-size="12" fill="#6B7078">고령층 진료비 (2023, 사상 첫 50조 돌파)</text>
+      <text x="520" y="150" text-anchor="middle" font-size="22" font-weight="900" fill="#E8651A">2.37배</text>
+      <text x="520" y="170" text-anchor="middle" font-size="12" fill="#6B7078">인구 비중 대비 과다 지출</text>
+    </svg>
+    <div class="diagram-cap">인구의 18.9%(65세 이상)가 건강보험 진료비의 44.9%를 소비 — 인구 비중 대비 2.37배 쏠림</div>
+  </div>
+  <div class="g g2">
+    <div class="card" onclick="OM('c3_1')"><span class="plus">+</span><span class="tag tr">통계</span><span class="ico">📊</span><h3>의료비 지출의 구조적 쏠림 (표1 포함)</h3><p>50조 돌파·44.9% 점유·1인당 550만 원·기대수명 1년당 51% 폭증</p></div>
+    <div class="card" onclick="OM('c3_2')"><span class="plus">+</span><span class="tag tr">사각지대</span><span class="ico">🕳️</span><h3>비급여 의료비와 본인부담금의 그림자</h3><p>산정특례·상한제가 못 막는 비급여 — 5년 누적 1,800만 원 증발</p></div>
+  </div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+<!-- S4 -->
+<section id="s4">
+  <div class="sh">
+    <span class="no">SECTION 04</span>
+    <h2>은퇴 후 소득 절벽과 보험료 납입의 구조적 모순</h2>
+    <p>의료비는 폭증하는데 납입 의무는 소득 절벽과 맞물립니다.</p>
+  </div>
+  <div class="diagram">
+    <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg">
+      <text x="320" y="24" text-anchor="middle" font-size="14" font-weight="800" fill="#1A2744">은퇴 진행에 따른 근로소득 비중 급락</text>
+      <line x1="60" y1="150" x2="600" y2="150" stroke="#D9D2C8" stroke-width="1.5"/>
+      <polyline points="120,58 320,90 520,146" fill="none" stroke="#D6403A" stroke-width="3.5"/>
+      <circle cx="120" cy="58" r="6" fill="#2C3F6E"/><circle cx="320" cy="90" r="6" fill="#E5A00D"/><circle cx="520" cy="146" r="7" fill="#D6403A"/>
+      <text x="120" y="46" text-anchor="middle" font-size="15" font-weight="900" fill="#2C3F6E">94.6%</text>
+      <text x="320" y="80" text-anchor="middle" font-size="15" font-weight="900" fill="#E5A00D">74.7%</text>
+      <text x="520" y="136" text-anchor="middle" font-size="15" font-weight="900" fill="#D6403A">14.4%</text>
+      <text x="120" y="170" text-anchor="middle" font-size="12.5" fill="#6B7078">계속 근로</text>
+      <text x="320" y="170" text-anchor="middle" font-size="12.5" fill="#6B7078">부분 은퇴</text>
+      <text x="520" y="170" text-anchor="middle" font-size="12.5" fill="#6B7078">완전 은퇴</text>
+    </svg>
+    <div class="diagram-cap">근로소득 비중 94.6% → 74.7% → 14.4% 수직 추락 — 그럼에도 지역건보료·민간 보험료는 이중 부과</div>
+  </div>
+  <div class="g g2">
+    <div class="card" onclick="OM('c4_1')"><span class="plus">+</span><span class="tag tr">건보료</span><span class="ico">💣</span><h3>근로소득 소멸과 지역건보료 폭탄</h3><p>피부양자 탈락·정률제 6.99%·2072년 보험료율 25% 전망</p></div>
+    <div class="card" onclick="OM('c4_2')"><span class="plus">+</span><span class="tag tr">해지</span><span class="ico">✂️</span><h3>장기 납입이 유발하는 노후 해지 리스크</h3><p>정작 필요한 시점에 보험을 해지하는 최악의 비극</p></div>
+  </div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+<!-- S5 -->
+<section id="s5">
+  <div class="sh">
+    <span class="no">SECTION 05</span>
+    <h2>대안: 생애주기 중심 가치 제안과 니즈 환기의 차용</h2>
+    <p>생명보험이 고도화해 온 '생애주기 · 니즈환기' 화법을 손해보험에 이식합니다.</p>
+  </div>
+  <div class="g g2">
+    <div class="card" onclick="OM('c5_1')"><span class="plus">+</span><span class="tag to">화법</span><span class="ico">💬</span><h3>특약(What)에서 존재 이유(Why)로</h3><p>40개 담보 나열 대신, 단 한 번의 방문으로 클로징하는 니즈환기</p></div>
+    <div class="card" onclick="OM('c5_2')"><span class="plus">+</span><span class="tag to">설계</span><span class="ico">🔄</span><h3>라이프사이클에 맞춘 리스크 재배치</h3><p>60세 이후 은퇴기의 3대 질병·비급여 리스크를 온전히 방어</p></div>
+  </div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+<!-- S6 -->
+<section id="s6">
+  <div class="sh">
+    <span class="no">SECTION 06</span>
+    <h2>10년납 단기완납 중심 3대 질병·장기요양 집중 솔루션</h2>
+    <p>60세 은퇴 이전 완납으로 노후 보험료 부담을 원천 차단하는 '선택과 집중'의 정수.</p>
+  </div>
+  <div class="g g2">
+    <div class="card" onclick="OM('c6_1')"><span class="plus">+</span><span class="tag tg">우위</span><span class="ico">🏆</span><h3>10년납 단기완납의 재무·행동경제학 우위 (표2 포함)</h3><p>은퇴 전 완납 → 민간 보험료 '0원', 유지율 100%, 핵심 위험 집중</p></div>
+    <div class="card" onclick="OM('c6_2')"><span class="plus">+</span><span class="tag tg">방어막</span><span class="ico">🛡️</span><h3>장기요양 4등급 확대·납입면제 방어막</h3><p>4등급 판정 시 납입 면제, 재가·시설급여, 스마트재가시설전환</p></div>
+  </div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+<!-- S7 -->
+<section id="s7">
+  <div class="sh">
+    <span class="no">SECTION 07</span>
+    <h2>설계사 인식 전환을 위한 실전 교육 교안 4모듈</h2>
+    <p>스스로 문제의식을 느끼고 솔루션을 도출하게 만드는 행동경제학-통계 융합 커리큘럼.</p>
+  </div>
+  <div class="g g2">
+    <div class="card" onclick="OM('c7_1')"><span class="plus">+</span><span class="tag tn">모듈 1</span><span class="ico">🧭</span><h3>행동경제학으로 통찰하는 영업의 함정</h3><p>Mindset Shift — 선택의 역설·특약 인플레이션·실습</p></div>
+    <div class="card" onclick="OM('c7_2')"><span class="plus">+</span><span class="tag tn">모듈 2</span><span class="ico">📈</span><h3>팩트체크 기반 노후 의료 리스크와 완납의 당위성</h3><p>통계연보·생애의료비·가처분 소득 붕괴 시나리오</p></div>
+    <div class="card" onclick="OM('c7_3')"><span class="plus">+</span><span class="tag tn">모듈 3</span><span class="ico">🗣️</span><h3>생애주기 중심 니즈 환기 실전 화법 구축</h3><p>What→Why 주도권 전환·5단계 프레임·롤플레잉</p></div>
+    <div class="card" onclick="OM('c7_4')"><span class="plus">+</span><span class="tag tn">모듈 4</span><span class="ico">💼</span><h3>10년납 완납·요양 보장 융합 컨설팅 시뮬레이션</h3><p>저해지형 설계·생애 방어막·ROI 브리핑 기법</p></div>
+  </div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+<!-- S8 -->
+<section id="s8">
+  <div class="sh">
+    <span class="no">SECTION 08</span>
+    <h2>결론</h2>
+    <p>보험 영업의 진정한 가치는 특약 조합 판매가 아니라 명료한 안전망을 세워주는 데 있습니다.</p>
+  </div>
+  <div class="g g1">
+    <div class="card" onclick="OM('c8_1')"><span class="plus">+</span><span class="tag to">종합</span><span class="ico">🧾</span><h3>결론 전문</h3><p>나열식의 폐해 → 초고령 이중고 → 10년납 단기완납 대안 → 교육 교안의 나침반 역할까지 종합</p></div>
+  </div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+<!-- S9 -->
+<section id="s9">
+  <div class="sh">
+    <span class="no">SECTION 09</span>
+    <h2>참고 자료</h2>
+    <p>본문에 인용된 26개 출처 전체 (원문 링크 포함).</p>
+  </div>
+  <div class="g g1">
+    <div class="card" onclick="OM('refs')"><span class="plus">+</span><span class="tag to">출처</span><span class="ico">📚</span><h3>참고 자료 26 전체 보기</h3><p>행동경제학·의료비 통계·건강보험·상품 자료 출처 링크 모음</p></div>
+  </div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+</div>
+
+<footer>
+  본 자료는 손해보험 영업 교육을 위한 <b>교육용 연구 요약 자료</b>입니다.<br>
+  실제 상품 제안·가입 전 반드시 <b>약관 및 상품설명서</b>와 전문가 상담을 확인하시기 바랍니다.<br>
+  © 스스로 학습하기 · 만능화법 니즈환기 가이드
+</footer>
+
+<!-- 모달 -->
+<div id="MB" onclick="if(event.target===this||event.target.id==='MB')CM()">
+  <div class="mbox">
+    <div class="mh">
+      <h3 id="MT"></h3>
+      <button class="mcl" onclick="CM()">✕</button>
+    </div>
+    <div class="mb" id="MC"></div>
+  </div>
+</div>
+
+<script>
+window.MD={
+"c1_1":{t:"서론 ① 손해보험의 구조와 기능 중심 영업",b:'<p>현대 자본주의 사회에서 민간 보험은 국가가 제공하는 공적 사회안전망의 한계를 보완하고, 개인의 생애주기 전반에 걸쳐 예기치 않게 발생하는 재무적 위험을 방어하는 핵심적인 금융 인프라로 기능한다. 그러나 대한민국 보험 산업의 양대 축을 이루는 생명보험과 손해보험은 오랜 기간 상이한 상품 구조와 판매 철학을 바탕으로 발전해 왔으며, 이는 영업 현장에서 설계사들이 고객과 소통하는 방식에 본질적인 차이를 잉태하였다. 특히 손해보험 업계는 실손의료보험을 필두로 하여 수십 가지의 다양한 진단비, 수술비, 입원일당, 후유장해 등의 보장을 하나의 통합된 증권에 모듈(Module) 형태로 담아내는 상품 개발 전략을 채택해 왔다. 이러한 구조적 특성으로 인해 손해보험 설계사들의 주된 판매 기법은 자연스럽게 상품에 내재된 개별 특약(Rider)들의 종류와 가성비를 고객에게 나열하고 설명하는 <b>&lsquo;기능 중심(Feature-focused)&rsquo;의 영업 방식</b>으로 고착화되었다.</p>'},
+"c1_2":{t:"서론 ② 나열식 영업의 구조적 모순",b:'<p>특약을 나열하는 현행 손해보험 영업 방식은 단기적으로 고객에게 &lsquo;적은 비용으로 다수의 보장을 빈틈없이 챙길 수 있다&rsquo;는 심리적 안도감을 부여하고, 맞춤형 컨설팅이라는 환상을 심어주어 신속한 계약 체결을 유도하는 데 일정 부분 기여해 온 것이 사실이다. 그러나 장기적인 관점에서 이러한 접근법은 심각한 구조적 모순과 위험성을 내포하고 있다. 제한된 상담 시간 내에 설계사가 일방적으로 쏟아내는 방대한 양의 특약 정보는 고객의 인지적 한계를 초과하여 <b>정보 과부하(Information Overload)</b>를 유발하며, 보험 가입의 근본적인 목적인 &lsquo;왜 이 보장이 내 삶에 필수적인가&rsquo;에 대한 깊은 고찰, 즉 니즈(Needs)를 휘발시킨다. 결국 고객은 자신이 무엇을 위해 보험에 가입했는지 그 본질적 가치를 망각하게 되며, 이는 은퇴 이후 소득이 급감하고 보험료 납입 부담이 가중되는 시기에 <b>민간 보험을 가장 먼저 해지하게 만드는 결정적인 원인</b>으로 작용한다.</p>'},
+"c1_3":{t:"서론 ③ 본 연구의 목적",b:'<p>본 연구는 손해보험 영업 현장에 만연한 특약 나열식 판매 기법이 지닌 맹점과 한계를 행동경제학적 관점과 초고령사회 진입에 따른 거시적 인구·의료비 통계를 융합하여 심층적으로 규명하고자 한다. 단순히 많은 정보를 제공하는 것이 합리적 의사결정을 돕는다는 전통적 경제학의 오류를 반박하고, 선택의 역설(Paradox of Choice)이 고객의 의사결정에 미치는 파괴적 영향을 분석한다. 나아가 생명보험 업계가 전통적으로 구사해 온 <b>&lsquo;생애주기(Life Cycle)&rsquo; 중심의 철학과 &lsquo;니즈 환기&rsquo; 화법</b>을 손해보험의 3대 질병(암, 뇌혈관, 허혈성 심장질환) 및 다빈도 질병 컨설팅에 이식하는 방안을 모색한다. 특히, 고령층의 의료비 폭증과 소득 단절이라는 이중고를 해결하기 위한 현실적이고도 강력한 대안으로서 <b>60세 이전 &lsquo;단기 완납(예: 10년납)&rsquo; 구조</b>의 전략적 우위성을 입증하고, 현장 설계사들의 근본적인 인식 전환을 이끌어낼 수 있는 체계적인 교육 교안 개발 방향을 제시하는 데 그 목적이 있다.</p>'},
+
+"c2_1":{t:"인지적 과부하와 선택의 역설에 따른 가치 훼손",b:'<p>손해보험 설계사들이 현장에서 가장 빈번하게 범하는 전략적 오류는 &lsquo;정보의 양이 곧 컨설팅의 질을 결정한다&rsquo;는 맹신이다. 이는 소비자에게 더 많은 선택지와 정보를 제공할수록 개인의 효용과 후생이 극대화된다는 전통적 경제학의 전제에 기반하고 있다<sup>1</sup>. 그러나 행동경제학의 수많은 실증 연구들은 소비자가 처리할 수 있는 정보의 양에는 명백한 한계가 존재하며, 이를 초과하는 정보가 주어질 경우 오히려 비합리적인 의사결정을 내리거나 결정 자체를 포기해 버리는 현상이 발생함을 증명하고 있다. 배리 슈워츠(Barry Schwartz)가 주창한 <b>&lsquo;선택의 역설(Paradox of Choice)&rsquo;</b> 이론은 사람들이 불확실한 상황에서 과도한 선택지에 직면했을 때, 만족감이 하락하고 선택에 대한 후회와 자책이 증가하는 심리적 메커니즘을 명확히 설명한다<sup>2</sup>.</p><p>보험 가입 시 소비자는 복잡한 보장 내용, 면책 조건, 감액 기간 등 고도의 전문 지식이 요구되는 선택과 정보에 직면하게 된다. 이때 시장의 객관적인 통계나 과학적 수치를 심도 있게 분석하여 이성적인 판단을 내리기보다는, 자신의 과거 경험이나 어림짐작에 의존하는 휴리스틱(Heuristics)적 결정에 빠지기 쉽다<sup>5</sup>. 설계사가 30개에서 50개에 이르는 각종 수술비, 입원일당, 후유장해 특약을 속사포처럼 쏟아낼 때, 고객의 뇌는 즉각적인 정보 과부하 상태에 빠지게 된다<sup>5</sup>. 고객은 각 특약의 실질적인 필요성이나 발병 확률을 계산하는 대신, 설계사의 권유에 맹목적으로 동의하거나 당장의 &lsquo;월 보험료 총액&rsquo;이라는 단편적인 숫자에만 집착하여 상품을 구매하게 된다.</p><p>특히 정보 과부하 상황은 개별 특약이 지닌 본질적인 가치를 심각하게 훼손하는 부작용을 낳는다. 이는 온라인 데이팅 애플리케이션의 매칭 알고리즘 사례를 통해 쉽게 유추할 수 있다. 한 연구에 따르면, 데이팅 앱 운영자가 사용자들의 매칭 점수를 인위적으로 상향 조정하여 수십 명의 &lsquo;매우 적합한 매칭 상대&rsquo;를 동시에 보여주었을 때, 사용자들은 눈앞의 상대방에게 집중하여 관계를 발전시키기보다는 끝없이 화면을 넘기며 &lsquo;더 나은 선택지가 있을 것&rsquo;이라는 착각에 빠져 결국 누구와도 깊은 관계를 맺지 못하는 결과를 초래했다<sup>2</sup>. 이와 동일한 심리적 역동이 특약 나열식 보험 영업에서도 발생한다. 설계사가 수십 개의 자잘한 특약을 끊임없이 나열할 때, 뇌혈관질환 진단비나 암 수술비와 같이 고객의 생존을 결정지을 수 있는 핵심 특약들의 가치마저 수백 원짜리 부가 서비스 중 하나로 전락해 버린다. 즉, 나열된 특약의 수가 증가할수록 각 보장이 고객의 삶에 미치는 중대성은 희석되며, 이는 보험을 재무적 안전망이 아닌 단순한 가성비 소비재로 전락시키는 결과를 낳는다<sup>1</sup>.</p>'},
+"c2_2":{t:"신뢰재 시장에서의 역선택과 정보 혼탁 현상",b:'<p>보험 상품은 그 자체의 무형적 특성으로 인해 소비자가 가입 전 탐색을 통해서는 물론이고, 상품을 구매하고 상당한 시간이 흐르거나 실제 보험 사고가 발생하기 전까지는 그 품질을 전혀 평가할 수 없는 전형적인 <b>&lsquo;신뢰재(Credence Good)&rsquo;</b>에 해당한다<sup>7</sup>. 신뢰재 시장에서는 상품에 대한 정보를 독점하고 있는 공급자(보험회사 및 설계사)와 정보를 알지 못하는 소비자 간에 극심한 정보 비대칭이 발생하며, 이는 필연적으로 시장의 실패와 역선택(Adverse Selection) 문제를 야기한다<sup>6</sup>.</p><p>현행 손해보험의 특약 나열식 영업은 표면적으로는 이러한 정보 비대칭을 해소하고 고객에게 투명한 정보를 제공하는 것처럼 포장된다. 그러나 실질적으로는 과도하게 복잡하고 전문화된 특약명을 무분별하게 나열함으로써 정보의 비대칭성을 해소하기는커녕 &lsquo;정보의 혼탁함&rsquo;을 가중시킨다<sup>7</sup>. 소비자는 자신이 제공받은 방대한 정보 속에서 무엇이 자신에게 진정으로 유리한 조건인지 선별할 능력을 상실하게 되며, 이는 결과적으로 보험 가입 시 소비자의 올바른 판단을 저해하는 강력한 장애물로 작용한다<sup>5</sup>. 가입 당시 수십 개의 특약 설명을 들었음에도 불구하고 훗날 중증 질환 진단을 받았을 때 보장 공백이 발생한다면, 소비자는 정보 과부하 상태에서 제대로 인지하지 못했던 면책 조항을 뒤늦게 깨닫고 극심한 배신감과 함께 설계사에 대한 신뢰를 철회하게 된다. 결국 나열식 설명은 단기적인 실적 창출에는 유리할지 몰라도, <b>장기 유지율과 고객 생애 가치를 파괴하는 지름길</b>인 셈이다.</p>'},
+"c2_3":{t:"고객 집중도 하락 및 휴리스틱 의사결정 고착화",b:'<p>행동경제학과 인지심리학의 연구들은 현대인이 정보에 짓눌렸을 때 제때 올바른 결정을 내리는 것이 거의 불가능에 가깝다는 점을 지적한다<sup>1</sup>. 인간의 뇌는 복잡한 인지적 자원 소모를 최소화하려는 <b>&lsquo;인지적 구두쇠(Cognitive Miser)&rsquo;</b>의 특성을 지닌다. 설계사가 가입 제안서를 펼치고 특약의 종류, 가입 금액, 보장 기간, 갱신 여부 등을 기계적으로 읊어 내려갈 때, 고객의 집중도는 채 5분을 넘기지 못하고 급격히 하락한다.</p><p>집중도가 하락한 고객은 위험을 회피하거나 가장 안전하고 단순해 보이는 선택을 하려는 경향성을 보인다<sup>3</sup>. 이 과정에서 고객의 머릿속에는 &lsquo;내가 65세에 뇌졸중으로 쓰러졌을 때 이 보험이 내 가족의 생계를 지켜줄 것인가&rsquo;라는 본질적인 질문은 사라지고, &lsquo;이 많은 특약을 다 넣고도 월 5만 원이면 꽤 괜찮은 거래군&rsquo;이라는 식의 휴리스틱 의사결정만이 남게 된다<sup>5</sup>. 보험 가입의 동기가 이처럼 얕고 외부적인 조건(설계사의 화술, 가성비)에만 의존할 경우, 고객의 내부적 동기(질병으로부터 나와 가족을 보호하겠다는 강력한 니즈)는 전혀 형성되지 않는다. 이러한 얕은 동기는 훗날 고객이 재정적 어려움에 처했을 때 가장 먼저 보험을 해약하는 심리적 기저로 작용한다.</p>'},
+
+"c3_1":{t:"의료비 지출의 구조적 쏠림 현상",b:'<p>손해보험 영업이 나열식 설명을 탈피하여 생애주기 중심의 가치 제안으로 나아가야 하는 가장 결정적인 이유는 대한민국을 덮치고 있는 유례없는 인구 구조 변화와 이에 파생되는 극단적인 의료비 집중 현상 때문이다. 설계사들이 집중해야 할 핵심은 자잘한 수술비 특약 몇 개가 아니라, 다가오는 초고령사회에서 고객이 맞이하게 될 <b>파멸적인 수준의 의료비 리스크</b>를 방어하는 것이다.</p><h4>[표1] 전체 인구 대비 고령층 의료비 현황</h4><div class="mt-box"><table class="mt"><tr><th>구분</th><th>전체 인구 현황</th><th>고령층(65세 이상)</th><th>비중 차이 및 증가 추이</th></tr><tr><td class="rowh">인구 비중<br>(2023년)</td><td>100%</td><td>18.9%</td><td>전체 인구의 5분의 1 미만 차지<sup>8</sup></td></tr><tr><td class="rowh">건강보험<br>진료비 총액</td><td>약 116조 원</td><td>약 52조 1,935억 원</td><td>전체 진료비의 44.9%로 인구 비중 대비 2.37배 과다 지출<sup>8</sup></td></tr><tr><td class="rowh">1인당 연평균<br>진료비</td><td>약 229만 원(전체 평균)</td><td>550만 8,000원</td><td>고령층이 전체 평균 대비 2.4배 이상 높음<sup>9</sup></td></tr><tr><td class="rowh">최근 5년간<br>진료비 증가율</td><td>점진적 우상향 추세</td><td>2020년 대비 38.8% 폭증</td><td>2020년 37조 원에서 4년 만에 약 52조 원으로 급증<sup>8</sup></td></tr><tr><td class="rowh">만성질환<br>진료비 비중</td><td>전체 질환의 80% 이상</td><td>고령층 진료비의 절대다수</td><td>순환기 질환, 암, 고혈압 등 만성질환에 90조 원 집중<sup>11</sup></td></tr></table></div><p>최근 발간된 건강보험 통계 데이터는 고령층 의료비 지출의 심각성을 극명하게 보여준다. 2023년 기준 65세 이상 노인의 건강보험 진료비는 역사상 처음으로 50조 원을 돌파하며 전체 건강보험 진료비 116조 원 중 무려 44.9%를 차지했다<sup>8</sup>. 이는 전체 인구 중 65세 이상 노인이 차지하는 비중이 18.9%에 불과하다는 사실을 감안할 때 기형적일 만큼 집중된 수치이다<sup>8</sup>.</p><p>노인 1인당 연평균 진료비 역시 550만 8천 원으로, 전체 인구 1인당 연평균 진료비보다 2.4배나 많았다<sup>9</sup>. 더욱 충격적인 사실은 이러한 진료비 폭증의 속도이다. 2020년 37조 6,135억 원이었던 노인 진료비는 불과 4~5년 사이에 38.8%가 증가하여 52조 원을 훌쩍 넘겼으며, 전체 진료비에서 차지하는 비중 또한 2020년 43.1%에서 2023년 44.9%로 지속적으로 몸집을 불리고 있다<sup>8</sup>. 한 연구 기관의 분석에 따르면 노인들의 기대 수명이 1년 늘어날 때마다 진료비는 무려 51%씩 폭증하는 것으로 나타나, 장수가 곧 재앙이 될 수 있는 경제적 위험성을 경고하고 있다<sup>12</sup>. 특히 노인성 질환의 대표격인 만성질환에 투입되는 진료비가 지난해 90조 원을 넘어서며 전체 진료비의 80% 이상을 차지했고, 암과 순환기 질환의 비중이 압도적으로 높았다<sup>11</sup>.</p><p>성별 및 연령 구간별 생애의료비 지출 추이를 세밀하게 살펴보면 생애주기별 위험의 심각성이 더욱 뚜렷해진다. 여성의 경우, 태어나서 66세에 이르기까지 지출하는 의료비가 평생 지출할 생애의료비의 50%를 차지하며, 나머지 50%는 66세 이후 노년기에 집중적으로 소진되는 것으로 추정된다<sup>13</sup>. 또한 70대 초반(70~74세) 구간에 진입하면서부터는 비교적 경증 질환을 다루는 외래비의 비중을 입원비가 역전하며 앞지르기 시작한다<sup>13</sup>. 70대의 연간 외래 방문 횟수는 50대보다 두 배 가까이 높으며, 방문 횟수의 누적은 필연적으로 법정 본인부담금의 기하급수적 상승으로 이어진다<sup>14</sup>.</p>'},
+"c3_2":{t:"비급여 의료비와 본인부담금의 그림자",b:'<p>국가가 운영하는 국민건강보험은 중증질환 산정특례 제도나 본인부담상한제 등을 통해 고액의 의료비 발생 시 가계 파탄을 막아주는 안전판 역할을 수행한다. 예를 들어 암, 뇌혈관질환, 심장질환 등에 걸려 산정특례로 등록될 경우 일반적인 입원(20%) 및 외래(30~60%) 본인부담률이 5%로 대폭 낮아지며, 소득 분위에 따라 연간 87만 원에서 780만 원까지만 부담하면 초과분을 돌려받을 수 있다<sup>14</sup>.</p><p>그러나 이러한 공적 안전망은 철저하게 <b>&lsquo;급여(건강보험 적용 항목)&rsquo; 치료에만 한정</b>된다는 치명적인 사각지대를 지니고 있다. 건강보험이 적용되지 않아 전액 환자 본인이 부담해야 하는 비급여 항목(예: MRI, 초음파, 선택진료, 표적항암치료 등)은 본인부담상한제나 산정특례의 혜택을 전혀 받을 수 없다<sup>14</sup>. 70대 이상 시니어 계층의 전체 의료비 지출 중 비급여가 차지하는 비중은 약 30% 안팎으로 추산되는데, 이로 인해 한 달에 30만 원씩 비급여 지출이 발생한다고 가정할 경우 1년이면 360만 원, 5년이면 약 1,800만 원이라는 막대한 현금이 순수하게 증발하게 된다<sup>14</sup>. 은퇴로 인해 고정 소득이 끊긴 시니어에게 단순 수술이나 골절 입원으로 촉발되는 수백만 원 단위의 비급여 청구서는 그 자체로 가계 경제의 기반을 무너뜨리는 직격탄이다.</p>'},
+
+"c4_1":{t:"근로소득의 소멸과 지역가입자 전환에 따른 건보료 폭탄",b:'<p>나열식 특약 설명에 현혹되어 저렴해 보이는 갱신형 상품이나 20년, 30년 납입의 장기 납입 상품에 가입한 고객은 은퇴 시기가 도래하면서 전혀 예상치 못한 치명적인 재무적 함정에 빠지게 된다. 고령화로 인해 의료비는 폭증하지만, 이를 방어하기 위해 가입한 보험의 보험료 납입 의무가 소득 절벽 시기와 맞물리며 거대한 딜레마를 형성하기 때문이다.</p><p>생애주기가 후반부로 접어들어 은퇴상의 지위가 변화함에 따라 개인의 소득 구조는 극적인 변곡점을 맞이한다. 한 노동 연구에 따르면 계속 근로 상태에서 부분 은퇴를 거쳐 완전 은퇴로 진입할 경우, 전체 소득 중 근로소득이 차지하는 비중은 <b>94.6%에서 74.7%를 거쳐 종국에는 14.4%까지 수직 추락</b>하는 것으로 나타났다<sup>15</sup>. 은퇴 후 실제 가처분 소득은 월 129만 원에서 203만 원 수준으로 급감하게 된다<sup>16</sup>.</p><p>이러한 극심한 소득의 축소에도 불구하고, 은퇴자들의 목을 조르는 것은 역설적이게도 국민건강보험료다. 직장 생활을 하던 은퇴자는 퇴직과 동시에 직장가입자 자격을 상실하게 되며, 배우자나 자녀의 직장 건강보험에 피부양자로 등재되지 못할 경우 즉시 지역가입자로 전환된다<sup>17</sup>. 문제는 피부양자 자격 요건이 갈수록 가혹해지고 있다는 점이다. 재산세 과세표준금액이 5.4억 원 이하이더라도 공적연금소득이나 이자, 배당소득 등을 합산한 연간 소득이 2,000만 원을 단 1원이라도 초과하게 되면 즉각 피부양자 자격을 상실하게 된다<sup>17</sup>.</p><p>지역가입자로 전환될 경우 소득은 물론 보유하고 있는 부동산 등의 재산과 자동차에까지 건강보험료가 부과된다. 특히 2022년 9월 부과 체계 개편 이후 소득 부분에 대해서는 직장인과 동일하게 정률제(약 6.99%)가 적용되어 은퇴자들의 부담을 가중시키고 있다<sup>18</sup>. 그 결과 월 소득이 100만 원대에 불과한 고령 은퇴자가 매달 12만 7천 원이 넘는 고액의 지역 건강보험료를 스스로 납부해야 하는 구조적 모순이 발생하고 있으며, 이는 심각한 사회적 문제로 대두되고 있다<sup>16</sup>.</p><p>이러한 공적 보험료의 부담 수위는 인구 구조 변화와 맞물려 미래 세대에게 더욱 가혹하게 다가올 전망이다. 서울대 산학협력단의 추계에 따르면, 가장 실현 가능한 시나리오 기준으로 2072년 건강보험 보험료율은 무려 25.09%까지 치솟을 수 있으며, 노인장기요양보험 보험료율 또한 현재의 0.91%에서 13.97%로 15배가량 폭등할 것으로 예측되었다<sup>19</sup>. 미국 메디케어(Medicare)의 경우에도 소득 기준을 초과하는 은퇴자에게 파트 B와 파트 D 보험료에 추가 할증(IRMAA)을 부과하는 등<sup>20</sup>, 은퇴 후 고소득 혹은 중산층 노인의 공적 의료비 부담을 늘리는 것은 전 세계적인 거시 경제 트렌드이다.</p>'},
+"c4_2":{t:"장기 납입 구조가 유발하는 노후 민간 보험 해지 리스크",b:'<p>국가가 강제 징수하는 공적 건강보험료와 급감한 근로소득 사이에서 은퇴자들의 현금 흐름은 극도로 경색된다. 이러한 재무적 질식 상태에서 매월 납부해야 하는 민간 손해보험의 10만 원, 20만 원짜리 장기 납입 보험료는 가계를 파탄으로 몰고 가는 <b>트리거(Trigger)</b>가 된다.</p><p>40대 중반에 20년납, 30년납으로 손해보험에 가입한 고객은 은퇴 시점인 65세 이후에도 상당 기간 납입 의무를 져야 한다. 만약 특약 나열식 영업에 이끌려 초기 보험료가 극단적으로 저렴한 갱신형(예: 10년, 20년 갱신) 특약을 다수 포함시켰다면, 위험률이 급증하는 60대와 70대 갱신 시점에 보험료가 기하급수적으로 폭등하여 사실상 납입이 불가능한 상태에 이른다.</p><p>과거 설계사가 &ldquo;이 특약도 좋고 저 특약도 훌륭합니다&rdquo;라며 정보 과부하를 유발하여 체결한 계약은, 고객의 마음속에 강렬한 &lsquo;유지 니즈&rsquo;를 심어주지 못했다. 고객은 질병 보장이 왜 내 인생에 생명줄과 같은지 깊이 내면화하지 못했으므로, 매월 날아오는 고액의 지역건보료 고지서 앞에서 <b>가장 먼저 민간 손해보험을 해지하는 최악의 선택</b>을 내리게 된다<sup>16</sup>. 60세 이후 계속 보험료를 납부할 여력이 없어 임의계속가입이나 자진 탈퇴를 고민해야 하는 고령층의 현실은 냉혹하다<sup>21</sup>. 정작 3대 질병과 만성질환의 발병 확률이 극대화되어 보험의 혜택이 가장 절실히 요구되는 바로 그 시점에, 보험료 장기 납입의 덫에 걸려 보험을 해지하고 거대한 비급여 의료비를 맨몸으로 감당해야 하는 비극이 발생하는 것이다.</p>'},
+
+"c5_1":{t:"특약(What)에서 존재 이유(Why)로의 화법 전환",b:'<p>현행 손해보험 영업 방식이 지닌 정보 과부하 문제와 60세 이후 장기 납입의 딜레마를 극복하기 위해서는 근본적인 패러다임의 전환이 요구된다. 이에 대한 해답은 오랜 기간 무형의 종신보험 가치를 판매하기 위해 고도화되어 온 생명보험 업계의 <b>&lsquo;생애주기(Life Cycle)&rsquo; 중심 컨설팅과 &lsquo;니즈 환기(Needs Evocation)&rsquo; 화법</b>을 손해보험 영업에 이식하는 데서 찾을 수 있다.</p><p>생명보험의 전통적인 교육 교안과 영업 화법은 &lsquo;특약의 세부 스펙(What)&rsquo;이나 &lsquo;가격(How much)&rsquo;에 집중하기보다는, &lsquo;가족에 대한 사랑&rsquo;, &lsquo;가장의 부재 시 남겨진 자녀의 생존&rsquo;, &lsquo;은퇴 후 존엄성 유지&rsquo;와 같은 본원적이고 감성적인 목적, 즉 &lsquo;왜 가입해야 하는가(Why)&rsquo;를 일깨우는 데 철저히 맞춰져 있다<sup>22</sup>. 반면 손해보험은 타사 대비 수술비 한도가 1천만 원 더 높다는 점이나 보장 범위의 넓이를 기계적으로 비교우위 삼는 데 치중한다.</p><p>나열식 설명의 위험성을 제거하기 위해 설계사는 화법의 축을 이동시켜야 한다. 고객에게 40개의 담보를 속사포로 읊어주는 대신, 단 한 번의 방문으로 클로징에 이르는 강력한 니즈 환기 화법을 구사해야 한다<sup>22</sup>. 예컨대, 뇌혈관질환 진단비의 약관상 면책 기간을 설명하기 전에,</p><div class="quote">&ldquo;고객님, 65세 이후 근로소득이 완전히 단절된 상태에서 뇌졸중이 발병한다면, 매월 쏟아지는 30만 원 이상의 비급여 치료비와 수백만 원에 달하는 간병 비용을 어떻게 감당하시겠습니까?&rdquo;<sup>14</sup></div><p>라는 강렬한 질문을 던짐으로써 상황을 통제해야 한다. 이러한 니즈 환기 기반의 컨설팅 화법은 고객의 머릿속에 맴도는 수많은 선택지의 소음을 제거하고<sup>1</sup>, 오직 &lsquo;생애주기 후반부의 파산 방어&rsquo;라는 하나의 강력한 메시지에 집중하게 만들어 정보 과부하를 원천적으로 차단한다<sup>5</sup>.</p>'},
+"c5_2":{t:"라이프사이클(Life Cycle)에 맞춘 리스크 재배치",b:'<p>생애주기 관점에서 개인의 재무적 취약성은 60세 전후의 은퇴 시점을 기준으로 급격히 갈라진다. 40~50대의 경제 활동기에는 비교적 풍부한 근로소득이 발생하므로<sup>15</sup>, 질병이 발병하더라도 보유한 현금 흐름을 통해 어느 정도 의료비 충당이 가능하다. 그러나 60세 이후에는 근로소득이 사라진 상태에서 고혈압, 순환기 질환, 암 등 다빈도 만성질환 진료비가 폭발하는 <b>이중 취약기</b>가 도래한다<sup>11</sup>.</p><p>따라서 설계사는 질병의 단순 발병 확률뿐만 아니라, 그 질병이 발병했을 때 고객이 생애주기상 어느 지점(현금 흐름 창출이 가능한가 불가능한가)에 위치하고 있을지를 복합적으로 예측하여 설계해야 한다. 생명보험이 조기 사망이라는 리스크를 가장의 경제 활동기에 집중하여 대비하듯, 손해보험은 생존 시 발생하는 3대 질병과 비급여 의료비 리스크를 <b>60세 이후 은퇴기에 온전히 보호</b>할 수 있도록 설계의 방향성을 재조정해야 한다.</p>'},
+
+"c6_1":{t:"10년납 단기 완납 구조의 재무적·행동경제학적 우위",b:'<p>고객의 생애주기 기반 니즈를 환기시켰다면, 설계사가 제시해야 할 최적의 물리적 수단은 60세 은퇴 이전까지 모든 보험료 납입을 종료(완납)하는 데 초점을 맞춘 단기 납입(예: 10년납) 중심의 3대 질병 및 장기요양 결합 보험이다. 이는 수십 개의 특약을 얇고 길게 가져가는 기존 방식의 대척점에 있는 <b>&lsquo;선택과 집중&rsquo;의 정수</b>이다.</p><p>기존 20년납, 30년납 상품은 월 보험료가 저렴해 보여 가입 당시의 진입 장벽을 낮추는 미끼 역할을 하지만, 장기적으로는 고객의 미래 소득을 담보로 잡는 족쇄와 같다. 반면, 40세에 가입하여 50세에 납입을 끝마치거나 50세에 가입하여 60세 이전에 납입을 완료하는 10년납 단기 완납 구조는 다음과 같은 강력한 비교 우위를 지닌다.</p><h4>[표2] 기존 장기 납입 vs 단기 완납(10년납) 비교</h4><div class="mt-box"><table class="mt"><tr><th>관점</th><th>기존 장기 납입(20년/30년납) + 특약 나열형</th><th>단기 완납(10년납) + 3대 질병 집중형</th></tr><tr><td class="rowh">재무적 위험 방어<br>(은퇴 후)</td><td>소득 절벽 및 지역건보료 부과 시기에 민간 보험료 이중 부담 발생<sup>16</sup></td><td>은퇴 전 민간 보험료 지출 &lsquo;0원&rsquo; 달성, 가처분 소득 확보 및 유지율 100% 보장</td></tr><tr><td class="rowh">행동경제학적 의사결정<br>(인지 과정)</td><td>수많은 특약으로 인한 정보 과부하 및 선택 마비 현상 발생<sup>1</sup></td><td>짧은 납기로 인해 보험료가 상승하므로, 잡다한 특약을 배제하고 핵심 위험(암, 뇌, 심장)에만 집중하게 유도</td></tr><tr><td class="rowh">해약환급금 및<br>장기 유지 유인</td><td>납입 기간이 길어 중도 해지 리스크가 상존하며, 해지 시 막대한 손해 발생</td><td>저해약환급금형 구조를 통해 월 납입 부담을 다소 완화하고, 10년 이상 유지 시 유지보너스 적립 혜택 제공<sup>23</sup></td></tr><tr><td class="rowh">가치 인식 및<br>심리적 요인</td><td>상품 가치 하락 및 맹목적 결정<sup>5</sup></td><td>단기 목표(10년 완납) 부여로 성취감 자극 및 보험의 본질적 방어막 기능 내면화</td></tr></table></div><p>10년납 플랜은 구조적으로 월 보험료가 장기 납기에 비해 높을 수밖에 없다. 그러나 이 높은 월 보험료는 오히려 훌륭한 필터링 장치로 작동한다. 설계사로 하여금 발병 확률도 낮고 보상 금액도 적은 자잘한 수술비 담보 수십 개를 억지로 끼워 넣지 못하게 만들기 때문이다. 오직 치명적인 타격을 주는 3대 질병과 노인장기요양 관련 담보에만 재원을 집중하게 하므로, 행동경제학에서 경계하는 인지적 과부하를 원천적으로 예방하고 상품의 가치를 극대화한다<sup>1</sup>.</p><p>또한 보험료 부담을 낮추기 위해 보험 납입 기간 중 해약 시 환급금이 적거나 없는 &lsquo;해약환급금 일부지급형(저해지형)&rsquo; 구조를 적극 활용한다. 10년만 무사히 납입을 마치면(완납), 가입 후 10년 시점부터 20년 시점까지 최장 11년간 매년 유지보너스를 적립해주어 장기 보장의 혜택을 대폭 상향시키는 재무적 이점을 누릴 수 있다<sup>23</sup>. 일부 종신 결합 상품의 경우, 60세 이후부터 매년 가입 금액의 5%씩 정액 체감 또는 체증하는 연금 형태의 혜택을 제공하여 생존 시 생활 자금으로 활용할 수 있게 한다<sup>24</sup>.</p>'},
+"c6_2":{t:"장기요양 4등급 확대 및 납입 면제 기능을 통한 완벽한 노후 방어막 구축",b:'<p>고령화 추세와 함께 다빈도 질병만큼이나 고객의 생애주기를 위협하는 것은 치매 및 노인성 질환으로 인한 <b>&lsquo;돌봄(Care)&rsquo; 비용</b>의 발생이다. 최근 생명 및 손해보험 업계에서 출시되는 10년납 중심의 건강·요양 보장 보험들은 생존 시 건강 리스크를 전방위적으로 보장하기 위해 파격적인 기능을 탑재하고 있다.</p><p>가장 주목할 만한 장점은 보험료 납입 면제 대상의 획기적인 확대이다. 과거의 장기요양보장 상품들은 주로 중증 상태인 장기요양 1~3등급 판정 시에만 보험료 납입을 면제해 주었다. 그러나 최근의 상품들은 일상적인 외출, 목욕, 청소 등에서 약간의 도움이 필요한 경증 상태인 <b>&lsquo;4등급&rsquo; 판정 시에도 잔여 보험료 납입을 전면 면제</b>해 주는 혜택을 제공한다<sup>25</sup>. 40세에 3,000만 원 주계약, 10년납 기준으로 남성 약 27만 9천 원 수준의 보험료를 납입하다가<sup>25</sup>, 예기치 못한 질환으로 요양 4등급 판정을 받으면 납입이 즉시 중단되고 보장은 평생 이어지는 것이다.</p><p>만일 10년 동안 무사히 납입을 완료한 후, 60대나 70대의 고령 시점에 장기요양상태(1~5등급)가 발생한다면 어떻게 될까? 이 경우 이미 납입이 끝났기 때문에 납입 면제 혜택은 받을 수 없지만, 대신 &lsquo;재가 및 시설급여&rsquo;를 추가로 보장하여 평균 수명 연장에 따른 고령층의 의료 및 요양비 부담을 직접적으로 지원한다<sup>26</sup>. 또한 미래의 사망 보험금을 일부 줄여 현재 필요한 실질적 요양비와 비급여 지출 재원으로 전환할 수 있는 &lsquo;스마트재가시설전환 기능&rsquo;을 통해 생애주기 후반의 재정적 유연성을 극대화한다<sup>26</sup>.</p><div class="ok">결론적으로 단기 완납과 장기요양 납입 면제, 그리고 3대 질병 보장이 결합된 이 플랜은 <b>&ldquo;생존 기간 동안에는 비급여 의료비와 간병비를 커버하고, 만약 납입 기간 중 요양 등급을 받으면 보험료를 면제받으며, 은퇴 후에는 보험료 0원의 상태로 평생 의료 안전망을 누린다&rdquo;</b>는 거부할 수 없는 라이프사이클 솔루션을 완성한다.</div>'},
+
+"c7_1":{t:"모듈 1: 행동경제학으로 통찰하는 영업의 함정 (Mindset Shift)",b:'<p>현장의 손해보험 설계사들이 관성에 젖은 특약 나열식 판매 기법에서 탈피하여 생애주기 기반의 니즈 환기 및 10년납 중심 고부가가치 컨설팅으로 나아가도록 유도하기 위해서는 강도 높은 체계적 교육이 필수적이다. 전통적인 상품 스펙 위주의 전달 교육을 지양하고, 설계사 스스로 문제의식을 느끼고 솔루션을 도출하게 만드는 4단계 행동경제학-통계 융합 교육 교안 연구 방향을 제안한다.</p><h4>교육 목표</h4><p>설계사 스스로 자신이 현재 구사하고 있는 다특약 나열식 영업 방식이 오히려 고객의 거절 방어기제를 자극하고, 상품 가치를 훼손시키는 근본 원인임을 행동경제학적 렌즈를 통해 자각한다.</p><h4>핵심 교육 내용</h4><ul><li>배리 슈워츠의 &lsquo;선택의 역설(Paradox of Choice)&rsquo; 이론을 학습하며, 불확실한 상황에서 정보 과부하가 초래하는 비합리적 선택과 결정 마비(Decision Paralysis) 현상을 이해한다<sup>2</sup>.</li><li>데이트 애플리케이션의 매칭 인플레이션 사례(모든 사람의 점수를 10% 올리자 오히려 좋은 데이트가 줄어들고 정착률이 하락한 현상)를 보험의 &lsquo;특약 인플레이션&rsquo;에 직접 대입하여 토론한다. 고객에게 50개의 특약을 보여주면 고객은 가장 중요한 1개의 암 진단비 특약마저 소홀히 여기고 가성비만을 따지게 된다는 심리적 역동을 규명한다<sup>1</sup>.</li><li>신뢰재 시장에서 고객이 취하는 휴리스틱 방어 체계와 맹목적 거절 메커니즘을 분석한다<sup>5</sup>.</li></ul><h4>실습 (Action Planning)</h4><p>설계사 본인이 최근 가입 거절이나 보류를 경험한 제안서를 지참하여, 해당 제안서에 담긴 특약의 개수와 정보량을 객관적으로 산출해 본다. 만약 본인이 고객의 입장이라면 10분 내에 이 복잡한 정보(면책 기간, 감액 조건 등)를 완벽히 이해하고 지갑을 열 수 있을지 역지사지로 평가하는 시간을 갖는다.</p>'},
+"c7_2":{t:"모듈 2: 팩트체크 기반 노후 의료 리스크와 완납의 당위성 도출",b:'<h4>교육 목표</h4><p>단순한 공포 조장 마케팅에서 벗어나, 철저한 국가 통계와 지표를 근거로 &lsquo;은퇴 후 의료비 폭등과 공적 보험료 부과의 이중고&rsquo;라는 거시적 팩트를 장착하여 논리적 설득력을 배양한다.</p><h4>핵심 교육 내용</h4><ul><li>국민건강보험 통계연보를 분석하여 고령층 진료비 50조 원 돌파, 전체 진료비의 44.9% 점유 등 의료비 쏠림 현상의 실체를 학습한다<sup>8</sup>.</li><li>생애의료비 지출의 구조적 특성(여성 66세 이후 50% 집중 지출, 70대 이후 입원비 비중 급증 등)을 이해하고, 급여 본인부담상한제의 맹점인 &lsquo;비급여 항목(약 30% 차지, 5년 누적 1,800만 원 이상 지출 위험)&rsquo;의 파괴력을 수치화하여 교육한다<sup>13</sup>.</li><li>노동연구원의 통계를 바탕으로 은퇴 후 근로소득 비중 14.4% 급락 실태와<sup>15</sup>, 지역건보료 정률제(약 6.99%) 부과, 피부양자 자격 탈락(재산 5.4억 및 연소득 2,000만 원 기준)이 맞물려 빚어내는 가처분 소득의 붕괴 시나리오를 심층 스터디한다<sup>17</sup>.</li><li>장기 납입(20년납 이상)이 왜 은퇴 고령자의 보험 강제 해지를 유발하는 가장 큰 리스크인지 인과관계를 도출한다<sup>16</sup>.</li></ul>'},
+"c7_3":{t:"모듈 3: 생애주기 중심의 니즈 환기 실전 화법 구축",b:'<h4>교육 목표</h4><p>생명보험의 가치 전달(Value Delivery) 방식을 적극 수용하여, &lsquo;무엇을(What)&rsquo; 팔 것인가에서 &lsquo;왜(Why)&rsquo; 가입해야 하는가로 대화의 주도권을 가져오는 감성·논리 융합 화법 스크립트를 체화한다.</p><h4>핵심 교육 내용</h4><ul><li>수십 개의 특약 설명을 단호히 생략하고, 즉시 상황 통제로 진입하는 화법 전개 기술 학습.</li><li>단 한 번의 방문으로 클로징에 이르는 5단계 니즈 환기 화법 프레임워크와 맞춤형 명언/속담을 활용한 동기부여 기법 습득<sup>22</sup>.</li></ul><h4>핵심 화법 예시</h4><div class="quote">&ldquo;고객님, 지금 보시는 이 수십 개의 보장 내용이 당장 중요한 것이 아닙니다. 핵심은 65세 은퇴 후 소득이 100만 원대로 떨어지고 지역건보료 고지서가 매달 날아올 때, 뇌경색으로 쓰러지면 수백만 원의 비급여 병원비와 이 민간 보험의 납입 보험료를 동시에 감당하실 수 있느냐는 점입니다.&rdquo;<sup>14</sup></div><h4>실습 (Action Planning)</h4><p>설계사 2인 1조를 구성하여 강도 높은 롤플레잉(Role-playing)을 실시한다. 한 명은 기존의 나열식 영업을, 다른 한 명은 통계 기반의 니즈 환기 및 생애주기 중심 컨설팅을 시연한 후 상호 비교 및 피드백을 통해 화법의 파괴력을 몸소 체험한다<sup>22</sup>.</p>'},
+"c7_4":{t:"모듈 4: 10년납 완납 플랜과 요양 보장 융합 컨설팅 시뮬레이션",b:'<h4>교육 목표</h4><p>3대 질병 집중 보장과 장기요양 납입 면제 기능이 결합된 단기 완납(10년납) 플랜을 활용하여, 고객의 라이프사이클에 맞춘 고단가 계약 클로징 능력을 배양한다.</p><h4>핵심 교육 내용</h4><ul><li>해약환급금 일부지급형(저해지형) 상품 구조를 활용하여 10년납 월 보험료 산출 구조의 효율성을 극대화하는 설계 기법 학습<sup>23</sup>.</li><li>장기요양 4등급까지 확장된 납입 면제 기능과 60세 이후 요양 발생 시 재가·시설 급여 추가 보장 메커니즘을 결합한 생애 방어막 시나리오 설계<sup>25</sup>.</li><li>고객이 40~50대 경제 활동기에 약간의 부담을 감수하고 10년납으로 완납을 마쳤을 때, 60세 이후 공적 건보료 부담과 별개로 민간 보험료 지출이 &lsquo;0원&rsquo;이 되어 얻게 되는 평생의 재무적 잉여 가치(ROI)를 수치로 환산하여 고객에게 브리핑하는 기법 학습.</li></ul>'},
+
+"c8_1":{t:"결론",b:'<p>손해보험 업계의 뿌리 깊은 특약 나열식 영업 관행은 설계사와 고객 모두에게 단기적인 만족감을 줄 수는 있으나, 행동경제학적 분석에 따르면 이는 극심한 정보 과부하와 선택의 역설을 유발하여 고객의 올바른 의사결정을 심각하게 저해한다<sup>1</sup>. 방대한 특약의 나열은 보험 상품이 지닌 본질적인 위험 방어 가치를 하락시키고, 고객을 가격과 가성비에만 집착하는 얕은 휴리스틱 판단으로 내몰아 결국 장기적인 신뢰재 시장을 파괴하는 요인으로 작용한다<sup>5</sup>.</p><p>더욱이 대한민국이 직면한 초고령사회 진입이라는 거대한 메가트렌드 속에서, 고령층의 진료비는 전체 건강보험 지출의 44.9%를 잠식하며 50조 원을 넘어섰고 폭발적인 만성질환 및 비급여 의료비 지출이 70대 이상 시니어의 생존을 위협하고 있다<sup>8</sup>. 이와 반대로 은퇴 후 근로소득은 14.4% 비중으로 급락하며, 지역건보료 전환 등에 따른 공적 납입 부담은 가중되고 있다<sup>15</sup>. 이러한 이중고 속에서 고객에게 장기 납입(20/30년납) 상품을 권유하는 행위는 60대 이후 필수불가결한 보험을 강제로 해지하게 만드는 재무적 시한폭탄을 심어놓는 것과 다름없다<sup>16</sup>.</p><p>따라서 손해보험 설계사들은 부수적인 특약의 종류와 한도를 늘어놓는 소모적인 기능 중심 컨설팅에서 벗어나, 생명보험 고유의 생애주기 철학과 &lsquo;왜 가입해야 하는가(Why)&rsquo;에 집중하는 니즈 환기 영업으로 패러다임을 시급히 전환해야 한다<sup>22</sup>. 그 궁극적이고 현실적인 솔루션으로서, 경제 활동이 왕성한 40~50대 시기에 납입을 종료하여 은퇴 후 보험료 부담을 원천 차단하고 3대 질병과 장기요양이라는 핵심 리스크에만 재원을 집중하는 &lsquo;10년납 중심 단기 완납 플랜&rsquo;을 대안으로 제시한다<sup>23</sup>.</p><p>본 연구가 제안한 행동경제학과 객관적 지표 융합 4단계 교육 교안은 현장 설계사들이 구시대적 영업 방식의 모순을 직시하고, 고객의 라이프사이클에 최적화된 고도의 리스크 매니저로 진화하는 데 핵심적인 나침반 역할을 수행할 것이다. <b>보험 영업의 진정한 가치는 복잡다단한 특약의 조합을 판매하는 기술에 있는 것이 아니라, 삶의 가장 취약한 순간에 인간의 존엄과 가계 경제를 수호하는 단단하고 명료한 안전망을 고객의 가슴속에 세워주는 데 있음을 명심해야 한다.</b></p>'},
+
+"refs":{t:"참고 자료 (26)",b:'<p>본 자료 전문에 인용된 모든 출처입니다.</p><ul class="reflist"><li><span class="num">1</span>행동경제학 | 미셸 배들리 - 교보문고<br><a href="https://product.kyobobook.co.kr/detail/S000001938243">링크</a></li><li><span class="num">2</span>오늘 &ldquo;선택의 역설&rdquo;에 대해 알게 됐어. … : r/todayilearned - Reddit<br><a href="https://www.reddit.com/r/todayilearned/comments/11yyumj/til_of_the_paradox_of_choice_research_indicates/?tl=ko">링크</a></li><li><span class="num">3</span>불확실성과 위험 경제학 … | Flashcards World<br><a href="https://flashcards.world/flashcards/sets/4e20256c-3aaf-464a-8913-0bfbf76a3acd">링크</a></li><li><span class="num">4</span>소비자 선택 소비자 선택의 이해: 의사결정에 영향을 미치는 요소 - FasterCapital<br><a href="https://fastercapital.com/ko/content/%EC%86%8C%EB%B9%84%EC%9E%90-%EC%84%A0%ED%83%9D-%EC%86%8C%EB%B9%84%EC%9E%90-%EC%84%A0%ED%83%9D%EC%9D%98-%EC%9D%B4%ED%95%B4--%EC%9D%98%EC%82%AC%EA%B2%B0%EC%A0%95%EC%97%90-%EC%98%81%ED%96%A5%EC%9D%84-%EB%AF%B8%EC%B9%98%EB%8A%94-%EC%9A%94%EC%86%8C.html">링크</a></li><li><span class="num">5</span>행동경제학의 소비자정책 적용사례 및 시사점 - 한국소비자원<br><a href="https://www.kca.go.kr/home/board/download.do?menukey=4083&fno=10013194&bid=00000018&did=1001842768">링크</a></li><li><span class="num">6</span>[전자책] 역선택의 이해 … | 씨익북스 편집부 2팀 - 예스24<br><a href="https://www.yes24.com/product/goods/145650244">링크</a></li><li><span class="num">7</span>Ⅲ. 사회적 신뢰의 중요성 - 보험연구원<br><a href="https://www.kiri.or.kr/pdf/%EC%97%B0%EA%B5%AC%EC%9E%90%EB%A3%8C/%EC%97%B0%EA%B5%AC%EB%B3%B4%EA%B3%A0%EC%84%9C/nre2020-10-3.pdf">링크</a></li><li><span class="num">8</span>&ldquo;나이 들어봐, 안 아픈데가 없어&rdquo;…노인 건보 진료비 50조 돌파 - 매일경제<br><a href="https://www.mk.co.kr/news/society/11479414">링크</a></li><li><span class="num">9</span>노인 건강보험 진료비, 5년간 39%↑ / KBS 2025.11.28. - YouTube<br><a href="https://www.youtube.com/watch?v=NUKbDRxtrPg">링크</a></li><li><span class="num">10</span>65세 이상 노인 병원비 50조원 돌파…전체 진료비의 거의 &lsquo;절반&rsquo; - 연합뉴스<br><a href="https://www.yna.co.kr/view/AKR20250805131400530">링크</a></li><li><span class="num">11</span>[100세 건강] 국민 10명 중 8명은 만성질환 사망...노인이 조심해야할 5대 질환은 - 뉴스퀘스트<br><a href="https://www.newsquest.co.kr/news/articleView.html?idxno=259458">링크</a></li><li><span class="num">12</span>&ldquo;평생 의료비 2억 5천만 원&rdquo;…78살에 가장 많이 쓴다 / KBS 2026.01.07. - YouTube<br><a href="https://www.youtube.com/watch?v=YjU2dobI0WQ">링크</a></li><li><span class="num">13</span>우리나라의 생애의료비 분포 추정 - 한국보건사회연구원<br><a href="https://www.kihasa.re.kr/hswr/assets/pdf/583/journal-31-1-194.pdf">링크</a></li><li><span class="num">14</span>건강/의료 데이터로 보는 시니어 비용 구조 - 케이시니어뉴스<br><a href="https://www.kseniornews.com/news/articleView.html?idxno=26642">링크</a></li><li><span class="num">15</span>점진적 은퇴와 부분연금제도 연구 - 노동연구원<br><a href="https://www.elabor.co.kr/store/data/%EB%85%B8%EB%8F%99%EC%97%B0%EC%97%B0%EA%B5%AC%EB%B3%B4%EA%B3%A0%EC%84%9C-%EC%A0%90%EC%A7%84%EC%A0%81%EC%9D%80%ED%87%B4%EC%99%80%EB%B6%80%EB%B6%84%EC%97%B0%EA%B8%88%EC%A0%9C%EB%8F%84%EC%97%B0%EA%B5%AC.pdf">링크</a></li><li><span class="num">16</span>은퇴 후 건보료 공포…재산 부과 체계가 낳은 기형적 선택 - 연합뉴스<br><a href="https://www.yna.co.kr/view/AKR20260310117300530">링크</a></li><li><span class="num">17</span>5060+ 은퇴 후 건강보험료는 어떻게? - 국민건강보험공단<br><a href="https://www.nhis.or.kr/static/alim/paper/oldpaper/202309/sub/section3_3.html">링크</a></li><li><span class="num">18</span>은퇴 후 달라지는 건강보험료, 폭탄이 될 수도 있다? - YouTube<br><a href="https://www.youtube.com/watch?v=QE71kV8syoY">링크</a></li><li><span class="num">19</span>고령화에 가파른 의료비 증가…&ldquo;2072년 건보료율 25% 달할 수도&rdquo; - 연합뉴스<br><a href="https://www.yna.co.kr/view/AKR20250726040500530">링크</a></li><li><span class="num">20</span>은퇴 후 메디케어 보험료, 소득 따라 두세 배 뛴다 - 미주중앙일보<br><a href="https://www.koreadaily.com/article/20250923225358877">링크</a></li><li><span class="num">21</span>전자민원 &gt; 개인 &gt; 전체 - 국민연금공단<br><a href="https://www.nps.or.kr/elctcvlcpt/comm/getOHAC0000M3.do">링크</a></li><li><span class="num">22</span>보험 실전 화법 | 김동범 - 국내도서 - 교보문고<br><a href="https://product.kyobobook.co.kr/detail/S000213492602">링크</a></li><li><span class="num">23</span>[병오년 알짜 금융상품-생보사] 보험 하나로 &lsquo;건강·사망·노후&rsquo; 함께 관리 - 팍스경제TV<br><a href="https://www.paxetv.com/news/articleView.html?idxno=262174">링크</a></li><li><span class="num">24</span>ABL건강하면THE소중한종신보험(해약환급금 일부지급형) - ABL생명<br><a href="https://www.abllife.co.kr/cms/prdt/wlifeFprd/__icsFiles/afieldfile/2025/09/29/(%EB%AC%B4)ABL%EA%B1%B4%EA%B0%95%ED%95%98%EB%A9%B4THE%EC%86%8C%EC%A4%91%ED%95%9C%EC%A2%85%EC%8B%A0%EB%B3%B4%ED%97%98(%ED%95%B4%EC%95%BD%ED%99%98%EA%B8%89%EA%B8%88_%EC%9D%BC%EB%B6%80%EC%A7%80%EA%B8%89%ED%98%95)2504_20251001.pdf">링크</a></li><li><span class="num">25</span>한화생명, &lsquo;밸류플러스보장보험&rsquo; 출시…&ldquo;노후 요양까지 대비&rdquo; - 서울경제TV<br><a href="https://www.sentv.co.kr/article/view/sentv202604010044">링크</a></li><li><span class="num">26</span>한화생명, 노후 장기요양까지 대비 &lsquo;밸류플러스보장보험&rsquo; 출시 - Daum<br><a href="https://v.daum.net/v/zInTb0mjj6?f=p">링크</a></li></ul>'}
+};
+</script>
+</body>
+</html>
