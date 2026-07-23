@@ -7,9 +7,17 @@
 
 var GH={owner:"comdoctor76-droid",repo:"Self-Directed-Learning",branch:"main"};
 var TOKEN_KEY="gh_admin_token";
+var PW_KEY="ad_pw_ok";
+/* 관리자 암호(편의용 게이트). 실제 보안 경계는 각 브라우저에만 저장되는 GitHub 토큰입니다. */
+var ADMIN_PW="1234";
 
 function getToken(){try{return localStorage.getItem(TOKEN_KEY)||"";}catch(e){return "";}}
-function isLoggedIn(){return !!getToken();}
+function pwOk(){try{return sessionStorage.getItem(PW_KEY)==="1";}catch(e){return false;}}
+function setPwOk(){try{sessionStorage.setItem(PW_KEY,"1");}catch(e){}}
+function clearPwOk(){try{sessionStorage.removeItem(PW_KEY);}catch(e){}}
+/* 편집 활성 = 암호 통과(세션) AND 토큰 보유 */
+function isEditing(){return pwOk()&&!!getToken();}
+function isLoggedIn(){return isEditing();}
 function dataPath(){return window.GUIDE_DATA_PATH||"data/lung.json";}
 function _t(s){return s==null?"":String(s);}
 function clone(o){return JSON.parse(JSON.stringify(o));}
@@ -128,29 +136,54 @@ function val(name){var e=document.getElementById("ad_"+name);return e?e.value:""
 function setVal(name,v){var e=document.getElementById("ad_"+name);if(e)e.value=(v==null?"":v);}
 function opt(v,label,cur){return '<option value="'+v+'"'+(v===cur?" selected":"")+'>'+label+'</option>';}
 
-/* ---------- 로그인 ---------- */
-function openLogin(){
+/* ---------- 로그인 (1단계: 암호 → 2단계: 최초 1회 토큰 등록) ---------- */
+function loginDone(){
+  closeOverlay();ensureBar();updateIndexButton();
+  if(window.GUIDE&&window.renderGuide)renderGuide(window.GUIDE);
+  toast("관리자 모드 ✅ ✏️ 편집 버튼이 나타납니다");
+}
+function openTokenStep(){
   var body=
-    '<div class="ad-field"><label>GitHub 토큰</label>'+
+    '<div class="ad-help" style="margin-bottom:12px">처음 한 번만 GitHub 토큰을 등록하면 이 브라우저에 기억되어, 다음부터는 <b>암호(1234)만</b>으로 로그인됩니다.</div>'+
+    '<div class="ad-field"><label>GitHub 토큰 (최초 1회)</label>'+
     '<input type="text" id="ad_token" placeholder="github_pat_..." autocomplete="off"></div>'+
     '<div class="ad-help">토큰은 <b>이 브라우저에만</b> 저장되며 서버로 전송되지 않습니다.<br>'+
     '발급: GitHub → Settings → Developer settings → <b>Fine-grained tokens</b> → '+
-    'Repository access는 저장소 <b>Self-Directed-Learning</b> 하나만, 권한 <b>Contents: Read and write</b>.'+
-    (isLoggedIn()?'<br><br>이미 로그인되어 있습니다. 토큰을 지우려면 아래 <b>로그아웃</b>.':'')+'</div>'+
-    (isLoggedIn()?'<button class="ad-mini ad-del" id="ad_logout_inline" type="button" style="margin-top:4px">로그아웃</button>':'');
-  openPanel("관리자 로그인",body,function(){
+    'Repository access는 저장소 <b>Self-Directed-Learning</b> 하나만, 권한 <b>Contents: Read and write</b>.</div>';
+  openPanel("최초 1회 · 토큰 등록",body,function(){
     var t=val("token").trim();
     if(!t){toast("토큰을 입력하세요",true);return;}
     try{localStorage.setItem(TOKEN_KEY,t);}catch(e){}
-    closeOverlay();ensureBar();updateIndexButton();
-    if(window.GUIDE&&window.renderGuide)renderGuide(window.GUIDE);
-    toast("로그인됨 ✅ ✏️ 편집 버튼이 나타납니다");
-  },"로그인");
+    loginDone();
+  },"등록하고 시작");
   setVal("token",getToken());
-  var li=document.getElementById("ad_logout_inline");if(li)li.onclick=function(){closeOverlay();logout();};
+}
+function openLogin(){
+  var body=
+    '<div class="ad-field"><label>관리자 암호</label>'+
+    '<input type="password" id="ad_pw" placeholder="암호를 입력하세요" autocomplete="off"></div>'+
+    '<div class="ad-help">관리자 암호로 로그인하면 각 학습자료를 직접 수정할 수 있습니다.'+
+    (getToken()?'':' <br>(이 기기에서는 최초 1회 GitHub 토큰 등록이 필요합니다.)')+'</div>'+
+    (getToken()?'<button class="ad-mini ad-del" id="ad_forget" type="button" style="margin-top:4px">이 기기에서 토큰 삭제</button>':'');
+  openPanel("관리자 로그인",body,function(){
+    var p=val("pw");
+    if(p!==ADMIN_PW){toast("암호가 올바르지 않습니다",true);return;}
+    setPwOk();
+    if(getToken()){loginDone();}
+    else{openTokenStep();}
+  },"로그인");
+  setTimeout(function(){var e=document.getElementById("ad_pw");if(e)e.focus();},50);
+  var fg=document.getElementById("ad_forget");
+  if(fg)fg.onclick=function(){
+    if(!confirm("이 기기에 저장된 GitHub 토큰을 삭제할까요? 다음에 다시 등록해야 합니다."))return;
+    try{localStorage.removeItem(TOKEN_KEY);}catch(e){}
+    clearPwOk();removeBar();updateIndexButton();
+    if(window.GUIDE&&window.renderGuide)renderGuide(window.GUIDE);
+    closeOverlay();toast("토큰이 삭제되었습니다");
+  };
 }
 function logout(){
-  try{localStorage.removeItem(TOKEN_KEY);}catch(e){}
+  clearPwOk();
   removeBar();updateIndexButton();
   if(window.GUIDE&&window.renderGuide)renderGuide(window.GUIDE);
   toast("로그아웃되었습니다");
