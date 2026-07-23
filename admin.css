@@ -1,0 +1,125 @@
+/* ===== 관리자 편집 UI 공통 스타일 ===== */
+
+/* 관리자 상단 바 */
+#adBar{position:fixed;left:0;right:0;bottom:0;z-index:11000;background:#111826;color:#fff;
+  display:flex;align-items:center;gap:12px;padding:10px 16px;font-family:'Noto Sans KR',sans-serif;
+  font-size:14px;box-shadow:0 -3px 14px rgba(0,0,0,.28)}
+#adBar .ad-dot{width:9px;height:9px;border-radius:50%;background:#7CE0A8;flex:0 0 auto}
+#adBar b{color:#FFC79B}
+#adBar .ad-spacer{flex:1 1 auto}
+#adBar button{font-family:inherit;font-size:13.5px;font-weight:800;border:none;border-radius:8px;
+  padding:8px 14px;cursor:pointer}
+.ad-btn-logout{background:rgba(255,255,255,.16);color:#fff}
+.ad-btn-logout:hover{background:rgba(255,255,255,.28)}
+#adBar .ad-hint{opacity:.7;font-size:12.5px}
+
+/* 편집 버튼(공통) */
+.ad-edit{display:inline-flex;align-items:center;gap:5px;background:#E8651A;color:#fff;border:none;
+  font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:800;padding:7px 13px;border-radius:999px;
+  cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.ad-edit:hover{background:#C94F0A}
+.ad-edit:active{transform:scale(.96)}
+.ad-edit.ad-ghost{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.35)}
+.ad-edit.ad-ghost:hover{background:rgba(255,255,255,.28)}
+
+/* 섹션 헤더 편집 버튼 위치 */
+.sh{position:relative}
+.ad-sec-edit{margin-top:10px}
+
+/* 카드 편집 버튼 */
+.card{}
+.ad-card-edit{position:absolute;top:12px;left:12px;z-index:5;font-size:12px;padding:6px 11px}
+
+/* 히어로 편집 버튼 그룹 */
+.ad-hero-tools{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}
+
+/* ===== 로그인 모달 & 편집 오버레이 ===== */
+.ad-overlay{display:none;position:fixed;inset:0;z-index:12000;background:rgba(15,20,32,.72);
+  overflow-y:auto;-webkit-overflow-scrolling:touch;padding:24px 14px 90px;font-family:'Noto Sans KR',sans-serif}
+.ad-overlay.on{display:block}
+.ad-panel{background:#fff;border-radius:18px;max-width:760px;margin:0 auto;overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.ad-phead{background:linear-gradient(120deg,#1A2744,#2C3F6E);color:#fff;padding:18px 22px;
+  display:flex;justify-content:space-between;align-items:center;gap:12px;position:sticky;top:0;z-index:2}
+.ad-phead h3{font-size:18px;font-weight:900;margin:0}
+.ad-pclose{flex:0 0 34px;height:34px;border:none;border-radius:50%;background:rgba(255,255,255,.22);
+  color:#fff;font-size:18px;font-weight:900;cursor:pointer}
+.ad-pbody{padding:20px 22px 8px}
+.ad-pfoot{position:sticky;bottom:0;background:#fff;border-top:1px solid #EEE7DF;padding:14px 22px;
+  display:flex;justify-content:flex-end;gap:10px}
+.ad-pfoot button,.ad-row-btns button,.ad-mini{font-family:'Noto Sans KR',sans-serif;font-weight:800;
+  border:none;border-radius:9px;padding:11px 18px;cursor:pointer;font-size:14.5px}
+.ad-save{background:#1E8E5A;color:#fff}
+.ad-save:hover{background:#17784c}
+.ad-save[disabled]{opacity:.5;cursor:default}
+.ad-cancel{background:#EEE7DF;color:#3A3E45}
+.ad-cancel:hover{background:#e2dacd}
+
+/* 폼 필드 */
+.ad-field{margin-bottom:16px}
+.ad-field label{display:block;font-size:13.5px;font-weight:800;color:#1A2744;margin-bottom:6px}
+.ad-field input[type=text],.ad-field textarea,.ad-field select{width:100%;font-family:'Noto Sans KR',sans-serif;
+  font-size:15px;border:1.5px solid #DED6CC;border-radius:10px;padding:10px 12px;color:#26282C;background:#fff}
+.ad-field textarea{min-height:80px;line-height:1.6;resize:vertical}
+.ad-field input:focus,.ad-field textarea:focus,.ad-field select:focus{outline:none;border-color:#E8651A}
+.ad-help{font-size:12.5px;color:#8A8F98;margin-top:5px;line-height:1.5}
+
+/* 하위 항목(카드/박스/표) 리스트 */
+.ad-list{border:1.5px solid #EEE7DF;border-radius:12px;padding:10px;margin-bottom:12px}
+.ad-item{display:flex;align-items:center;gap:8px;padding:9px 8px;border-bottom:1px solid #F2ECE4}
+.ad-item:last-child{border-bottom:none}
+.ad-item .ad-item-t{flex:1 1 auto;min-width:0;font-size:14px;color:#1A2744;font-weight:700;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ad-row-btns{display:flex;gap:5px;flex:0 0 auto}
+.ad-mini{padding:6px 10px;font-size:12.5px;background:#EBEFF8;color:#2C3F6E}
+.ad-mini:hover{background:#dbe3f2}
+.ad-mini.ad-del{background:#FCEBEA;color:#D6403A}
+.ad-mini.ad-del:hover{background:#f8d9d7}
+.ad-add{background:#FFF3EA;color:#C94F0A;border:1.5px dashed #F6C9A8;width:100%;padding:11px;
+  border-radius:10px;font-weight:800;cursor:pointer;font-size:14px}
+.ad-add:hover{background:#FFE6D2}
+
+/* 표 편집 그리드 */
+.ad-tblwrap{overflow:auto;border:1.5px solid #EEE7DF;border-radius:10px;margin-bottom:10px}
+table.ad-tbl{border-collapse:collapse;width:100%}
+table.ad-tbl td{border:1px solid #EEE7DF;padding:4px;vertical-align:top}
+table.ad-tbl th{background:#F7F2EB;border:1px solid #EEE7DF;padding:4px}
+table.ad-tbl textarea{width:100%;min-width:130px;min-height:44px;border:none;font-family:inherit;
+  font-size:13px;resize:vertical;background:transparent}
+table.ad-tbl textarea:focus{outline:1px solid #E8651A}
+.ad-tbl-tools{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+
+/* WYSIWYG 본문 편집기 */
+.ad-wtoolbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.ad-wtoolbar button{font-family:'Noto Sans KR',sans-serif;font-size:12.5px;font-weight:800;
+  border:1.5px solid #DED6CC;background:#fff;color:#3A3E45;border-radius:8px;padding:7px 11px;cursor:pointer}
+.ad-wtoolbar button:hover{background:#F2ECE4}
+.ad-wysi{border:1.5px solid #DED6CC;border-radius:10px;padding:14px 16px;min-height:160px;
+  font-size:15.5px;line-height:1.7;background:#fff;color:#26282C}
+.ad-wysi:focus{outline:none;border-color:#E8651A}
+.ad-wysi h4{color:#C94F0A;font-size:16px;font-weight:800;margin:14px 0 6px;padding-left:9px;border-left:4px solid #E8651A}
+.ad-wysi ul{margin:6px 0 10px 2px;padding-left:18px}
+.ad-wysi .ok{background:#E9F6EF;border-left:4px solid #1E8E5A;border-radius:0 8px 8px 0;padding:10px 12px;margin:9px 0}
+.ad-wysi .note{background:#FFF9E8;border-left:4px solid #E5A00D;border-radius:0 8px 8px 0;padding:10px 12px;margin:9px 0}
+.ad-wysi .bad{background:#FCEEED;border-left:4px solid #D6403A;border-radius:0 8px 8px 0;padding:10px 12px;margin:9px 0}
+.ad-htmlarea{width:100%;min-height:180px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;
+  line-height:1.55;border:1.5px solid #DED6CC;border-radius:10px;padding:12px;display:none}
+
+/* 상태 토스트 */
+#adToast{position:fixed;left:50%;bottom:70px;transform:translateX(-50%);z-index:13000;
+  background:#1A2744;color:#fff;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;
+  padding:12px 20px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.35);display:none;max-width:90%;text-align:center}
+#adToast.err{background:#B2352F}
+#adToast.on{display:block}
+
+/* 파일 업로드 미리보기 */
+.ad-preview{margin-top:10px;max-width:100%;border-radius:10px;border:1px solid #EEE7DF;display:none}
+.ad-preview.on{display:block}
+
+@media(max-width:760px){
+  .ad-phead h3{font-size:16px}
+  .ad-pbody{padding:16px 16px 6px}
+  .ad-pfoot{padding:12px 16px}
+  #adBar{font-size:13px;gap:8px;padding:9px 12px}
+  #adBar .ad-hint{display:none}
+}

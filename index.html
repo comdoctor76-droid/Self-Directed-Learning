@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>스스로 학습하기 | 플래너를 위한 니즈환기 자료</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Noto Sans KR',sans-serif;background:#FBF8F5;color:#26282C;font-size:17px;line-height:1.65}
@@ -70,7 +71,7 @@ footer b{color:#FFB37E}
     <span class="badge">스스로 학습하기</span>
     <h1>플래너를 위한 니즈환기 자료<br><span>인터랙티브 가이드</span></h1>
     <p>가입설계서로 담보설명에 집중하는 프리젠테이션은 이제그만! 니즈환기로 승부하자!!</p>
-    <div class="version-tag"><span class="dot"></span>v0.18</div>
+    <div class="version-tag"><span class="dot"></span>v0.19</div>
   </div>
   <div class="hero-qr" aria-label="사이트 QR 코드">
     <img src="assets/qr.svg" alt="학습 사이트 QR 코드" />
@@ -136,7 +137,13 @@ footer b{color:#FFB37E}
 <footer>
   본 자료는 이해를 돕기 위한 <b>교육용 요약 자료</b>입니다.<br>
   © 스스로 학습하기
+  <div style="margin-top:16px">
+    <button id="adminBtn" type="button" onclick="AdminEditor.openLogin()"
+      style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.28);color:rgba(255,255,255,.8);font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 14px;border-radius:999px;cursor:pointer">🔧 관리자</button>
+  </div>
 </footer>
+
+<script src="admin.js"></script>
 
 </body>
 </html>
