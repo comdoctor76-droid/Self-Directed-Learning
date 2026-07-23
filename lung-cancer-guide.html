@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>폐암 2기 표준치료 및 비용 가이드 | 스스로 학습하기</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+<script>
+function OM(key){
+  var bg=document.getElementById('MB');
+  var title=document.getElementById('MT');
+  var body=document.getElementById('MC');
+  var data=window.MD?window.MD[key]:null;
+  if(!data||!bg||!title||!body)return;
+  title.innerHTML=data.t;
+  body.innerHTML=data.b;
+  body.scrollTop=0;
+  bg.style.cssText='display:block;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(20,25,38,0.75);z-index:9999;overflow-y:auto;-webkit-overflow-scrolling:touch;';
+}
+function CM(){
+  var bg=document.getElementById('MB');
+  if(bg)bg.style.display='none';
+}
+</script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#FBF8F5;color:#26282C;font-size:17px;line-height:1.65}
+:root{--or:#E8651A;--ord:#C94F0A;--ors:#FFF3EA;--navy:#1A2744;--navy2:#2C3F6E;--gray:#6B7078;--green:#1E8E5A;--red:#D6403A}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#1A2744 0%,#2C3F6E 60%,#3d5390 100%);color:#fff;padding:50px 20px 64px}
+.hero-in{max-width:1060px;margin:0 auto}
+.badge{display:inline-block;background:#E8651A;color:#fff;font-weight:700;font-size:14px;padding:7px 16px;border-radius:999px;margin-bottom:16px}
+.hero h1{font-size:32px;font-weight:900;line-height:1.3;margin-bottom:12px}
+.hero h1 span{color:#FFB37E}
+.hero p{font-size:17px;opacity:.9;max-width:680px}
+.tip{margin-top:22px;display:inline-block;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:11px 16px;font-size:14.5px}
+.tip b{color:#FFC79B}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.1);display:flex;align-items:center;gap:6px;padding:0 8px}
+.nav-back{flex:0 0 auto;display:flex;align-items:center;gap:5px;font-size:14px;font-weight:800;color:#1A2744;text-decoration:none;padding:9px 12px;border-radius:999px;white-space:nowrap}
+.nav-back:hover{background:#EBEFF8}
+.nav-sep{flex:0 0 auto;width:1px;height:22px;background:#EEE7DF}
+.nav-in{flex:1 1 auto;min-width:0;display:flex;overflow-x:auto;gap:4px;padding:9px 4px;scrollbar-width:none}
+.nav-in::-webkit-scrollbar{display:none}
+.nav a.navlink{flex:0 0 auto;font-size:14.5px;font-weight:700;color:#6B7078;text-decoration:none;padding:8px 14px;border-radius:999px;white-space:nowrap}
+.nav a.navlink:hover{background:#FFF3EA;color:#C94F0A}
+
+/* WRAP */
+.wrap{max-width:1060px;margin:0 auto;padding:0 16px}
+section{padding:52px 0 20px}
+.sh{margin-bottom:22px}
+.sh .no{display:block;color:#E8651A;font-weight:900;font-size:14px;letter-spacing:1.5px;margin-bottom:6px}
+.sh h2{font-size:26px;font-weight:900;color:#1A2744}
+.sh p{color:#6B7078;margin-top:7px;font-size:16px}
+.hint{display:inline-block;background:#FFF3EA;color:#C94F0A;font-size:14px;font-weight:700;border-radius:999px;padding:6px 14px;margin-top:10px}
+
+/* GRID */
+.g{display:grid;gap:14px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+
+/* CARD */
+.card{background:#fff;border:2px solid #EEE7DF;border-radius:16px;padding:22px 20px;cursor:pointer;position:relative;display:block;width:100%;text-align:left}
+.card:active{border-color:#E8651A;background:#FFF9F5}
+.ico{font-size:28px;margin-bottom:8px;display:block}
+.card h3{font-size:18px;font-weight:800;color:#1A2744;margin-bottom:6px;line-height:1.4}
+.card p{font-size:15px;color:#6B7078}
+.plus{position:absolute;top:16px;right:16px;width:28px;height:28px;border-radius:50%;background:#FFF3EA;color:#E8651A;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;line-height:1}
+.tag{display:inline-block;font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;margin-bottom:8px}
+.to{background:#FFF3EA;color:#C94F0A}
+.tg{background:#E7F5EE;color:#1E8E5A}
+.tr{background:#FCEBEA;color:#D6403A}
+.tn{background:#EBEFF8;color:#2C3F6E}
+
+/* TABLE (section-level, reused for modal too) */
+.mt-box{overflow:auto;margin:10px 0;border-radius:10px;box-shadow:0 3px 12px rgba(0,0,0,.07)}
+.mt{width:100%;border-collapse:collapse;font-size:14.5px;min-width:560px;background:#fff}
+.mt th{background:#E8651A;color:#fff;padding:11px 10px;font-weight:700;text-align:left}
+.mt td{padding:11px 10px;border-bottom:1px solid #F0EAE2;text-align:left;vertical-align:top;line-height:1.6}
+.mt tr:last-child td{border-bottom:none}
+
+/* 경고/OK박스 */
+.bad{background:#FCEEED;border-left:4px solid #D6403A;border-radius:0 8px 8px 0;padding:12px 14px;margin:12px 0;font-size:15.5px}
+.ok{background:#E9F6EF;border-left:4px solid #1E8E5A;border-radius:0 8px 8px 0;padding:12px 14px;margin:12px 0;font-size:15.5px}
+.note{background:#FFF9E8;border-left:4px solid #E5A00D;border-radius:0 8px 8px 0;padding:12px 14px;margin:12px 0;font-size:15.5px}
+
+/* 메인/섹션 하단 돌아가기 */
+.back-bottom{text-align:right;margin-top:20px}
+.back-bottom a{display:inline-flex;align-items:center;gap:5px;font-size:14px;font-weight:800;color:#C94F0A;text-decoration:none;padding:8px 14px;border-radius:999px;background:#FFF3EA}
+.back-bottom a:hover{background:#FFE6D2}
+
+/* FOOTER */
+footer{background:#1A2744;color:rgba(255,255,255,.75);text-align:center;padding:34px 16px;margin-top:50px;font-size:14.5px;line-height:1.9}
+footer b{color:#FFB37E}
+
+/* MODAL */
+#MB{display:none;padding:20px 16px}
+.mbox{background:#fff;border-radius:18px;max-width:720px;margin:0 auto;overflow:hidden}
+.mh{background:linear-gradient(120deg,#E8651A,#C94F0A);color:#fff;padding:20px 22px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;position:sticky;top:0}
+.mh h3{font-size:19px;font-weight:900;line-height:1.4}
+.mcl{flex:0 0 36px;height:36px;border:none;border-radius:50%;background:rgba(255,255,255,.25);color:#fff;font-size:19px;font-weight:900;cursor:pointer;line-height:36px;text-align:center;padding:0}
+.mb{padding:20px 22px 26px;font-size:16.5px}
+.mb h4{color:#C94F0A;font-size:17.5px;font-weight:800;margin:20px 0 8px;padding-left:10px;border-left:4px solid #E8651A}
+.mb h4:first-child{margin-top:0}
+.mb p{margin-bottom:11px;color:#2E3238;line-height:1.75}
+.mb b{color:#1A2744}
+.mb ul{margin:6px 0 12px 2px;list-style:none}
+.mb li{padding:7px 0 7px 26px;position:relative;color:#2E3238;line-height:1.7}
+.mb li::before{content:'✓';position:absolute;left:2px;color:#E8651A;font-weight:900}
+.mb li.n::before{content:'•';color:#2C3F6E;font-size:20px;line-height:1}
+.mb .ok{background:#E9F6EF;border-left:4px solid #1E8E5A;border-radius:0 8px 8px 0;padding:12px 14px;margin:11px 0;font-size:15.5px}
+.mb .note{background:#FFF9E8;border-left:4px solid #E5A00D;border-radius:0 8px 8px 0;padding:12px 14px;margin:11px 0;font-size:15.5px}
+.mb .bad{background:#FCEEED;border-left:4px solid #D6403A;border-radius:0 8px 8px 0;padding:12px 14px;margin:11px 0;font-size:15.5px}
+
+/* MOBILE */
+@media(max-width:760px){
+  .hero h1{font-size:25px}
+  .sh h2{font-size:22px}
+  .g2,.g3{grid-template-columns:1fr}
+  .card h3{font-size:17px}
+  .mb{padding:16px 16px 22px;font-size:16px}
+  .mh{padding:16px 18px}
+  .mh h3{font-size:17px}
+  .nav-back span.label{display:none}
+  body{font-size:16px}
+}
+@media(min-width:761px) and (max-width:960px){
+  .g3{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-in">
+    <span class="badge">스스로 학습하기 · 의학 교육자료</span>
+    <h1>폐암 2기 표준치료 및 비용 가이드<br><span>80kg 성인 남성 · 로봇수술 기준</span></h1>
+    <p>본 자료는 비소세포폐암 2기 환자(80kg 성인 남성, 체표면적 약 1.95m², 로봇수술 적용)를 기준으로 작성된 인터랙티브 치료 가이드입니다. 아래의 각 항목을 클릭(터치)하시면 치료법, 투여 약제, 주기, 횟수, 비용 등의 상세 설명을 확인하실 수 있습니다.</p>
+    <div class="tip">👆 카드를 <b>터치(클릭)</b>하면 상세 설명이 팝업으로 열립니다</div>
+  </div>
+</div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-back">← <span class="label">메인으로</span></a>
+  <div class="nav-sep"></div>
+  <div class="nav-in">
+    <a class="navlink" href="#s1">① 치료 단계별 설명</a>
+    <a class="navlink" href="#s2">② 산정특례 vs 비급여</a>
+    <a class="navlink" href="#s3">③ 비용 상세 정리표</a>
+    <a class="navlink" href="#s4">④ 시나리오별 요약</a>
+    <a class="navlink" href="#s5">⑤ 비용 경감 전략</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- S1 치료 단계별 세부 설명 -->
+<section id="s1">
+  <div class="sh">
+    <span class="no">SECTION 01</span>
+    <h2>치료 단계별 세부 설명</h2>
+    <p>아래의 각 항목을 클릭(터치)하시면 치료법, 투여 약제, 주기, 횟수, 비용 등의 상세 설명을 확인하실 수 있습니다.</p>
+    <span class="hint">👇 각 단계를 터치하면 상세 설명이 열립니다</span>
+  </div>
+  <div class="g g2">
+    <div class="card" onclick="OM('c1')"><span class="plus">+</span><span class="tag tn">1단계</span><span class="ico">💉</span><h3>선항암 치료 (수술 전 항암치료)</h3><p>화학항암제·면역항암제 병용, 종양 크기 축소 및 미세전이 사멸 목적</p></div>
+    <div class="card" onclick="OM('c2')"><span class="plus">+</span><span class="tag tg">2단계</span><span class="ico">🤖</span><h3>수술 (로봇수술 - 폐엽절제술)</h3><p>폐엽절제술 및 종격동 림프절 절제, 로봇수술 비급여 비용 포함</p></div>
+    <div class="card" onclick="OM('c3')"><span class="plus">+</span><span class="tag to">3단계</span><span class="ico">🛡️</span><h3>후항암 치료 (수술 후 보조요법)</h3><p>세포독성·표적(타그리소)·면역(티센트릭/키트루다) 항암제 경로별 정리</p></div>
+    <div class="card" onclick="OM('c4')"><span class="plus">+</span><span class="tag tr">대안</span><span class="ico">☢️</span><h3>수술 불가능 시: 동시 항암방사선치료(CCRT)</h3><p>고령·심폐기능저하 시 근치적 표준치료, 임핀지 공고요법</p></div>
+    <div class="card" onclick="OM('c5')"><span class="plus">+</span><span class="tag tn">완치기준</span><span class="ico">🏁</span><h3>완치 판정 시점 및 전체 소요 기간</h3><p>기본·표적·면역 병용별 총 소요기간과 완전관해(5년 무재발) 기준</p></div>
+  </div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+<!-- S2 산정특례 vs 비급여 -->
+<section id="s2">
+  <div class="sh">
+    <span class="no">SECTION 02</span>
+    <h2>산정특례 적용 vs 비급여 항목 비교</h2>
+    <p>건강보험 급여 여부에 따라 본인부담 비율이 크게 달라집니다.</p>
+  </div>
+  <div class="mt-box"><table class="mt">
+    <tr><th>구분</th><th>산정특례 적용 (본인부담 5%)</th><th>산정특례 미적용 (비급여 / 전액 본인부담)</th></tr>
+    <tr><td><b>적용 요건</b></td><td>암(C34) 확진 및 산정특례 등록<br>급여 인정 기준 내의 수술, 항암제, 방사선 치료</td><td>식약처 허가는 되었으나 수술 전/후 보조요법 급여 기준 미등재 약제<br>비급여 선택 진료 및 로봇 장비료</td></tr>
+    <tr><td><b>대표 항목</b></td><td>표준 흉강경 수술, 입원료, 검사비<br>시스플라틴, 페메트렉시드 등 세포독성 항암제<br>표준 방사선치료 및 CCRT 후 임핀지 유지요법</td><td><b>로봇수술 장비/소모품비</b> (약 1,000만~1,300만 원)<br><b>타그리소</b> (2기 수술 후 보조요법 3년)<br><b>키트루다/티센트릭/옵디보</b> (수술 전/후 보조요법)</td></tr>
+  </table></div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+<!-- S3 치료 단계별 약제·횟수·비용 상세 정리표 -->
+<section id="s3">
+  <div class="sh">
+    <span class="no">SECTION 03</span>
+    <h2>치료 단계별 약제·횟수·비용 상세 정리표</h2>
+    <p>80kg 성인 남성 기준으로 정리한 전 치료 단계 요약표입니다.</p>
+  </div>
+  <div class="mt-box"><table class="mt">
+    <tr><th>치료 단계</th><th>세부 치료법 / 약제</th><th>투여 주기 및 횟수</th><th>급여 구분</th><th>예상 본인부담 비용</th></tr>
+    <tr><td><b>선항암<br>(수술 전)</b></td><td>세포독성 항암제<br>(Cisplatin + Vinorelbine 등)</td><td>3주 간격, 총 3~4회<br>(약 9~12주)</td><td>급여 (5%)</td><td>회당 5만~15만 원<br>(총 20만~60만 원)</td></tr>
+    <tr><td><b>선항암<br>(수술 전)</b></td><td>면역항암제 병용<br>(키트루다 / 옵디보)</td><td>3주 간격, 총 3회</td><td>비급여 (100%)</td><td>회당 300만~400만 원<br>(총 900만~1,200만 원)</td></tr>
+    <tr><td><b>수술</b></td><td>로봇 폐엽절제술<br>(+ 종격동 림프절 절제)</td><td>1회<br>(입원 5~10일)</td><td>일부 급여 +<br>로봇 비급여</td><td><b>약 1,200만~1,500만 원</b><br>(로봇 추가비 1,000만~1,300만 포함)</td></tr>
+    <tr><td><b>후항암<br>(수술 후)</b></td><td>세포독성 항암제<br>(Cisplatin + Pemetrexed 등)</td><td>3~4주 간격, 총 4회<br>(약 3~4개월)</td><td>급여 (5%)</td><td>회당 10만~20만 원<br>(총 40만~80만 원)</td></tr>
+    <tr><td><b>후항암<br>(수술 후)</b></td><td>표적항암제<br>(타그리소 80mg)</td><td>매일 1정,<br>최대 3년 (36개월)</td><td>비급여 (100%)</td><td>월 600만~680만 원<br>(<b>3년 총 2억 1,000만~2억 4,000만 원</b>)</td></tr>
+    <tr><td><b>후항암<br>(수술 후)</b></td><td>면역항암제<br>(티센트릭 / 키트루다)</td><td>3주 간격, 총 16~17회<br>(약 1년)</td><td>비급여 (100%)</td><td><b>티센트릭:</b> 1년 총 5,000만~6,000만 원<br><b>키트루다:</b> 1년 총 8,000만~9,500만 원</td></tr>
+  </table></div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+<!-- S4 환자 시나리오별 총 치료 비용 및 기간 요약 -->
+<section id="s4">
+  <div class="sh">
+    <span class="no">SECTION 04</span>
+    <h2>환자 시나리오별 총 치료 비용 및 기간 요약</h2>
+    <p>80kg 남성 + 로봇수술 기준, 치료 경로에 따른 3가지 시나리오입니다.</p>
+  </div>
+  <div class="mt-box"><table class="mt">
+    <tr><th>시나리오</th><th>치료 구성</th><th>총 소요 기간</th><th>총 예상 환자 부담 비용<br>(비급여 포함)</th></tr>
+    <tr><td><b>시나리오 A<br>(기본 표준)</b></td><td>로봇수술 + 수술 후 세포독성 항암제(4회)</td><td>약 5~6개월</td><td>약 1,300만~1,600만 원</td></tr>
+    <tr><td><b>시나리오 B<br>(EGFR 표적)</b></td><td>로봇수술 + 세포독성 항암제(4회) + <b>표적항암제(타그리소 3년)</b></td><td>약 3년 6개월</td><td><b>약 2억 2,000만~2억 5,000만 원</b></td></tr>
+    <tr><td><b>시나리오 C<br>(면역치료)</b></td><td>로봇수술 + 세포독성 항암제(4회) + <b>면역항암제(티센트릭/키트루다 1년)</b></td><td>약 1년 6개월</td><td>약 6,500만~1억 1,000만 원</td></tr>
+  </table></div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+<!-- S5 비용 부담 경감 전략 -->
+<section id="s5">
+  <div class="sh">
+    <span class="no">SECTION 05</span>
+    <h2>비용 부담 경감 전략 및 안내</h2>
+    <p>비급여 부담을 줄일 수 있는 두 가지 현실적인 방법입니다.</p>
+  </div>
+  <div class="note"><b>실손의료보험(실비):</b> 비급여 항목인 로봇수술 비용 및 통원/입원 항암 치료비의 실손보험 보장 범위와 한도를 미리 점검하셔야 합니다.</div>
+  <div class="ok"><b>제약사 환자 지원 프로그램(PAP):</b> 비급여 표적/면역항암제(타그리소, 키트루다 등) 이용 시 제약사에서 운영하는 약제비 환급/지원 프로그램이 있으므로 병원 내 사회복지팀을 통해 확인을 권장합니다.</div>
+  <div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>
+</section>
+
+</div>
+
+<footer>
+  본 자료는 이해를 돕기 위한 <b>교육용 요약 자료</b>이며, 실제 비용은 병원·환자 상태에 따라 달라질 수 있습니다.<br>
+  © 스스로 학습하기
+</footer>
+
+<!-- 모달 -->
+<div id="MB" onclick="if(event.target===this)CM()">
+  <div class="mbox">
+    <div class="mh">
+      <h3 id="MT"></h3>
+      <button class="mcl" onclick="CM()">✕</button>
+    </div>
+    <div class="mb" id="MC"></div>
+  </div>
+</div>
+
+<script>
+window.MD={
+"c1":{t:"1단계: 선항암 치료 (수술 전 항암치료)",b:'<p><b>목적:</b> 수술 전 종양의 크기를 줄여 수술 범위를 축소하고, 몸 전체의 미세 전이 암세포를 미리 사멸시키기 위해 시행합니다.</p><h4>화학항암제 (세포독성 항암제)</h4><ul><li class="n"><b>약제:</b> 시스플라틴(Cisplatin) 또는 카보플라틴(Carboplatin) + 비노렐빈/페메트렉시드/젬시타빈 병용</li><li class="n"><b>주기 및 횟수:</b> 3주 간격, 총 3~4회 투여 (약 9~12주 소요)</li><li class="n"><b>비용 (산정특례 5% 적용):</b> 1회당 약 5만~15만 원 (총 3~4회 약 20만~60만 원)</li></ul><h4>면역항암제 병용</h4><ul><li class="n"><b>약제:</b> 옵디보(니볼루맙) 또는 키트루다(펨브롤리주맙) + 세포독성 항암제</li><li class="n"><b>주기 및 횟수:</b> 3주 간격, 총 3회 투여</li><li class="n"><b>비용 (비급여 / 전액 본인부담):</b> 1회당 약 300만~400만 원 (3회 총 약 900만~1,200만 원)</li></ul><div class="note"><b>표적항암제:</b> 선항암 목적의 단독 표적치료는 일반적인 표준 지침상 시행하지 않으며, 주로 수술 후 보조요법으로 사용됩니다.</div>'},
+"c2":{t:"2단계: 수술 (로봇수술 - 폐엽절제술)",b:'<p><b>치료 방법:</b> 암이 위치한 폐의 한 엽을 절제하는 폐엽절제술 및 종격동 림프절 절제술을 시행합니다.</p><p><b>진행 횟수:</b> 1회 (입원 기간 약 5~10일 소요)</p><div class="ok"><b>기본 수술비 (산정특례 5% 적용):</b> 건강보험 급여 항목(입원, 검사, 기본 수술) 약 100만~200만 원</div><div class="bad"><b>로봇수술 추가 비용 (비급여):</b> 로봇 장비 사용료 및 전용 소모품비 약 1,000만~1,300만 원 추가</div><p><b>수술 총 예상 비용:</b> 약 1,200만~1,500만 원 (본인부담금 기준)</p>'},
+"c3":{t:"3단계: 후항암 치료 (수술 후 보조요법)",b:'<p><b>목적:</b> 수술 후 눈에 보이지 않게 남아있을 수 있는 미세 암세포를 제거하여 재발을 방지합니다. 수술 후 조직검사(유전자 변이 및 PD-L1 발현율) 결과에 따라 경로가 결정됩니다.</p><h4>① 세포독성 화학항암제 (기본 필수 과정)</h4><ul><li class="n"><b>약제:</b> 시스플라틴 + (비노렐빈 또는 페메트렉시드)</li><li class="n"><b>80kg 남성 용량 기준:</b> 체표면적 약 1.95m²에 맞춰 투여 (Cisplatin 약 145~150mg)</li><li class="n"><b>주기 및 횟수:</b> 3~4주 간격, 총 4회 투여 (약 3~4개월 소요)</li><li class="n"><b>비용 (산정특례 5% 적용):</b> 1회당 약 10만~20만 원 → 총 4회 약 40만~80만 원</li></ul><h4>② 표적항암제 (EGFR 유전자 변이 양성 시)</h4><ul><li class="n"><b>약제:</b> 타그리소 (오시머티닙 80mg)</li><li class="n"><b>용량 및 복용법:</b> 체중 무관 매일 1정 경구 복용</li><li class="n"><b>복용 기간:</b> 매일 복용, 최대 3년간 (36개월)</li></ul><div class="bad"><b>비용 (2기 수술 후 보조요법 비급여 / 전액 본인부담):</b><br>월 비용: 약 600만~680만 원<br>1년 비용: 약 7,200만~8,000만 원<br>3년 총비용: 약 2억 1,000만~2억 4,000만 원</div><h4>③ 면역항암제 (PD-L1 양성 &amp; 유전자 변이 음성 시)</h4><ul><li class="n"><b>약제:</b> 티센트릭(아테졸리주맙 1200mg) 또는 키트루다(펨브롤리주맙 200mg)</li><li class="n"><b>용량 및 투여:</b> 고정 용량 정맥 주사</li><li class="n"><b>주기 및 횟수:</b> 세포독성 항암제 4회 완료 후, 3주 간격으로 총 16~17회 (약 1년간 투여)</li></ul><div class="bad"><b>비용 (2기 수술 후 보조요법 비급여 / 전액 본인부담):</b><br>티센트릭: 1회당 약 300만~350만 원 → 1년 총 약 5,000만~6,000만 원<br>키트루다: 1회당 약 500만~580만 원 → 1년 총 약 8,000만~9,500만 원</div>'},
+"c4":{t:"수술 불가능 시: 동시 항암방사선치료(CCRT)",b:'<p>고령이나 심폐 기능 저하 등으로 수술을 진행할 수 없는 경우 시행하는 근치적 표준 치료입니다.</p><ul><li class="n"><b>방사선 치료:</b> 주 5회(월~금), 총 25~33회 (약 5~7주 소요)</li><li class="n"><b>항암제 병용:</b> 방사선치료 기간 동안 세포독성 항암제 동시 투여</li><li class="n"><b>공고 면역치료:</b> CCRT 완료 후 질병이 진행되지 않은 경우, 임핀지(더발루맙)를 2주/4주 간격으로 최대 1년간 투여 (건강보험 급여 적용 가능)</li></ul>'},
+"c5":{t:"완치 판정 시점 및 전체 소요 기간",b:'<ul><li class="n"><b>기본 항암/수술 소요 기간:</b> 약 6개월~9개월</li><li class="n"><b>표적항암제 병용 시 총 소요 기간:</b> 수술 포함 약 3년 6개월</li><li class="n"><b>면역항암제 병용 시 총 소요 기간:</b> 수술 포함 약 1년 6개월</li></ul><div class="note"><b>의학적 완치(완전 관해) 기준:</b> 모든 치료 종료 후 5년 동안 재발 없이 추적 관찰이 유지될 때 완치로 평가합니다.</div>'}
+};
+</script>
+
+</body>
+</html>
