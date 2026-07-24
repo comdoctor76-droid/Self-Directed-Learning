@@ -49,6 +49,9 @@ body{font-family:'Noto Sans KR',sans-serif;background:#FBF8F5;color:#26282C;font
 .nav-in::-webkit-scrollbar{display:none}
 .nav a.navlink{flex:0 0 auto;font-size:14.5px;font-weight:700;color:#6B7078;text-decoration:none;padding:8px 14px;border-radius:999px;white-space:nowrap}
 .nav a.navlink:hover{background:#FFF3EA;color:#C94F0A}
+.nav-refresh{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;margin-left:2px;border-radius:50%;background:#F7F2EB;border:1px solid #EEE7DF;color:#1A2744;font-size:16px;cursor:pointer}
+.nav-refresh:hover{background:#EBEFF8}
+.nav-refresh:active{transform:scale(.9)}
 
 /* WRAP */
 .wrap{max-width:1060px;margin:0 auto;padding:0 16px}
@@ -188,6 +191,7 @@ footer b{color:#FFB37E}
     <a class="navlink" href="#s8">⑧ 결론</a>
     <a class="navlink" href="#s9">⑨ 참고자료</a>
   </div>
+  <button class="nav-refresh" onclick="location.reload()" aria-label="새로고침" type="button">🔄</button>
 </nav>
 
 <div class="wrap">
