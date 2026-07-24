@@ -102,6 +102,7 @@ table.ad-tbl textarea:focus{outline:1px solid #E8651A}
 .ad-wysi .ok{background:#E9F6EF;border-left:4px solid #1E8E5A;border-radius:0 8px 8px 0;padding:10px 12px;margin:9px 0}
 .ad-wysi .note{background:#FFF9E8;border-left:4px solid #E5A00D;border-radius:0 8px 8px 0;padding:10px 12px;margin:9px 0}
 .ad-wysi .bad{background:#FCEEED;border-left:4px solid #D6403A;border-radius:0 8px 8px 0;padding:10px 12px;margin:9px 0}
+.ad-wysi a{color:#C94F0A;font-weight:700;text-decoration:underline}
 .ad-htmlarea{width:100%;min-height:180px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;
   line-height:1.55;border:1.5px solid #DED6CC;border-radius:10px;padding:12px;display:none}
 

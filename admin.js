@@ -402,6 +402,7 @@ function openCardEditor(si,ci){
       '<button type="button" data-w="ok">초록박스</button>'+
       '<button type="button" data-w="note">노랑박스</button>'+
       '<button type="button" data-w="bad">빨강박스</button>'+
+      '<button type="button" data-w="link">🔗 링크</button>'+
       '<button type="button" data-w="html">HTML 보기</button>'+
     '</div>'+
     '<div class="ad-wysi" id="ad_wysi" contenteditable="true"></div>'+
@@ -428,6 +429,20 @@ function wireWysi(){
       if(a==="html"){
         if(html.style.display==="block"){wysi.innerHTML=html.value;html.style.display="none";wysi.style.display="block";b.textContent="HTML 보기";}
         else{html.value=wysi.innerHTML;html.style.display="block";wysi.style.display="none";b.textContent="화면 보기";}
+        return;
+      }
+      if(a==="link"){
+        var sel=window.getSelection();
+        var selText=(sel&&sel.toString())||"";
+        var url=prompt("연결할 링크 주소(URL)를 입력하세요","https://");
+        if(url==null)return;
+        url=url.trim();
+        if(!url)return;
+        if(!/^https?:\/\//i.test(url))url="https://"+url;
+        var text=selText||prompt("링크에 표시할 문구를 입력하세요",url)||url;
+        wysi.focus();
+        var linkHtml='<a href="'+url.replace(/"/g,"&quot;")+'" target="_blank" rel="noopener">'+text+"</a>";
+        try{document.execCommand("insertHTML",false,linkHtml);}catch(e){wysi.innerHTML+=linkHtml;}
         return;
       }
       wysi.focus();
