@@ -281,17 +281,46 @@ function openInfographicEditor(){
 function openSectionEditor(i){
   var work=clone(window.GUIDE.sections[i]);
   var body=field("no","섹션 번호 (예: SECTION 03)")+field("title","섹션 제목")+fieldArea("desc","섹션 설명")+
-    (work.type==="cards"?field("hint","힌트 문구 (선택)"):"")+'<div id="ad_sub"></div>';
+    (work.type==="cards"?field("hint","힌트 문구 (선택)"):"")+
+    '<div class="ad-field"><label>섹션 인포그래픽 (선택)</label>'+
+    '<div class="ad-img-drop" id="ad_img_drop" tabindex="0">'+
+      '<img class="ad-preview" id="ad_card_img_prev" alt="">'+
+      '<div class="ad-img-drop-hint">📎 이 영역을 클릭한 뒤 이미지를 붙여넣기(Ctrl+V) 하거나, <span class="ad-img-browse" id="ad_img_browse">파일 선택</span></div>'+
+    '</div>'+
+    '<input type="file" id="ad_card_img_file" accept="image/*" style="display:none">'+
+    '<button class="ad-mini ad-del" id="ad_card_img_remove" type="button" style="display:none;margin-top:8px">이미지 제거</button>'+
+    '</div>'+
+    '<div id="ad_sub"></div>';
+  var pendingImgFile=null, pendingImgRemove=false;
   openPanel("섹션 수정 — "+_t(work.no),body,function(){
     work.no=val("no");work.title=val("title");work.desc=val("desc");
     if(work.type==="cards")work.hint=val("hint");
     collectSub(work);
-    window.GUIDE.sections[i]=work;
-    return saveGuide("Update section (admin)");
+    function finish(){
+      window.GUIDE.sections[i]=work;
+      return saveGuide("Update section (admin)");
+    }
+    if(pendingImgFile){
+      var ext=(pendingImgFile.name&&pendingImgFile.name.split(".").pop()||"png").toLowerCase().replace(/[^a-z0-9]/g,"")||"png";
+      var path="assets/mechanism/"+(window.GUIDE_ID||"guide")+"-sec"+i+"-"+new Date().getTime()+"."+ext;
+      toast("이미지 업로드 중…");
+      return fileToBase64(pendingImgFile).then(function(b64){
+        return ghPut(path,b64,null,"Add section infographic (admin)");
+      }).then(function(){
+        work.image={src:path,alt:work.title};
+        return finish();
+      }).catch(function(e){toast("이미지 업로드 실패: "+ghErr(e&&e.status),true);throw e;});
+    }
+    if(pendingImgRemove){delete work.image;}
+    return finish();
   });
   setVal("no",work.no);setVal("title",work.title);setVal("desc",work.desc);
   if(work.type==="cards")setVal("hint",work.hint);
   buildSub(work);
+  wireCardImage(work,
+    function(f){pendingImgFile=f;pendingImgRemove=false;},
+    function(){pendingImgFile=null;pendingImgRemove=true;}
+  );
 }
 function buildSub(work){
   var host=document.getElementById("ad_sub");if(!host)return;

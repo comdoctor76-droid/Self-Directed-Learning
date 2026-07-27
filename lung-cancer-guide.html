@@ -258,6 +258,7 @@ window.IMGDATA={};
 window.GUIDE=null;
 
 function _t(s){return s==null?'':String(s);}
+function _extOf(src){return (/\.(\w+)(\?|$)/.exec(src||'')||[,'png'])[1];}
 
 function renderGuide(data){
   window.GUIDE=data;
@@ -296,14 +297,18 @@ function renderSection(sec,si){
   if(sec.desc)h+='<p>'+_t(sec.desc)+'</p>';
   if(sec.hint)h+='<span class="hint">'+_t(sec.hint)+'</span>';
   h+='</div>';
+  if(sec.image&&sec.image.src){
+    var secImgKey='sec'+si;
+    window.IMGDATA[secImgKey]={src:sec.image.src,name:(sec.image.alt||sec.title||'infographic')+'.'+_extOf(sec.image.src)};
+    h+='<div class="diagram"><img src="'+_t(sec.image.src)+'" alt="'+_t(sec.image.alt||sec.title)+'" onclick="OI(\''+secImgKey+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
+  }
   if(sec.type==='cards'){
     h+='<div class="g '+_t(sec.grid||'g2')+'">';
     (sec.cards||[]).forEach(function(c,ci){
       var key='s'+si+'c'+ci;
       var cardImgHtml='';
       if(c.image&&c.image.src){
-        var _ext=(/\.(\w+)(\?|$)/.exec(c.image.src)||[,'png'])[1];
-        window.IMGDATA[key]={src:c.image.src,name:(c.image.alt||c.modalTitle||'infographic')+'.'+_ext};
+        window.IMGDATA[key]={src:c.image.src,name:(c.image.alt||c.modalTitle||'infographic')+'.'+_extOf(c.image.src)};
         cardImgHtml='<div class="diagram"><img src="'+_t(c.image.src)+'" alt="'+_t(c.image.alt||c.modalTitle)+'" onclick="event.stopPropagation();OI(\''+key+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
       }
       window.MD[key]={t:c.modalTitle,b:cardImgHtml+c.modalBody};
