@@ -295,7 +295,8 @@ function renderSection(sec,si){
     h+='<div class="g '+_t(sec.grid||'g2')+'">';
     (sec.cards||[]).forEach(function(c,ci){
       var key='s'+si+'c'+ci;
-      window.MD[key]={t:c.modalTitle,b:c.modalBody};
+      var cardImgHtml=(c.image&&c.image.src)?('<div class="diagram"><img src="'+_t(c.image.src)+'" alt="'+_t(c.image.alt||c.modalTitle)+'"></div>'):'';
+      window.MD[key]={t:c.modalTitle,b:cardImgHtml+c.modalBody};
       h+='<div class="card" onclick="OM(\''+key+'\')" data-sec="'+si+'" data-card="'+ci+'">'+
          '<span class="plus">+</span>'+
          '<span class="tag '+_t(c.tagClass||'tn')+'">'+_t(c.tag)+'</span>'+

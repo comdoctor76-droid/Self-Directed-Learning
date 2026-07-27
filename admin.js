@@ -392,6 +392,14 @@ function openCardEditor(si,ci){
       opt("tn","파랑",work.tagClass)+opt("to","주황",work.tagClass)+opt("tg","초록",work.tagClass)+opt("tr","빨강",work.tagClass)+
     '</select></div>'+
     field("cico","아이콘 (이모지)")+field("ctitle","카드 제목")+fieldArea("cdesc","카드 설명 (카드에 보이는 한 줄 요약)")+
+    '<div class="ad-field"><label>단계 인포그래픽 (선택)</label>'+
+    '<div class="ad-img-drop" id="ad_img_drop" tabindex="0">'+
+      '<img class="ad-preview" id="ad_card_img_prev" alt="">'+
+      '<div class="ad-img-drop-hint">📎 이 영역을 클릭한 뒤 이미지를 붙여넣기(Ctrl+V) 하거나, <span class="ad-img-browse" id="ad_img_browse">파일 선택</span></div>'+
+    '</div>'+
+    '<input type="file" id="ad_card_img_file" accept="image/*" style="display:none">'+
+    '<button class="ad-mini ad-del" id="ad_card_img_remove" type="button" style="display:none;margin-top:8px">이미지 제거</button>'+
+    '</div>'+
     field("cmtitle","팝업 제목")+
     '<div class="ad-field"><label>단계 상세 내용 (팝업에 표시)</label>'+
     '<div class="ad-wtoolbar">'+
@@ -408,18 +416,84 @@ function openCardEditor(si,ci){
     '<div class="ad-wysi" id="ad_wysi" contenteditable="true"></div>'+
     '<textarea class="ad-htmlarea" id="ad_html"></textarea>'+
     '<div class="ad-help">글자를 직접 고치고, 위 버튼으로 소제목·목록·강조박스를 넣을 수 있어요. 표가 필요하면 [HTML 보기]에서 직접 편집하세요.</div></div>';
+  var pendingImgFile=null, pendingImgRemove=false;
   openPanel("카드 · 단계 수정",body,function(){
     work.tag=val("ctag");
     var sc=document.getElementById("ad_ctagcls");work.tagClass=sc?sc.value:work.tagClass;
     work.ico=val("cico");work.title=val("ctitle");work.desc=val("cdesc");
     work.modalTitle=val("cmtitle");work.modalBody=getBody();
-    window.GUIDE.sections[si].cards[ci]=work;
-    return saveGuide("Update card (admin)");
+    function finish(){
+      window.GUIDE.sections[si].cards[ci]=work;
+      return saveGuide("Update card (admin)");
+    }
+    if(pendingImgFile){
+      var ext=(pendingImgFile.name&&pendingImgFile.name.split(".").pop()||"png").toLowerCase().replace(/[^a-z0-9]/g,"")||"png";
+      var path="assets/mechanism/"+(window.GUIDE_ID||"guide")+"-s"+si+"c"+ci+"-"+new Date().getTime()+"."+ext;
+      toast("이미지 업로드 중…");
+      return fileToBase64(pendingImgFile).then(function(b64){
+        return ghPut(path,b64,null,"Add card infographic (admin)");
+      }).then(function(){
+        work.image={src:path,alt:work.title};
+        return finish();
+      }).catch(function(e){toast("이미지 업로드 실패: "+ghErr(e&&e.status),true);throw e;});
+    }
+    if(pendingImgRemove){delete work.image;}
+    return finish();
   });
   setVal("ctag",work.tag);setVal("cico",work.ico);setVal("ctitle",work.title);
   setVal("cdesc",work.desc);setVal("cmtitle",work.modalTitle);
   var wysi=document.getElementById("ad_wysi");if(wysi)wysi.innerHTML=work.modalBody||"";
   wireWysi();
+  wireCardImage(work,
+    function(f){pendingImgFile=f;pendingImgRemove=false;},
+    function(){pendingImgFile=null;pendingImgRemove=true;}
+  );
+}
+function wireCardImage(work,onPick,onRemove){
+  var drop=document.getElementById("ad_img_drop");
+  var prev=document.getElementById("ad_card_img_prev");
+  var fileInput=document.getElementById("ad_card_img_file");
+  var browseBtn=document.getElementById("ad_img_browse");
+  var removeBtn=document.getElementById("ad_card_img_remove");
+  if(!drop)return;
+  function showPreview(src){
+    if(src){prev.src=src;prev.classList.add("on");removeBtn.style.display="inline-block";}
+    else{prev.removeAttribute("src");prev.classList.remove("on");removeBtn.style.display="none";}
+  }
+  if(work.image&&work.image.src)showPreview(work.image.src);
+  function handleFile(f){
+    if(!f||f.type.indexOf("image/")!==0){toast("이미지 파일만 추가할 수 있어요",true);return;}
+    onPick(f);
+    var reader=new FileReader();
+    reader.onload=function(){showPreview(String(reader.result));};
+    reader.readAsDataURL(f);
+  }
+  browseBtn.onclick=function(e){e.stopPropagation();fileInput.click();};
+  fileInput.onchange=function(){
+    var f=fileInput.files&&fileInput.files[0];
+    if(f)handleFile(f);
+  };
+  drop.addEventListener("paste",function(e){
+    var items=(e.clipboardData&&e.clipboardData.items)||[];
+    for(var i=0;i<items.length;i++){
+      if(items[i].type&&items[i].type.indexOf("image/")===0){
+        var f=items[i].getAsFile();
+        if(f){handleFile(f);e.preventDefault();break;}
+      }
+    }
+  });
+  drop.addEventListener("dragover",function(e){e.preventDefault();drop.classList.add("ad-dragover");});
+  drop.addEventListener("dragleave",function(){drop.classList.remove("ad-dragover");});
+  drop.addEventListener("drop",function(e){
+    e.preventDefault();drop.classList.remove("ad-dragover");
+    var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];
+    if(f)handleFile(f);
+  });
+  removeBtn.onclick=function(){
+    onRemove();
+    showPreview(null);
+    fileInput.value="";
+  };
 }
 function wireWysi(){
   var wysi=document.getElementById("ad_wysi"),html=document.getElementById("ad_html");
