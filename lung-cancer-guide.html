@@ -325,6 +325,9 @@ function renderSection(sec,si){
   }else if(sec.type==='boxes'){
     (sec.boxes||[]).forEach(function(b){h+='<div class="'+_t(b.kind||'note')+'">'+_t(b.html)+'</div>';});
   }
+  if(sec.type!=='boxes'){
+    (sec.extraBoxes||[]).forEach(function(b){h+='<div class="'+_t(b.kind||'note')+'">'+_t(b.html)+'</div>';});
+  }
   h+='<div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>';
   h+='</section>';
   return h;
