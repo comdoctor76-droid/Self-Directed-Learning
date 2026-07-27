@@ -300,7 +300,12 @@ function renderSection(sec,si){
     h+='<div class="g '+_t(sec.grid||'g2')+'">';
     (sec.cards||[]).forEach(function(c,ci){
       var key='s'+si+'c'+ci;
-      var cardImgHtml=(c.image&&c.image.src)?('<div class="diagram"><img src="'+_t(c.image.src)+'" alt="'+_t(c.image.alt||c.modalTitle)+'"></div>'):'';
+      var cardImgHtml='';
+      if(c.image&&c.image.src){
+        var _ext=(/\.(\w+)(\?|$)/.exec(c.image.src)||[,'png'])[1];
+        window.IMGDATA[key]={src:c.image.src,name:(c.image.alt||c.modalTitle||'infographic')+'.'+_ext};
+        cardImgHtml='<div class="diagram"><img src="'+_t(c.image.src)+'" alt="'+_t(c.image.alt||c.modalTitle)+'" onclick="event.stopPropagation();OI(\''+key+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
+      }
       window.MD[key]={t:c.modalTitle,b:cardImgHtml+c.modalBody};
       h+='<div class="card" onclick="OM(\''+key+'\')" data-sec="'+si+'" data-card="'+ci+'">'+
          '<span class="plus">+</span>'+
