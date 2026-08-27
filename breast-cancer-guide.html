@@ -167,6 +167,16 @@ footer b{color:#FFB37E}
 .mb .ok{background:#E9F6EF;border-left:4px solid #1E8E5A;border-radius:0 8px 8px 0;padding:12px 14px;margin:11px 0;font-size:15.5px}
 .mb .note{background:#FFF9E8;border-left:4px solid #E5A00D;border-radius:0 8px 8px 0;padding:12px 14px;margin:11px 0;font-size:15.5px}
 .mb .bad{background:#FCEEED;border-left:4px solid #D6403A;border-radius:0 8px 8px 0;padding:12px 14px;margin:11px 0;font-size:15.5px}
+/* 팝업 내 하위 항목 버튼 */
+.mb .sub-btns{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.mb .sub-btn{display:block;width:100%;text-align:left;background:#FFF3EA;border:2px solid #F6C9A8;color:#C94F0A;
+  font-family:inherit;font-size:15.5px;font-weight:800;padding:14px 16px;border-radius:12px;cursor:pointer;position:relative}
+.mb .sub-btn::after{content:'→';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-weight:900}
+.mb .sub-btn:hover{background:#FFE6D2;border-color:#E8651A}
+.mb .sub-btn:active{transform:scale(.98)}
+.mb .sub-back{display:inline-flex;align-items:center;gap:6px;background:#EEE7DF;border:none;color:#3A3E45;
+  font-family:inherit;font-size:13.5px;font-weight:800;padding:8px 14px;border-radius:999px;cursor:pointer;margin-bottom:14px}
+.mb .sub-back:hover{background:#e2dacd}
 
 /* 카드 내 인포그래픽 (모달 상단) — 화면/컨테이너 폭에 맞춰 자동 축소 */
 .diagram{background:#FBF8F5;border:1.5px solid #EEE7DF;border-radius:14px;padding:12px;margin:0 0 16px;overflow:hidden}
@@ -309,7 +319,16 @@ function renderSection(sec,si){
         window.IMGDATA[key]={src:c.image.src,name:(c.image.alt||c.modalTitle||'infographic')+'.'+_extOf(c.image.src)};
         cardImgHtml='<div class="diagram"><img src="'+_t(c.image.src)+'" alt="'+_t(c.image.alt||c.modalTitle)+'" onclick="event.stopPropagation();OI(\''+key+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
       }
-      window.MD[key]={t:c.modalTitle,b:cardImgHtml+c.modalBody};
+      /* 하위 팝업(서브 모달) 버튼: 카드 팝업 하단에 버튼으로 표시, 클릭 시 해당 내용으로 전환 */
+      var subBtnsHtml='';
+      (c.subs||[]).forEach(function(sub,bi){
+        var skey=key+'_'+_t(sub.id||('sub'+bi));
+        window.MD[skey]={t:_t(sub.modalTitle||sub.btnLabel),
+          b:'<button class="sub-back" onclick="OM(\''+key+'\')">← 이전으로</button>'+_t(sub.modalBody)};
+        subBtnsHtml+='<button class="sub-btn" onclick="OM(\''+skey+'\')">'+_t(sub.btnLabel)+'</button>';
+      });
+      if(subBtnsHtml)subBtnsHtml='<div class="sub-btns">'+subBtnsHtml+'</div>';
+      window.MD[key]={t:c.modalTitle,b:cardImgHtml+c.modalBody+subBtnsHtml};
       h+='<div class="card" onclick="OM(\''+key+'\')" data-sec="'+si+'" data-card="'+ci+'">'+
          '<span class="plus">+</span>'+
          '<span class="tag '+_t(c.tagClass||'tn')+'">'+_t(c.tag)+'</span>'+
