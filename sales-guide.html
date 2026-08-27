@@ -23,6 +23,54 @@ function CM(){
   var bg=document.getElementById('MB');
   if(bg)bg.style.display='none';
 }
+
+/* ★ 인포그래픽 라이트박스 */
+window.IMGDATA={
+  c2_1:{src:'assets/mechanism/sales-c2_1.webp',name:'정보_과부하와_선택의_역설.webp'}
+};
+window.__curImg=null;
+function OI(key){
+  var d=window.IMGDATA?window.IMGDATA[key]:null;
+  var bg=document.getElementById('IMB');
+  var img=document.getElementById('IMG_IMG');
+  if(!d||!bg||!img)return;
+  window.__curImg=d;
+  img.src=d.src;
+  img.alt=d.name;
+  bg.style.display='block';
+  bg.scrollTop=0;
+}
+function CI(){
+  var bg=document.getElementById('IMB');
+  if(bg)bg.style.display='none';
+}
+function DLI(){
+  var d=window.__curImg;
+  if(!d)return;
+  fetch(d.src).then(function(res){return res.blob();}).then(function(blob){
+    var file=null;
+    try{file=new File([blob],d.name,{type:blob.type||'image/png'});}catch(e){}
+    /* 모바일: Web Share API로 카카오톡 등 공유 시트 */
+    if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
+      navigator.share({files:[file],title:d.name}).catch(function(err){
+        if(err&&err.name==='AbortError')return;
+        __saveBlob(blob,d.name);
+      });
+      return;
+    }
+    /* 데스크톱 등: 직접 다운로드 */
+    __saveBlob(blob,d.name);
+  }).catch(function(){
+    window.open(d.src,'_blank');
+  });
+}
+function __saveBlob(blob,name){
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;a.download=name;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(url);},1500);
+}
 </script>
 
 <style>
@@ -107,6 +155,7 @@ section{padding:52px 0 20px}
 /* 도식 */
 .diagram{background:#FBF8F5;border:1.5px solid #EEE7DF;border-radius:14px;padding:16px 14px 12px;margin:4px 0 16px}
 .diagram svg{width:100%;height:auto;display:block;font-family:'Noto Sans KR',sans-serif}
+.diagram img{display:block;width:100%;height:auto;max-width:100%;border-radius:10px}
 .diagram-cap{text-align:center;font-size:13px;color:#6B7078;margin-top:10px;font-weight:700;letter-spacing:.2px}
 
 /* 하단 돌아가기 */
@@ -152,7 +201,20 @@ footer b{color:#FFB37E}
 .reflist .num{display:inline-block;min-width:26px;font-weight:800;color:#C94F0A}
 
 /* MOBILE */
+/* 인포그래픽 라이트박스 */
+#IMB{display:none;position:fixed;inset:0;z-index:10000;background:rgba(20,25,38,.88);padding:14px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.imb-box{max-width:1400px;margin:0 auto}
+.imb-bar{position:sticky;top:0;display:flex;justify-content:flex-end;gap:8px;padding:2px 0 12px;z-index:2}
+.imb-btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:10px;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:800;padding:11px 18px;cursor:pointer;line-height:1;box-shadow:0 3px 10px rgba(0,0,0,.25)}
+.imb-btn:active{transform:scale(.96)}
+.imb-dl{background:#E8651A;color:#fff}
+.imb-dl:hover{background:#C94F0A}
+.imb-cl{background:rgba(255,255,255,.92);color:#1A2744}
+.imb-cl:hover{background:#fff}
+#IMG_IMG{width:100%;height:auto;display:block;border-radius:12px;box-shadow:0 12px 44px rgba(0,0,0,.45);background:#fff}
+
 @media(max-width:760px){
+  .imb-btn{font-size:13.5px;padding:11px 15px}
   .hero h1{font-size:24px}
   .sh h2{font-size:21px}
   .g2,.g3{grid-template-columns:1fr}
@@ -406,7 +468,7 @@ window.MD={
 "c1_2":{t:"서론 ② 나열식 영업의 구조적 모순",b:'<p>특약을 나열하는 현행 손해보험 영업 방식은 단기적으로 고객에게 &lsquo;적은 비용으로 다수의 보장을 빈틈없이 챙길 수 있다&rsquo;는 심리적 안도감을 부여하고, 맞춤형 컨설팅이라는 환상을 심어주어 신속한 계약 체결을 유도하는 데 일정 부분 기여해 온 것이 사실이다. 그러나 장기적인 관점에서 이러한 접근법은 심각한 구조적 모순과 위험성을 내포하고 있다. 제한된 상담 시간 내에 설계사가 일방적으로 쏟아내는 방대한 양의 특약 정보는 고객의 인지적 한계를 초과하여 <b>정보 과부하(Information Overload)</b>를 유발하며, 보험 가입의 근본적인 목적인 &lsquo;왜 이 보장이 내 삶에 필수적인가&rsquo;에 대한 깊은 고찰, 즉 니즈(Needs)를 휘발시킨다. 결국 고객은 자신이 무엇을 위해 보험에 가입했는지 그 본질적 가치를 망각하게 되며, 이는 은퇴 이후 소득이 급감하고 보험료 납입 부담이 가중되는 시기에 <b>민간 보험을 가장 먼저 해지하게 만드는 결정적인 원인</b>으로 작용한다.</p>'},
 "c1_3":{t:"서론 ③ 본 연구의 목적",b:'<p>본 연구는 손해보험 영업 현장에 만연한 특약 나열식 판매 기법이 지닌 맹점과 한계를 행동경제학적 관점과 초고령사회 진입에 따른 거시적 인구·의료비 통계를 융합하여 심층적으로 규명하고자 한다. 단순히 많은 정보를 제공하는 것이 합리적 의사결정을 돕는다는 전통적 경제학의 오류를 반박하고, 선택의 역설(Paradox of Choice)이 고객의 의사결정에 미치는 파괴적 영향을 분석한다. 나아가 생명보험 업계가 전통적으로 구사해 온 <b>&lsquo;생애주기(Life Cycle)&rsquo; 중심의 철학과 &lsquo;니즈 환기&rsquo; 화법</b>을 손해보험의 3대 질병(암, 뇌혈관, 허혈성 심장질환) 및 다빈도 질병 컨설팅에 이식하는 방안을 모색한다. 특히, 고령층의 의료비 폭증과 소득 단절이라는 이중고를 해결하기 위한 현실적이고도 강력한 대안으로서 <b>60세 이전 &lsquo;단기 완납(예: 10년납)&rsquo; 구조</b>의 전략적 우위성을 입증하고, 현장 설계사들의 근본적인 인식 전환을 이끌어낼 수 있는 체계적인 교육 교안 개발 방향을 제시하는 데 그 목적이 있다.</p>'},
 
-"c2_1":{t:"인지적 과부하와 선택의 역설에 따른 가치 훼손",b:'<p>손해보험 설계사들이 현장에서 가장 빈번하게 범하는 전략적 오류는 &lsquo;정보의 양이 곧 컨설팅의 질을 결정한다&rsquo;는 맹신이다. 이는 소비자에게 더 많은 선택지와 정보를 제공할수록 개인의 효용과 후생이 극대화된다는 전통적 경제학의 전제에 기반하고 있다<sup>1</sup>. 그러나 행동경제학의 수많은 실증 연구들은 소비자가 처리할 수 있는 정보의 양에는 명백한 한계가 존재하며, 이를 초과하는 정보가 주어질 경우 오히려 비합리적인 의사결정을 내리거나 결정 자체를 포기해 버리는 현상이 발생함을 증명하고 있다. 배리 슈워츠(Barry Schwartz)가 주창한 <b>&lsquo;선택의 역설(Paradox of Choice)&rsquo;</b> 이론은 사람들이 불확실한 상황에서 과도한 선택지에 직면했을 때, 만족감이 하락하고 선택에 대한 후회와 자책이 증가하는 심리적 메커니즘을 명확히 설명한다<sup>2</sup>.</p><p>보험 가입 시 소비자는 복잡한 보장 내용, 면책 조건, 감액 기간 등 고도의 전문 지식이 요구되는 선택과 정보에 직면하게 된다. 이때 시장의 객관적인 통계나 과학적 수치를 심도 있게 분석하여 이성적인 판단을 내리기보다는, 자신의 과거 경험이나 어림짐작에 의존하는 휴리스틱(Heuristics)적 결정에 빠지기 쉽다<sup>5</sup>. 설계사가 30개에서 50개에 이르는 각종 수술비, 입원일당, 후유장해 특약을 속사포처럼 쏟아낼 때, 고객의 뇌는 즉각적인 정보 과부하 상태에 빠지게 된다<sup>5</sup>. 고객은 각 특약의 실질적인 필요성이나 발병 확률을 계산하는 대신, 설계사의 권유에 맹목적으로 동의하거나 당장의 &lsquo;월 보험료 총액&rsquo;이라는 단편적인 숫자에만 집착하여 상품을 구매하게 된다.</p><p>특히 정보 과부하 상황은 개별 특약이 지닌 본질적인 가치를 심각하게 훼손하는 부작용을 낳는다. 이는 온라인 데이팅 애플리케이션의 매칭 알고리즘 사례를 통해 쉽게 유추할 수 있다. 한 연구에 따르면, 데이팅 앱 운영자가 사용자들의 매칭 점수를 인위적으로 상향 조정하여 수십 명의 &lsquo;매우 적합한 매칭 상대&rsquo;를 동시에 보여주었을 때, 사용자들은 눈앞의 상대방에게 집중하여 관계를 발전시키기보다는 끝없이 화면을 넘기며 &lsquo;더 나은 선택지가 있을 것&rsquo;이라는 착각에 빠져 결국 누구와도 깊은 관계를 맺지 못하는 결과를 초래했다<sup>2</sup>. 이와 동일한 심리적 역동이 특약 나열식 보험 영업에서도 발생한다. 설계사가 수십 개의 자잘한 특약을 끊임없이 나열할 때, 뇌혈관질환 진단비나 암 수술비와 같이 고객의 생존을 결정지을 수 있는 핵심 특약들의 가치마저 수백 원짜리 부가 서비스 중 하나로 전락해 버린다. 즉, 나열된 특약의 수가 증가할수록 각 보장이 고객의 삶에 미치는 중대성은 희석되며, 이는 보험을 재무적 안전망이 아닌 단순한 가성비 소비재로 전락시키는 결과를 낳는다<sup>1</sup>.</p>'},
+"c2_1":{t:"인지적 과부하와 선택의 역설에 따른 가치 훼손",b:'<div class="diagram"><img src="assets/mechanism/sales-c2_1.webp" alt="정보 과부하와 선택의 역설" onclick="event.stopPropagation();OI(&#39;c2_1&#39;)" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div><p>손해보험 설계사들이 현장에서 가장 빈번하게 범하는 전략적 오류는 &lsquo;정보의 양이 곧 컨설팅의 질을 결정한다&rsquo;는 맹신이다. 이는 소비자에게 더 많은 선택지와 정보를 제공할수록 개인의 효용과 후생이 극대화된다는 전통적 경제학의 전제에 기반하고 있다<sup>1</sup>. 그러나 행동경제학의 수많은 실증 연구들은 소비자가 처리할 수 있는 정보의 양에는 명백한 한계가 존재하며, 이를 초과하는 정보가 주어질 경우 오히려 비합리적인 의사결정을 내리거나 결정 자체를 포기해 버리는 현상이 발생함을 증명하고 있다. 배리 슈워츠(Barry Schwartz)가 주창한 <b>&lsquo;선택의 역설(Paradox of Choice)&rsquo;</b> 이론은 사람들이 불확실한 상황에서 과도한 선택지에 직면했을 때, 만족감이 하락하고 선택에 대한 후회와 자책이 증가하는 심리적 메커니즘을 명확히 설명한다<sup>2</sup>.</p><p>보험 가입 시 소비자는 복잡한 보장 내용, 면책 조건, 감액 기간 등 고도의 전문 지식이 요구되는 선택과 정보에 직면하게 된다. 이때 시장의 객관적인 통계나 과학적 수치를 심도 있게 분석하여 이성적인 판단을 내리기보다는, 자신의 과거 경험이나 어림짐작에 의존하는 휴리스틱(Heuristics)적 결정에 빠지기 쉽다<sup>5</sup>. 설계사가 30개에서 50개에 이르는 각종 수술비, 입원일당, 후유장해 특약을 속사포처럼 쏟아낼 때, 고객의 뇌는 즉각적인 정보 과부하 상태에 빠지게 된다<sup>5</sup>. 고객은 각 특약의 실질적인 필요성이나 발병 확률을 계산하는 대신, 설계사의 권유에 맹목적으로 동의하거나 당장의 &lsquo;월 보험료 총액&rsquo;이라는 단편적인 숫자에만 집착하여 상품을 구매하게 된다.</p><p>특히 정보 과부하 상황은 개별 특약이 지닌 본질적인 가치를 심각하게 훼손하는 부작용을 낳는다. 이는 온라인 데이팅 애플리케이션의 매칭 알고리즘 사례를 통해 쉽게 유추할 수 있다. 한 연구에 따르면, 데이팅 앱 운영자가 사용자들의 매칭 점수를 인위적으로 상향 조정하여 수십 명의 &lsquo;매우 적합한 매칭 상대&rsquo;를 동시에 보여주었을 때, 사용자들은 눈앞의 상대방에게 집중하여 관계를 발전시키기보다는 끝없이 화면을 넘기며 &lsquo;더 나은 선택지가 있을 것&rsquo;이라는 착각에 빠져 결국 누구와도 깊은 관계를 맺지 못하는 결과를 초래했다<sup>2</sup>. 이와 동일한 심리적 역동이 특약 나열식 보험 영업에서도 발생한다. 설계사가 수십 개의 자잘한 특약을 끊임없이 나열할 때, 뇌혈관질환 진단비나 암 수술비와 같이 고객의 생존을 결정지을 수 있는 핵심 특약들의 가치마저 수백 원짜리 부가 서비스 중 하나로 전락해 버린다. 즉, 나열된 특약의 수가 증가할수록 각 보장이 고객의 삶에 미치는 중대성은 희석되며, 이는 보험을 재무적 안전망이 아닌 단순한 가성비 소비재로 전락시키는 결과를 낳는다<sup>1</sup>.</p>'},
 "c2_2":{t:"신뢰재 시장에서의 역선택과 정보 혼탁 현상",b:'<p>보험 상품은 그 자체의 무형적 특성으로 인해 소비자가 가입 전 탐색을 통해서는 물론이고, 상품을 구매하고 상당한 시간이 흐르거나 실제 보험 사고가 발생하기 전까지는 그 품질을 전혀 평가할 수 없는 전형적인 <b>&lsquo;신뢰재(Credence Good)&rsquo;</b>에 해당한다<sup>7</sup>. 신뢰재 시장에서는 상품에 대한 정보를 독점하고 있는 공급자(보험회사 및 설계사)와 정보를 알지 못하는 소비자 간에 극심한 정보 비대칭이 발생하며, 이는 필연적으로 시장의 실패와 역선택(Adverse Selection) 문제를 야기한다<sup>6</sup>.</p><p>현행 손해보험의 특약 나열식 영업은 표면적으로는 이러한 정보 비대칭을 해소하고 고객에게 투명한 정보를 제공하는 것처럼 포장된다. 그러나 실질적으로는 과도하게 복잡하고 전문화된 특약명을 무분별하게 나열함으로써 정보의 비대칭성을 해소하기는커녕 &lsquo;정보의 혼탁함&rsquo;을 가중시킨다<sup>7</sup>. 소비자는 자신이 제공받은 방대한 정보 속에서 무엇이 자신에게 진정으로 유리한 조건인지 선별할 능력을 상실하게 되며, 이는 결과적으로 보험 가입 시 소비자의 올바른 판단을 저해하는 강력한 장애물로 작용한다<sup>5</sup>. 가입 당시 수십 개의 특약 설명을 들었음에도 불구하고 훗날 중증 질환 진단을 받았을 때 보장 공백이 발생한다면, 소비자는 정보 과부하 상태에서 제대로 인지하지 못했던 면책 조항을 뒤늦게 깨닫고 극심한 배신감과 함께 설계사에 대한 신뢰를 철회하게 된다. 결국 나열식 설명은 단기적인 실적 창출에는 유리할지 몰라도, <b>장기 유지율과 고객 생애 가치를 파괴하는 지름길</b>인 셈이다.</p>'},
 "c2_3":{t:"고객 집중도 하락 및 휴리스틱 의사결정 고착화",b:'<p>행동경제학과 인지심리학의 연구들은 현대인이 정보에 짓눌렸을 때 제때 올바른 결정을 내리는 것이 거의 불가능에 가깝다는 점을 지적한다<sup>1</sup>. 인간의 뇌는 복잡한 인지적 자원 소모를 최소화하려는 <b>&lsquo;인지적 구두쇠(Cognitive Miser)&rsquo;</b>의 특성을 지닌다. 설계사가 가입 제안서를 펼치고 특약의 종류, 가입 금액, 보장 기간, 갱신 여부 등을 기계적으로 읊어 내려갈 때, 고객의 집중도는 채 5분을 넘기지 못하고 급격히 하락한다.</p><p>집중도가 하락한 고객은 위험을 회피하거나 가장 안전하고 단순해 보이는 선택을 하려는 경향성을 보인다<sup>3</sup>. 이 과정에서 고객의 머릿속에는 &lsquo;내가 65세에 뇌졸중으로 쓰러졌을 때 이 보험이 내 가족의 생계를 지켜줄 것인가&rsquo;라는 본질적인 질문은 사라지고, &lsquo;이 많은 특약을 다 넣고도 월 5만 원이면 꽤 괜찮은 거래군&rsquo;이라는 식의 휴리스틱 의사결정만이 남게 된다<sup>5</sup>. 보험 가입의 동기가 이처럼 얕고 외부적인 조건(설계사의 화술, 가성비)에만 의존할 경우, 고객의 내부적 동기(질병으로부터 나와 가족을 보호하겠다는 강력한 니즈)는 전혀 형성되지 않는다. 이러한 얕은 동기는 훗날 고객이 재정적 어려움에 처했을 때 가장 먼저 보험을 해약하는 심리적 기저로 작용한다.</p>'},
 
@@ -432,5 +494,16 @@ window.MD={
 "refs":{t:"참고 자료 (26)",b:'<p>본 자료 전문에 인용된 모든 출처입니다.</p><ul class="reflist"><li><span class="num">1</span>행동경제학 | 미셸 배들리 - 교보문고<br><a href="https://product.kyobobook.co.kr/detail/S000001938243">링크</a></li><li><span class="num">2</span>오늘 &ldquo;선택의 역설&rdquo;에 대해 알게 됐어. … : r/todayilearned - Reddit<br><a href="https://www.reddit.com/r/todayilearned/comments/11yyumj/til_of_the_paradox_of_choice_research_indicates/?tl=ko">링크</a></li><li><span class="num">3</span>불확실성과 위험 경제학 … | Flashcards World<br><a href="https://flashcards.world/flashcards/sets/4e20256c-3aaf-464a-8913-0bfbf76a3acd">링크</a></li><li><span class="num">4</span>소비자 선택 소비자 선택의 이해: 의사결정에 영향을 미치는 요소 - FasterCapital<br><a href="https://fastercapital.com/ko/content/%EC%86%8C%EB%B9%84%EC%9E%90-%EC%84%A0%ED%83%9D-%EC%86%8C%EB%B9%84%EC%9E%90-%EC%84%A0%ED%83%9D%EC%9D%98-%EC%9D%B4%ED%95%B4--%EC%9D%98%EC%82%AC%EA%B2%B0%EC%A0%95%EC%97%90-%EC%98%81%ED%96%A5%EC%9D%84-%EB%AF%B8%EC%B9%98%EB%8A%94-%EC%9A%94%EC%86%8C.html">링크</a></li><li><span class="num">5</span>행동경제학의 소비자정책 적용사례 및 시사점 - 한국소비자원<br><a href="https://www.kca.go.kr/home/board/download.do?menukey=4083&fno=10013194&bid=00000018&did=1001842768">링크</a></li><li><span class="num">6</span>[전자책] 역선택의 이해 … | 씨익북스 편집부 2팀 - 예스24<br><a href="https://www.yes24.com/product/goods/145650244">링크</a></li><li><span class="num">7</span>Ⅲ. 사회적 신뢰의 중요성 - 보험연구원<br><a href="https://www.kiri.or.kr/pdf/%EC%97%B0%EA%B5%AC%EC%9E%90%EB%A3%8C/%EC%97%B0%EA%B5%AC%EB%B3%B4%EA%B3%A0%EC%84%9C/nre2020-10-3.pdf">링크</a></li><li><span class="num">8</span>&ldquo;나이 들어봐, 안 아픈데가 없어&rdquo;…노인 건보 진료비 50조 돌파 - 매일경제<br><a href="https://www.mk.co.kr/news/society/11479414">링크</a></li><li><span class="num">9</span>노인 건강보험 진료비, 5년간 39%↑ / KBS 2025.11.28. - YouTube<br><a href="https://www.youtube.com/watch?v=NUKbDRxtrPg">링크</a></li><li><span class="num">10</span>65세 이상 노인 병원비 50조원 돌파…전체 진료비의 거의 &lsquo;절반&rsquo; - 연합뉴스<br><a href="https://www.yna.co.kr/view/AKR20250805131400530">링크</a></li><li><span class="num">11</span>[100세 건강] 국민 10명 중 8명은 만성질환 사망...노인이 조심해야할 5대 질환은 - 뉴스퀘스트<br><a href="https://www.newsquest.co.kr/news/articleView.html?idxno=259458">링크</a></li><li><span class="num">12</span>&ldquo;평생 의료비 2억 5천만 원&rdquo;…78살에 가장 많이 쓴다 / KBS 2026.01.07. - YouTube<br><a href="https://www.youtube.com/watch?v=YjU2dobI0WQ">링크</a></li><li><span class="num">13</span>우리나라의 생애의료비 분포 추정 - 한국보건사회연구원<br><a href="https://www.kihasa.re.kr/hswr/assets/pdf/583/journal-31-1-194.pdf">링크</a></li><li><span class="num">14</span>건강/의료 데이터로 보는 시니어 비용 구조 - 케이시니어뉴스<br><a href="https://www.kseniornews.com/news/articleView.html?idxno=26642">링크</a></li><li><span class="num">15</span>점진적 은퇴와 부분연금제도 연구 - 노동연구원<br><a href="https://www.elabor.co.kr/store/data/%EB%85%B8%EB%8F%99%EC%97%B0%EC%97%B0%EA%B5%AC%EB%B3%B4%EA%B3%A0%EC%84%9C-%EC%A0%90%EC%A7%84%EC%A0%81%EC%9D%80%ED%87%B4%EC%99%80%EB%B6%80%EB%B6%84%EC%97%B0%EA%B8%88%EC%A0%9C%EB%8F%84%EC%97%B0%EA%B5%AC.pdf">링크</a></li><li><span class="num">16</span>은퇴 후 건보료 공포…재산 부과 체계가 낳은 기형적 선택 - 연합뉴스<br><a href="https://www.yna.co.kr/view/AKR20260310117300530">링크</a></li><li><span class="num">17</span>5060+ 은퇴 후 건강보험료는 어떻게? - 국민건강보험공단<br><a href="https://www.nhis.or.kr/static/alim/paper/oldpaper/202309/sub/section3_3.html">링크</a></li><li><span class="num">18</span>은퇴 후 달라지는 건강보험료, 폭탄이 될 수도 있다? - YouTube<br><a href="https://www.youtube.com/watch?v=QE71kV8syoY">링크</a></li><li><span class="num">19</span>고령화에 가파른 의료비 증가…&ldquo;2072년 건보료율 25% 달할 수도&rdquo; - 연합뉴스<br><a href="https://www.yna.co.kr/view/AKR20250726040500530">링크</a></li><li><span class="num">20</span>은퇴 후 메디케어 보험료, 소득 따라 두세 배 뛴다 - 미주중앙일보<br><a href="https://www.koreadaily.com/article/20250923225358877">링크</a></li><li><span class="num">21</span>전자민원 &gt; 개인 &gt; 전체 - 국민연금공단<br><a href="https://www.nps.or.kr/elctcvlcpt/comm/getOHAC0000M3.do">링크</a></li><li><span class="num">22</span>보험 실전 화법 | 김동범 - 국내도서 - 교보문고<br><a href="https://product.kyobobook.co.kr/detail/S000213492602">링크</a></li><li><span class="num">23</span>[병오년 알짜 금융상품-생보사] 보험 하나로 &lsquo;건강·사망·노후&rsquo; 함께 관리 - 팍스경제TV<br><a href="https://www.paxetv.com/news/articleView.html?idxno=262174">링크</a></li><li><span class="num">24</span>ABL건강하면THE소중한종신보험(해약환급금 일부지급형) - ABL생명<br><a href="https://www.abllife.co.kr/cms/prdt/wlifeFprd/__icsFiles/afieldfile/2025/09/29/(%EB%AC%B4)ABL%EA%B1%B4%EA%B0%95%ED%95%98%EB%A9%B4THE%EC%86%8C%EC%A4%91%ED%95%9C%EC%A2%85%EC%8B%A0%EB%B3%B4%ED%97%98(%ED%95%B4%EC%95%BD%ED%99%98%EA%B8%89%EA%B8%88_%EC%9D%BC%EB%B6%80%EC%A7%80%EA%B8%89%ED%98%95)2504_20251001.pdf">링크</a></li><li><span class="num">25</span>한화생명, &lsquo;밸류플러스보장보험&rsquo; 출시…&ldquo;노후 요양까지 대비&rdquo; - 서울경제TV<br><a href="https://www.sentv.co.kr/article/view/sentv202604010044">링크</a></li><li><span class="num">26</span>한화생명, 노후 장기요양까지 대비 &lsquo;밸류플러스보장보험&rsquo; 출시 - Daum<br><a href="https://v.daum.net/v/zInTb0mjj6?f=p">링크</a></li></ul>'}
 };
 </script>
+<!-- 인포그래픽 라이트박스 -->
+<div id="IMB" onclick="if(event.target===this)CI()">
+  <div class="imb-box">
+    <div class="imb-bar">
+      <button class="imb-btn imb-dl" onclick="DLI()">⬇ 다운로드</button>
+      <button class="imb-btn imb-cl" onclick="CI()">✕ 닫기</button>
+    </div>
+    <img id="IMG_IMG" src="" alt="인포그래픽">
+  </div>
+</div>
+
 </body>
 </html>
