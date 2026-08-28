@@ -42,13 +42,112 @@ function CI(){
   var bg=document.getElementById('IMB');
   if(bg)bg.style.display='none';
 }
-function DLI(){
+/* ★ 인쇄/다운로드/전송 팝업 제어 */
+function OPA(){
+  var bg=document.getElementById('PRPOP');
+  if(!window.__curImg||!bg)return;
+  bg.style.display='flex';
+}
+function CPA(){
+  var bg=document.getElementById('PRPOP');
+  if(bg)bg.style.display='none';
+}
+function OPB(){
+  var bg=document.getElementById('SVPOP');
+  if(!window.__curImg||!bg)return;
+  var msg=document.getElementById('SV_MSG');
+  if(msg){msg.style.display='none';msg.textContent='';}
+  CPA();
+  bg.style.display='flex';
+}
+function CPB(){
+  var bg=document.getElementById('SVPOP');
+  if(bg)bg.style.display='none';
+}
+
+/* 인쇄: 인쇄 전용 컨테이너에 현재 이미지를 넣고 window.print() 호출 */
+function PR_GO(){
   var d=window.__curImg;
   if(!d)return;
+  CPA();
+  var pimg=document.getElementById('PRINT_IMG');
+  if(!pimg)return;
+  var fired=false;
+  function launch(){
+    if(fired)return;
+    fired=true;
+    window.print();
+  }
+  function afterReady(){
+    if(pimg.decode){pimg.decode().then(launch).catch(launch);}
+    else{launch();}
+  }
+  pimg.onload=afterReady;
+  pimg.onerror=launch;
+  pimg.alt=d.name;
+  pimg.src=d.src;
+  if(pimg.complete)afterReady();
+}
+
+/* 전송하기: 모바일은 OS 공유 시트(카카오톡 등), 데스크톱(공유 불가)은 안내 문구 + 다운로드로 대체 */
+function SV_SEND(){
+  var d=window.__curImg;
+  if(!d)return;
+  var msg=document.getElementById('SV_MSG');
+  if(msg){msg.style.display='none';msg.textContent='';}
   fetch(d.src).then(function(res){return res.blob();}).then(function(blob){
     var file=null;
     try{file=new File([blob],d.name,{type:blob.type||'image/png'});}catch(e){}
-    /* 모바일: Web Share API로 카카오톡 등 공유 시트 */
+    if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
+      navigator.share({files:[file],title:d.name}).then(function(){
+        CPB();
+      }).catch(function(err){
+        if(err&&err.name==='AbortError')return;
+        __saveBlob(blob,d.name);
+        CPB();
+      });
+      return;
+    }
+    if(msg){
+      msg.textContent='카카오톡 전송은 모바일에서 가능합니다. PC에서는 다운로드를 이용해주세요.';
+      msg.style.display='block';
+    }
+    __saveBlob(blob,d.name);
+  }).catch(function(){
+    window.open(d.src,'_blank');
+  });
+}
+
+/* 다운로드: 데스크톱(File System Access API 지원)은 저장 위치 선택,
+   미지원 데스크톱(Safari/Firefox)은 <a download> 방식,
+   모바일은 OS 공유 시트를 통해 "사진에 저장/갤러리에 저장" 유도 */
+function SV_SAVE(){
+  var d=window.__curImg;
+  if(!d)return;
+  if(window.showSaveFilePicker){
+    var pPromise=window.showSaveFilePicker({
+      suggestedName:d.name,
+      types:[{description:'Image',accept:_svAccept(d.name)}]
+    });
+    CPB();
+    pPromise.then(function(handle){
+      return fetch(d.src).then(function(r){return r.blob();}).then(function(blob){
+        return handle.createWritable().then(function(w){
+          return w.write(blob).then(function(){return w.close();});
+        });
+      });
+    }).catch(function(err){
+      if(err&&err.name==='AbortError')return;
+      fetch(d.src).then(function(r){return r.blob();}).then(function(blob){
+        __saveBlob(blob,d.name);
+      }).catch(function(){window.open(d.src,'_blank');});
+    });
+    return;
+  }
+  CPB();
+  fetch(d.src).then(function(r){return r.blob();}).then(function(blob){
+    var file=null;
+    try{file=new File([blob],d.name,{type:blob.type||'image/png'});}catch(e){}
     if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
       navigator.share({files:[file],title:d.name}).catch(function(err){
         if(err&&err.name==='AbortError')return;
@@ -56,11 +155,18 @@ function DLI(){
       });
       return;
     }
-    /* 데스크톱 등: 직접 다운로드 */
     __saveBlob(blob,d.name);
   }).catch(function(){
     window.open(d.src,'_blank');
   });
+}
+function _svAccept(name){
+  var ext=(name.split('.').pop()||'png').toLowerCase();
+  var mimeMap={png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',webp:'image/webp',svg:'image/svg+xml',gif:'image/gif'};
+  var m=mimeMap[ext]||'image/png';
+  var o={};
+  o[m]=['.'+ext];
+  return o;
 }
 function __saveBlob(blob,name){
   var url=URL.createObjectURL(blob);
@@ -200,6 +306,30 @@ footer b{color:#FFB37E}
 .imb-cl:hover{background:#fff}
 #IMG_IMG{width:100%;height:auto;display:block;border-radius:12px;box-shadow:0 12px 44px rgba(0,0,0,.45);background:#fff}
 
+/* 인쇄/다운로드/전송 팝업 (Popup A / B 공용) */
+.pp-ov{display:none;position:fixed;inset:0;z-index:10010;background:rgba(20,25,38,.55);align-items:center;justify-content:center;padding:16px}
+#SVPOP{z-index:10011}
+.pp-box{background:#fff;border-radius:16px;max-width:320px;width:100%;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.pp-head{background:linear-gradient(120deg,var(--navy),var(--navy2));color:#fff;padding:16px 20px;font-size:15.5px;font-weight:800}
+.pp-body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:10px}
+.pp-btn{font-family:'Noto Sans KR',sans-serif;font-size:14.5px;font-weight:800;border:none;border-radius:10px;padding:12px 16px;cursor:pointer;line-height:1}
+.pp-btn:active{transform:scale(.97)}
+.pp-primary{background:var(--or);color:#fff}
+.pp-primary:hover{background:var(--ord)}
+.pp-ghost{background:#F2EEE8;color:var(--navy)}
+.pp-ghost:hover{background:#E9E3D9}
+.pp-msg{font-size:12.5px;color:var(--gray);background:#FFF9E8;border-left:3px solid #E5A00D;border-radius:0 8px 8px 0;padding:8px 10px;margin:0 0 4px;display:none;line-height:1.5}
+
+/* 인쇄 전용 */
+#PRINTAREA{display:none}
+@media print{
+  body>*:not(#PRINTAREA){display:none!important}
+  body{background:#fff}
+  #PRINTAREA{display:block!important;position:static;margin:0;padding:0;width:100%}
+  #PRINTAREA img{width:100%;height:auto;max-width:100%;page-break-inside:avoid}
+  @page{margin:10mm}
+}
+
 /* MOBILE */
 @media(max-width:760px){
   .hero h1{font-size:25px}
@@ -212,6 +342,7 @@ footer b{color:#FFB37E}
   .nav-back span.label{display:none}
   body{font-size:16px}
   .imb-btn{font-size:13.5px;padding:11px 15px}
+  .pp-btn{font-size:13.5px;padding:11px 14px}
 }
 @media(min-width:761px) and (max-width:960px){
   .g3{grid-template-columns:1fr 1fr}
@@ -239,12 +370,40 @@ footer b{color:#FFB37E}
 <div id="IMB" onclick="if(event.target===this)CI()">
   <div class="imb-box">
     <div class="imb-bar">
-      <button class="imb-btn imb-dl" onclick="DLI()">⬇ 다운로드</button>
+      <button class="imb-btn imb-dl" onclick="OPA()">🖨 인쇄</button>
       <button class="imb-btn imb-cl" onclick="CI()">✕ 닫기</button>
     </div>
     <img id="IMG_IMG" src="" alt="인포그래픽">
   </div>
 </div>
+
+<!-- 인쇄/다운로드 선택 -->
+<div id="PRPOP" class="pp-ov" onclick="if(event.target===this)CPA()">
+  <div class="pp-box" role="dialog" aria-modal="true" aria-label="이미지 내보내기">
+    <div class="pp-head">이미지 내보내기</div>
+    <div class="pp-body">
+      <button class="pp-btn pp-primary" onclick="PR_GO()">🖨 인쇄</button>
+      <button class="pp-btn pp-primary" onclick="OPB()">⬇ 다운로드</button>
+      <button class="pp-btn pp-ghost" onclick="CPA()">취소</button>
+    </div>
+  </div>
+</div>
+
+<!-- 전송/저장 선택 -->
+<div id="SVPOP" class="pp-ov" onclick="if(event.target===this)CPB()">
+  <div class="pp-box" role="dialog" aria-modal="true" aria-label="다운로드">
+    <div class="pp-head">다운로드</div>
+    <div class="pp-body">
+      <p class="pp-msg" id="SV_MSG"></p>
+      <button class="pp-btn pp-primary" onclick="SV_SEND()">📤 전송하기</button>
+      <button class="pp-btn pp-primary" onclick="SV_SAVE()">⬇ 다운로드</button>
+      <button class="pp-btn pp-ghost" onclick="CPB()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 인쇄 전용 영역: 화면에는 항상 숨김, @media print에서만 표시 -->
+<div id="PRINTAREA"><img id="PRINT_IMG" src="" alt=""></div>
 
 <!-- 모달 -->
 <div id="MB" onclick="if(event.target===this)CM()">
