@@ -280,6 +280,10 @@ footer b{color:#FFB37E}
 .diagram{background:#FBF8F5;border:1.5px solid #EEE7DF;border-radius:14px;padding:12px;margin:0 0 16px;overflow:hidden}
 .diagram img{display:block;width:100%;height:auto;max-width:100%;border-radius:10px}
 .diagram-cap{text-align:center;font-size:13px;color:#6B7078;margin-top:10px;font-weight:700;letter-spacing:.2px}
+.imgbtns{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 18px}
+.imgbtn{flex:1 1 0;min-width:158px;display:flex;align-items:center;justify-content:center;gap:8px;background:#fff;border:2px solid #EEE7DF;border-bottom:4px solid #E8651A;border-radius:12px;padding:13px 12px;cursor:pointer;font-family:inherit;font-size:14.5px;font-weight:800;color:#1A2744;line-height:1.35;text-align:center}
+.imgbtn:active{border-color:#E8651A;background:#FFF3EA}
+.imgbtn .ib-ico{flex:0 0 auto;font-size:16px;line-height:1}
 
 /* 인포그래픽 버튼 (히어로) */
 .hero-info-btn{margin-top:18px;display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.3);color:#fff;font-family:inherit;font-size:14.5px;font-weight:800;padding:11px 18px;border-radius:12px;cursor:pointer}
@@ -335,6 +339,9 @@ footer b{color:#FFB37E}
   body{font-size:16px}
   .imb-btn{font-size:13.5px;padding:11px 15px}
   .pp-btn{font-size:13.5px;padding:11px 14px}
+  .imgbtns{gap:8px}
+  .imgbtn{flex:1 1 calc(50% - 4px);min-width:0;font-size:13px;padding:11px 8px;gap:5px}
+  .imgbtn .ib-ico{font-size:14px}
 }
 @media(min-width:761px) and (max-width:960px){
   .g3{grid-template-columns:1fr 1fr}
@@ -460,6 +467,17 @@ function renderSection(sec,si){
     var secImgKey='sec'+si;
     window.IMGDATA[secImgKey]={src:sec.image.src,name:(sec.image.alt||sec.title||'infographic')+'.'+_extOf(sec.image.src)};
     h+='<div class="diagram"><img src="'+_t(sec.image.src)+'" alt="'+_t(sec.image.alt||sec.title)+'" onclick="OI(\''+secImgKey+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
+  }
+  if(sec.imgButtons&&sec.imgButtons.length){
+    h+='<div class="imgbtns">';
+    (sec.imgButtons||[]).forEach(function(b,bi){
+      if(!b||!b.src)return;
+      var bk='sec'+si+'b'+bi;
+      window.IMGDATA[bk]={src:b.src,name:(b.alt||b.label||'infographic')+'.'+_extOf(b.src)};
+      h+='<button type="button" class="imgbtn" onclick="OI(\''+bk+'\')">'+
+         '<span class="ib-ico">🖼</span><span class="ib-tx">'+_t(b.label)+'</span></button>';
+    });
+    h+='</div>';
   }
   if(sec.type==='cards'){
     h+='<div class="g '+_t(sec.grid||'g2')+'">';
