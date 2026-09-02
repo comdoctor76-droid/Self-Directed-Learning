@@ -24,6 +24,29 @@ function CM(){
   if(bg)bg.style.display='none';
 }
 
+/* ★ PDF 자료 뷰어 (페이지 이미지를 세로로 쌓아 스크롤) */
+function OPDF(){
+  var bg=document.getElementById('PDFB');
+  if(!bg)return;
+  var body=document.getElementById('PDF_BODY');
+  if(body&&!body.getAttribute('data-loaded')){
+    var n=parseInt(bg.getAttribute('data-pages'),10)||0,h='',i,p;
+    for(i=1;i<=n;i++){
+      p=(i<10?'0':'')+i;
+      h+='<div class="pdf-page"><img src="assets/docs/fullplan/p'+p+'.webp" alt="풀보장 가입설계 샘플 '+i+'쪽"'+(i>1?' loading="lazy"':'')+'></div>'
+        +'<div class="pdf-num">'+i+' / '+n+'</div>';
+    }
+    body.innerHTML=h;
+    body.setAttribute('data-loaded','1');
+  }
+  if(body)body.scrollTop=0;
+  bg.style.display='block';
+}
+function CPDF(){
+  var bg=document.getElementById('PDFB');
+  if(bg)bg.style.display='none';
+}
+
 /* ★ 인포그래픽 라이트박스 */
 window.IMGDATA={
   flow1:{src:'assets/mechanism/sales-flow1.webp',name:'손해보험_설계사의_치명적_영업_오류.webp'},
@@ -293,6 +316,27 @@ section{padding:52px 0 20px}
 footer{background:#1A2744;color:rgba(255,255,255,.75);text-align:center;padding:34px 16px;margin-top:50px;font-size:14.5px;line-height:1.9}
 footer b{color:#FFB37E}
 
+/* 자료 문서 열기 버튼 */
+.docbtn{display:flex;align-items:center;gap:14px;width:100%;background:#fff;border:2px solid #EEE7DF;border-left:6px solid #E8651A;border-radius:14px;padding:16px 18px;margin:4px 0 16px;cursor:pointer;font-family:inherit;text-align:left;box-shadow:0 4px 16px rgba(26,39,68,.06)}
+.docbtn:active{border-color:#E8651A}
+.docbtn .dico{flex:0 0 auto;font-size:26px;line-height:1}
+.docbtn .dtx{flex:1 1 auto;min-width:0}
+.docbtn .dtx b{display:block;font-size:17px;font-weight:900;color:#1A2744;margin-bottom:3px;line-height:1.35}
+.docbtn .dtx i{display:block;font-style:normal;font-size:13.5px;color:#6B7078;font-weight:500;line-height:1.45}
+.docbtn .dgo{flex:0 0 auto;font-size:14px;font-weight:800;color:#E8651A;white-space:nowrap}
+
+/* PDF 자료 뷰어 */
+#PDFB{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(20,25,38,.92);z-index:10020}
+.pdf-wrap{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column}
+.pdf-head{flex:0 0 auto;background:linear-gradient(120deg,#E8651A,#C94F0A);color:#fff;padding:13px 14px;display:flex;align-items:center;gap:10px}
+.pdf-head h3{flex:1 1 auto;font-size:17px;font-weight:900;min-width:0;line-height:1.35}
+.pdf-head .pdl{flex:0 0 auto;display:inline-block;background:rgba(255,255,255,.22);color:#fff;text-decoration:none;font-size:13px;font-weight:800;padding:8px 12px;border-radius:999px;white-space:nowrap}
+.pdf-head .pcl{flex:0 0 36px;height:36px;border:none;border-radius:50%;background:rgba(255,255,255,.25);color:#fff;font-size:19px;font-weight:900;cursor:pointer;padding:0;line-height:36px;text-align:center;font-family:inherit}
+.pdf-body{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 12px 30px;background:#5A5F6B}
+.pdf-page{max-width:900px;margin:0 auto}
+.pdf-page img{width:100%;height:auto;display:block;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,.35);background:#fff}
+.pdf-num{text-align:center;font-size:12.5px;color:rgba(255,255,255,.85);font-weight:700;margin:7px 0 14px}
+
 /* MODAL */
 #MB{display:none;padding:20px 16px}
 .mbox{background:#fff;border-radius:18px;max-width:760px;margin:0 auto;overflow:hidden}
@@ -373,6 +417,13 @@ footer b{color:#FFB37E}
   .mb{padding:16px 16px 22px;font-size:16px}
   .mh{padding:16px 18px}
   .mh h3{font-size:16.5px}
+  .docbtn{padding:14px 14px;gap:11px}
+  .docbtn .dtx b{font-size:15.5px}
+  .docbtn .dtx i{font-size:12.5px}
+  .docbtn .dgo{display:none}
+  .pdf-head h3{font-size:15.5px}
+  .pdf-head .pdl{font-size:12px;padding:7px 10px}
+  .pdf-body{padding:10px 8px 24px}
   .nav-back span.label{display:none}
   body{font-size:16px}
 }
@@ -445,6 +496,11 @@ footer b{color:#FFB37E}
     <h2>서론</h2>
     <p>왜 손해보험 영업은 '특약 나열'에서 '생애주기 니즈환기'로 전환해야 하는가.</p>
   </div>
+  <button class="docbtn" type="button" onclick="OPDF()">
+    <span class="dico">📄</span>
+    <span class="dtx"><b>풀보장 가입설계 샘플</b><i>가입제안서 13쪽 — 눌러서 바로 보기</i></span>
+    <span class="dgo">열기 →</span>
+  </button>
   <div class="g g3">
     <div class="card" onclick="OM('c1_1')"><span class="plus">+</span><span class="tag tn">배경</span><span class="ico">🏛️</span><h3>손해보험의 구조와 기능 중심 영업</h3><p>모듈형 특약 상품이 낳은 '기능 중심(Feature-focused)' 판매의 고착화</p></div>
     <div class="card" onclick="OM('c1_2')"><span class="plus">+</span><span class="tag tr">문제</span><span class="ico">⚠️</span><h3>나열식 영업의 구조적 모순</h3><p>정보 과부하 → 니즈 휘발 → 은퇴 후 가장 먼저 해지</p></div>
@@ -620,6 +676,18 @@ footer b{color:#FFB37E}
       <button class="mcl" onclick="CM()">✕</button>
     </div>
     <div class="mb" id="MC"></div>
+  </div>
+</div>
+
+<!-- PDF 자료 뷰어 -->
+<div id="PDFB" data-pages="13">
+  <div class="pdf-wrap">
+    <div class="pdf-head">
+      <h3>풀보장 가입설계 샘플</h3>
+      <a class="pdl" href="assets/docs/full-coverage-sample.pdf" target="_blank" rel="noopener">원본 PDF</a>
+      <button class="pcl" type="button" onclick="CPDF()" aria-label="닫기">✕</button>
+    </div>
+    <div class="pdf-body" id="PDF_BODY"></div>
   </div>
 </div>
 
