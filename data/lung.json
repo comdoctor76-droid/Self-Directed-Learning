@@ -317,6 +317,11 @@
       },
       "imgButtons": [
         {
+          "label": "모듈 0. 암진단의 대체담보",
+          "src": "assets/mechanism/lung-s5-mod0.png",
+          "alt": "모듈 0. 암진단의 대체담보 - 질병사망·3대질병사망·암진단II 설계 화면"
+        },
+        {
           "label": "모듈 1-1. 항암 최초1회한 치료비",
           "src": "assets/mechanism/lung-s5-mod1-1.webp",
           "alt": "모듈 1-1. 항암 최초1회한 치료비 설계 화면"
