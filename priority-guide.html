@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>암과 2대질병의 가입우선순위 | 스스로 학습하기</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+
+<script>
+function OM(key){
+  var bg=document.getElementById('MB');
+  var title=document.getElementById('MT');
+  var body=document.getElementById('MC');
+  var data=window.MD?window.MD[key]:null;
+  if(!data||!bg||!title||!body)return;
+  title.innerHTML=data.t;
+  body.innerHTML=data.b;
+  body.scrollTop=0;
+  bg.style.cssText='display:block;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(20,25,38,0.75);z-index:9999;overflow-y:auto;-webkit-overflow-scrolling:touch;';
+}
+function CM(){
+  var bg=document.getElementById('MB');
+  if(bg)bg.style.display='none';
+}
+
+/* ★ 인포그래픽 라이트박스 */
+window.IMGDATA={};
+window.__curImg=null;
+function OI(key){
+  var d=window.IMGDATA?window.IMGDATA[key]:null;
+  var bg=document.getElementById('IMB');
+  var img=document.getElementById('IMG_IMG');
+  if(!d||!bg||!img)return;
+  window.__curImg=d;
+  img.src=d.src;
+  img.alt=d.name;
+  bg.style.display='block';
+  bg.scrollTop=0;
+}
+function CI(){
+  var bg=document.getElementById('IMB');
+  if(bg)bg.style.display='none';
+}
+/* ★ 인쇄/다운로드/전송 팝업 제어 */
+function OPA(){
+  var bg=document.getElementById('PRPOP');
+  if(!window.__curImg||!bg)return;
+  bg.style.display='flex';
+}
+function CPA(){
+  var bg=document.getElementById('PRPOP');
+  if(bg)bg.style.display='none';
+}
+function OPB(){
+  var bg=document.getElementById('SVPOP');
+  if(!window.__curImg||!bg)return;
+  var msg=document.getElementById('SV_MSG');
+  if(msg){msg.style.display='none';msg.textContent='';}
+  CPA();
+  bg.style.display='flex';
+}
+function CPB(){
+  var bg=document.getElementById('SVPOP');
+  if(bg)bg.style.display='none';
+}
+
+/* 인쇄: 인쇄 전용 컨테이너에 현재 이미지를 넣고 window.print() 호출 */
+function PR_GO(){
+  var d=window.__curImg;
+  if(!d)return;
+  CPA();
+  var pimg=document.getElementById('PRINT_IMG');
+  if(!pimg)return;
+  var fired=false;
+  function launch(){
+    if(fired)return;
+    fired=true;
+    window.print();
+  }
+  function afterReady(){
+    if(pimg.decode){pimg.decode().then(launch).catch(launch);}
+    else{launch();}
+  }
+  pimg.onload=afterReady;
+  pimg.onerror=launch;
+  pimg.alt=d.name;
+  pimg.src=d.src;
+  if(pimg.complete)afterReady();
+}
+
+/* 전송하기: 모바일은 OS 공유 시트(카카오톡 등), 데스크톱(공유 불가)은 안내 문구 + 다운로드로 대체 */
+function SV_SEND(){
+  var d=window.__curImg;
+  if(!d)return;
+  var msg=document.getElementById('SV_MSG');
+  if(msg){msg.style.display='none';msg.textContent='';}
+  fetch(d.src).then(function(res){return res.blob();}).then(function(blob){
+    var file=null;
+    try{file=new File([blob],d.name,{type:blob.type||'image/png'});}catch(e){}
+    if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
+      navigator.share({files:[file],title:d.name}).then(function(){
+        CPB();
+      }).catch(function(err){
+        if(err&&err.name==='AbortError')return;
+        __saveBlob(blob,d.name);
+        CPB();
+      });
+      return;
+    }
+    if(msg){
+      msg.textContent='카카오톡 전송은 모바일에서 가능합니다. PC에서는 다운로드를 이용해주세요.';
+      msg.style.display='block';
+    }
+    __saveBlob(blob,d.name);
+  }).catch(function(){
+    window.open(d.src,'_blank');
+  });
+}
+
+/* 다운로드: 데스크톱(File System Access API 지원)은 저장 위치 선택,
+   미지원 데스크톱(Safari/Firefox)은 <a download> 방식,
+   모바일은 OS 공유 시트를 통해 "사진에 저장/갤러리에 저장" 유도 */
+function SV_SAVE(){
+  var d=window.__curImg;
+  if(!d)return;
+  if(window.showSaveFilePicker){
+    var pPromise=window.showSaveFilePicker({
+      suggestedName:d.name,
+      types:[{description:'Image',accept:_svAccept(d.name)}]
+    });
+    CPB();
+    pPromise.then(function(handle){
+      return fetch(d.src).then(function(r){return r.blob();}).then(function(blob){
+        return handle.createWritable().then(function(w){
+          return w.write(blob).then(function(){return w.close();});
+        });
+      });
+    }).catch(function(err){
+      if(err&&err.name==='AbortError')return;
+      fetch(d.src).then(function(r){return r.blob();}).then(function(blob){
+        __saveBlob(blob,d.name);
+      }).catch(function(){window.open(d.src,'_blank');});
+    });
+    return;
+  }
+  CPB();
+  fetch(d.src).then(function(r){return r.blob();}).then(function(blob){
+    var file=null;
+    try{file=new File([blob],d.name,{type:blob.type||'image/png'});}catch(e){}
+    if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
+      navigator.share({files:[file],title:d.name}).catch(function(err){
+        if(err&&err.name==='AbortError')return;
+        __saveBlob(blob,d.name);
+      });
+      return;
+    }
+    __saveBlob(blob,d.name);
+  }).catch(function(){
+    window.open(d.src,'_blank');
+  });
+}
+function _svAccept(name){
+  var ext=(name.split('.').pop()||'png').toLowerCase();
+  var mimeMap={png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',webp:'image/webp',svg:'image/svg+xml',gif:'image/gif'};
+  var m=mimeMap[ext]||'image/png';
+  var o={};
+  o[m]=['.'+ext];
+  return o;
+}
+function __saveBlob(blob,name){
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;a.download=name;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(url);},1500);
+}
+</script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#FBF8F5;color:#26282C;font-size:17px;line-height:1.65}
+:root{--or:#E8651A;--ord:#C94F0A;--ors:#FFF3EA;--navy:#1A2744;--navy2:#2C3F6E;--gray:#6B7078;--green:#1E8E5A;--red:#D6403A}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#1A2744 0%,#2C3F6E 60%,#3d5390 100%);color:#fff;padding:50px 20px 64px}
+.hero-in{max-width:1060px;margin:0 auto}
+.badge{display:inline-block;background:#E8651A;color:#fff;font-weight:700;font-size:14px;padding:7px 16px;border-radius:999px;margin-bottom:16px}
+.hero h1{font-size:32px;font-weight:900;line-height:1.3;margin-bottom:12px}
+.hero h1 span{color:#FFB37E}
+.hero p{font-size:17px;opacity:.9;max-width:680px}
+.tip{margin-top:22px;display:inline-block;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:11px 16px;font-size:14.5px}
+.tip b{color:#FFC79B}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.1);display:flex;align-items:center;gap:6px;padding:0 8px}
+.nav-back{flex:0 0 auto;display:flex;align-items:center;gap:5px;font-size:14px;font-weight:800;color:#1A2744;text-decoration:none;padding:9px 12px;border-radius:999px;white-space:nowrap}
+.nav-back:hover{background:#EBEFF8}
+.nav-sep{flex:0 0 auto;width:1px;height:22px;background:#EEE7DF}
+.nav-in{flex:1 1 auto;min-width:0;display:flex;overflow-x:auto;gap:4px;padding:9px 4px;scrollbar-width:none}
+.nav-in::-webkit-scrollbar{display:none}
+.nav a.navlink{flex:0 0 auto;font-size:14.5px;font-weight:700;color:#6B7078;text-decoration:none;padding:8px 14px;border-radius:999px;white-space:nowrap}
+.nav a.navlink:hover{background:#FFF3EA;color:#C94F0A}
+.nav-refresh{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;margin-left:2px;border-radius:50%;background:#F7F2EB;border:1px solid #EEE7DF;color:#1A2744;font-size:16px;cursor:pointer}
+.nav-refresh:hover{background:#EBEFF8}
+.nav-refresh:active{transform:scale(.9)}
+
+/* WRAP */
+.wrap{max-width:1060px;margin:0 auto;padding:0 16px}
+section{padding:52px 0 20px}
+.sh{margin-bottom:22px}
+.sh .no{display:block;color:#E8651A;font-weight:900;font-size:14px;letter-spacing:1.5px;margin-bottom:6px}
+.sh h2{font-size:26px;font-weight:900;color:#1A2744}
+.sh p{color:#6B7078;margin-top:7px;font-size:16px}
+.hint{display:inline-block;background:#FFF3EA;color:#C94F0A;font-size:14px;font-weight:700;border-radius:999px;padding:6px 14px;margin-top:10px}
+
+/* GRID */
+.g{display:grid;gap:14px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+
+/* CARD */
+.card{background:#fff;border:2px solid #EEE7DF;border-radius:16px;padding:22px 20px;cursor:pointer;position:relative;display:block;width:100%;text-align:left}
+.card:active{border-color:#E8651A;background:#FFF9F5}
+.ico{font-size:28px;margin-bottom:8px;display:block}
+.card h3{font-size:18px;font-weight:800;color:#1A2744;margin-bottom:6px;line-height:1.4}
+.card p{font-size:15px;color:#6B7078}
+.plus{position:absolute;top:16px;right:16px;width:28px;height:28px;border-radius:50%;background:#FFF3EA;color:#E8651A;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;line-height:1}
+.tag{display:inline-block;font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;margin-bottom:8px}
+.to{background:#FFF3EA;color:#C94F0A}
+.tg{background:#E7F5EE;color:#1E8E5A}
+.tr{background:#FCEBEA;color:#D6403A}
+.tn{background:#EBEFF8;color:#2C3F6E}
+
+/* TABLE (section-level, reused for modal too) */
+.mt-box{overflow:auto;margin:10px 0;border-radius:10px;box-shadow:0 3px 12px rgba(0,0,0,.07)}
+.mt{width:100%;border-collapse:collapse;font-size:14.5px;min-width:560px;background:#fff}
+.mt th{background:#E8651A;color:#fff;padding:11px 10px;font-weight:700;text-align:left}
+.mt td{padding:11px 10px;border-bottom:1px solid #F0EAE2;text-align:left;vertical-align:top;line-height:1.6}
+.mt tr:last-child td{border-bottom:none}
+
+/* 경고/OK박스 */
+.bad{background:#FCEEED;border-left:4px solid #D6403A;border-radius:0 8px 8px 0;padding:12px 14px;margin:12px 0;font-size:15.5px}
+.ok{background:#E9F6EF;border-left:4px solid #1E8E5A;border-radius:0 8px 8px 0;padding:12px 14px;margin:12px 0;font-size:15.5px}
+.note{background:#FFF9E8;border-left:4px solid #E5A00D;border-radius:0 8px 8px 0;padding:12px 14px;margin:12px 0;font-size:15.5px}
+
+/* 메인/섹션 하단 돌아가기 */
+.back-bottom{text-align:right;margin-top:20px}
+.back-bottom a{display:inline-flex;align-items:center;gap:5px;font-size:14px;font-weight:800;color:#C94F0A;text-decoration:none;padding:8px 14px;border-radius:999px;background:#FFF3EA}
+.back-bottom a:hover{background:#FFE6D2}
+
+/* FOOTER */
+footer{background:#1A2744;color:rgba(255,255,255,.75);text-align:center;padding:34px 16px;margin-top:50px;font-size:14.5px;line-height:1.9}
+footer b{color:#FFB37E}
+
+/* MODAL */
+#MB{display:none;padding:20px 16px}
+.mbox{background:#fff;border-radius:18px;max-width:720px;margin:0 auto;overflow:hidden}
+.mh{background:linear-gradient(120deg,#E8651A,#C94F0A);color:#fff;padding:20px 22px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;position:sticky;top:0}
+.mh h3{font-size:19px;font-weight:900;line-height:1.4}
+.mcl{flex:0 0 36px;height:36px;border:none;border-radius:50%;background:rgba(255,255,255,.25);color:#fff;font-size:19px;font-weight:900;cursor:pointer;line-height:36px;text-align:center;padding:0}
+.mb{padding:20px 22px 26px;font-size:16.5px}
+.mb h4{color:#C94F0A;font-size:17.5px;font-weight:800;margin:20px 0 8px;padding-left:10px;border-left:4px solid #E8651A}
+.mb h4:first-child{margin-top:0}
+.mb p{margin-bottom:11px;color:#2E3238;line-height:1.75}
+.mb b{color:#1A2744}
+.mb a{color:#C94F0A;font-weight:700;text-decoration:underline;text-decoration-color:#F6C9A8}
+.mb a:hover{color:#E8651A}
+.mb ul{margin:6px 0 12px 2px;list-style:none}
+.mb li{padding:7px 0 7px 26px;position:relative;color:#2E3238;line-height:1.7}
+.mb li::before{content:'✓';position:absolute;left:2px;color:#E8651A;font-weight:900}
+.mb li.n::before{content:'•';color:#2C3F6E;font-size:20px;line-height:1}
+.mb .ok{background:#E9F6EF;border-left:4px solid #1E8E5A;border-radius:0 8px 8px 0;padding:12px 14px;margin:11px 0;font-size:15.5px}
+.mb .note{background:#FFF9E8;border-left:4px solid #E5A00D;border-radius:0 8px 8px 0;padding:12px 14px;margin:11px 0;font-size:15.5px}
+.mb .bad{background:#FCEEED;border-left:4px solid #D6403A;border-radius:0 8px 8px 0;padding:12px 14px;margin:11px 0;font-size:15.5px}
+/* 팝업 내 하위 항목 버튼 */
+.mb .sub-btns{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.mb .sub-btn{display:block;width:100%;text-align:left;background:#FFF3EA;border:2px solid #F6C9A8;color:#C94F0A;
+  font-family:inherit;font-size:15.5px;font-weight:800;padding:14px 16px;border-radius:12px;cursor:pointer;position:relative}
+.mb .sub-btn::after{content:'→';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-weight:900}
+.mb .sub-btn:hover{background:#FFE6D2;border-color:#E8651A}
+.mb .sub-btn:active{transform:scale(.98)}
+.mb .sub-back{display:inline-flex;align-items:center;gap:6px;background:#EEE7DF;border:none;color:#3A3E45;
+  font-family:inherit;font-size:13.5px;font-weight:800;padding:8px 14px;border-radius:999px;cursor:pointer;margin-bottom:14px}
+.mb .sub-back:hover{background:#e2dacd}
+
+/* 카드 내 인포그래픽 (모달 상단) — 화면/컨테이너 폭에 맞춰 자동 축소 */
+.diagram{background:#FBF8F5;border:1.5px solid #EEE7DF;border-radius:14px;padding:12px;margin:0 0 16px;overflow:hidden}
+.diagram img{display:block;width:100%;height:auto;max-width:100%;border-radius:10px}
+.diagram-cap{text-align:center;font-size:13px;color:#6B7078;margin-top:10px;font-weight:700;letter-spacing:.2px}
+
+/* 인포그래픽 버튼 (히어로) */
+.hero-info-btn{margin-top:18px;display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.3);color:#fff;font-family:inherit;font-size:14.5px;font-weight:800;padding:11px 18px;border-radius:12px;cursor:pointer}
+.hero-info-btn:hover{background:rgba(255,255,255,.22)}
+.hero-info-btn:active{transform:scale(.97)}
+
+/* 인포그래픽 라이트박스 */
+#IMB{display:none;position:fixed;inset:0;z-index:10000;background:rgba(20,25,38,.88);padding:14px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.imb-box{max-width:1400px;margin:0 auto}
+.imb-bar{position:sticky;top:0;display:flex;justify-content:flex-end;gap:8px;padding:2px 0 12px;z-index:2}
+.imb-btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:10px;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:800;padding:11px 18px;cursor:pointer;line-height:1;box-shadow:0 3px 10px rgba(0,0,0,.25)}
+.imb-btn:active{transform:scale(.96)}
+.imb-dl{background:#E8651A;color:#fff}
+.imb-dl:hover{background:#C94F0A}
+.imb-cl{background:rgba(255,255,255,.92);color:#1A2744}
+.imb-cl:hover{background:#fff}
+#IMG_IMG{width:100%;height:auto;display:block;border-radius:12px;box-shadow:0 12px 44px rgba(0,0,0,.45);background:#fff}
+
+/* 인쇄/다운로드/전송 팝업 (Popup A / B 공용) */
+.pp-ov{display:none;position:fixed;inset:0;z-index:10010;background:rgba(20,25,38,.55);align-items:center;justify-content:center;padding:16px}
+#SVPOP{z-index:10011}
+.pp-box{background:#fff;border-radius:16px;max-width:320px;width:100%;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.pp-head{background:linear-gradient(120deg,var(--navy),var(--navy2));color:#fff;padding:16px 20px;font-size:15.5px;font-weight:800}
+.pp-body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:10px}
+.pp-btn{font-family:'Noto Sans KR',sans-serif;font-size:14.5px;font-weight:800;border:none;border-radius:10px;padding:12px 16px;cursor:pointer;line-height:1}
+.pp-btn:active{transform:scale(.97)}
+.pp-primary{background:var(--or);color:#fff}
+.pp-primary:hover{background:var(--ord)}
+.pp-ghost{background:#F2EEE8;color:var(--navy)}
+.pp-ghost:hover{background:#E9E3D9}
+.pp-msg{font-size:12.5px;color:var(--gray);background:#FFF9E8;border-left:3px solid #E5A00D;border-radius:0 8px 8px 0;padding:8px 10px;margin:0 0 4px;display:none;line-height:1.5}
+
+/* 인쇄 전용 */
+#PRINTAREA{display:none}
+@media print{
+  body>*:not(#PRINTAREA){display:none!important}
+  body{background:#fff}
+  #PRINTAREA{display:block!important;position:static;margin:0;padding:0;width:100%}
+  #PRINTAREA img{width:100%;height:auto;max-width:100%;page-break-inside:avoid}
+  @page{margin:10mm}
+}
+
+/* MOBILE */
+@media(max-width:760px){
+  .hero h1{font-size:25px}
+  .sh h2{font-size:22px}
+  .g2,.g3{grid-template-columns:1fr}
+  .card h3{font-size:17px}
+  .mb{padding:16px 16px 22px;font-size:16px}
+  .mh{padding:16px 18px}
+  .mh h3{font-size:17px}
+  .nav-back span.label{display:none}
+  body{font-size:16px}
+  .imb-btn{font-size:13.5px;padding:11px 15px}
+  .pp-btn{font-size:13.5px;padding:11px 14px}
+}
+@media(min-width:761px) and (max-width:960px){
+  .g3{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-in" id="heroIn"></div>
+</div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-back">← <span class="label">메인으로</span></a>
+  <div class="nav-sep"></div>
+  <div class="nav-in" id="navIn"></div>
+  <button class="nav-refresh" onclick="location.href=location.pathname+'?_='+Date.now()" aria-label="새로고침" type="button">🔄</button>
+</nav>
+
+<div class="wrap" id="wrap"></div>
+
+<footer id="foot"></footer>
+
+<!-- 인포그래픽 라이트박스 -->
+<div id="IMB" onclick="if(event.target===this)CI()">
+  <div class="imb-box">
+    <div class="imb-bar">
+      <button class="imb-btn imb-dl" onclick="OPA()">🖨 인쇄</button>
+      <button class="imb-btn imb-cl" onclick="CI()">✕ 닫기</button>
+    </div>
+    <img id="IMG_IMG" src="" alt="인포그래픽">
+  </div>
+</div>
+
+<!-- 인쇄/다운로드 선택 -->
+<div id="PRPOP" class="pp-ov" onclick="if(event.target===this)CPA()">
+  <div class="pp-box" role="dialog" aria-modal="true" aria-label="이미지 내보내기">
+    <div class="pp-head">이미지 내보내기</div>
+    <div class="pp-body">
+      <button class="pp-btn pp-primary" onclick="PR_GO()">🖨 인쇄</button>
+      <button class="pp-btn pp-primary" onclick="OPB()">⬇ 다운로드</button>
+      <button class="pp-btn pp-ghost" onclick="CPA()">취소</button>
+    </div>
+  </div>
+</div>
+
+<!-- 전송/저장 선택 -->
+<div id="SVPOP" class="pp-ov" onclick="if(event.target===this)CPB()">
+  <div class="pp-box" role="dialog" aria-modal="true" aria-label="다운로드">
+    <div class="pp-head">다운로드</div>
+    <div class="pp-body">
+      <p class="pp-msg" id="SV_MSG"></p>
+      <button class="pp-btn pp-primary" onclick="SV_SEND()">📤 전송하기</button>
+      <button class="pp-btn pp-primary" onclick="SV_SAVE()">⬇ 다운로드</button>
+      <button class="pp-btn pp-ghost" onclick="CPB()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 인쇄 전용 영역: 화면에는 항상 숨김, @media print에서만 표시 -->
+<div id="PRINTAREA"><img id="PRINT_IMG" src="" alt=""></div>
+
+<!-- 모달 -->
+<div id="MB" onclick="if(event.target===this)CM()">
+  <div class="mbox">
+    <div class="mh">
+      <h3 id="MT"></h3>
+      <button class="mcl" onclick="CM()">✕</button>
+    </div>
+    <div class="mb" id="MC"></div>
+  </div>
+</div>
+
+<script>
+/* ===== JSON 렌더러 : data/priority.json 을 읽어 화면을 생성 ===== */
+window.GUIDE_ID='priority';
+window.GUIDE_DATA_PATH='data/priority.json';
+window.MD={};
+window.IMGDATA={};
+window.GUIDE=null;
+
+function _t(s){return s==null?'':String(s);}
+function _extOf(src){return (/\.(\w+)(\?|$)/.exec(src||'')||[,'png'])[1];}
+
+function renderGuide(data){
+  window.GUIDE=data;
+  window.MD={};
+  window.IMGDATA={};
+  var h=data.hero||{}, ig=data.infographic||{};
+  var heroHtml=
+    '<span class="badge">'+_t(h.badge)+'</span>'+
+    '<h1>'+_t(h.title)+'<br><span>'+_t(h.titleSpan)+'</span></h1>'+
+    '<p>'+_t(h.subtitle)+'</p>'+
+    '<div class="tip">'+_t(h.tip)+'</div>';
+  if(ig&&ig.src){
+    window.IMGDATA['hero']={src:ig.src,name:ig.name||'infographic.png'};
+    heroHtml+='<br><button class="hero-info-btn" onclick="OI(\'hero\')">'+_t(ig.buttonLabel||'📊 인포그래픽 보기')+'</button>';
+  }
+  document.getElementById('heroIn').innerHTML=heroHtml;
+
+  var navHtml='';
+  (data.nav||[]).forEach(function(n){navHtml+='<a class="navlink" href="'+_t(n.href)+'">'+_t(n.label)+'</a>';});
+  document.getElementById('navIn').innerHTML=navHtml;
+
+  var html='';
+  (data.sections||[]).forEach(function(sec,si){html+=renderSection(sec,si);});
+  document.getElementById('wrap').innerHTML=html;
+
+  document.getElementById('foot').innerHTML=_t(data.footer);
+
+  if(window.AdminEditor&&AdminEditor.decorateGuide){AdminEditor.decorateGuide();}
+}
+
+function renderSection(sec,si){
+  var h='<section id="'+_t(sec.id||('s'+(si+1)))+'">';
+  h+='<div class="sh">';
+  h+='<span class="no">'+_t(sec.no)+'</span>';
+  h+='<h2>'+_t(sec.title)+'</h2>';
+  if(sec.desc)h+='<p>'+_t(sec.desc)+'</p>';
+  if(sec.hint)h+='<span class="hint">'+_t(sec.hint)+'</span>';
+  h+='</div>';
+  if(sec.image&&sec.image.src){
+    var secImgKey='sec'+si;
+    window.IMGDATA[secImgKey]={src:sec.image.src,name:(sec.image.alt||sec.title||'infographic')+'.'+_extOf(sec.image.src)};
+    h+='<div class="diagram"><img src="'+_t(sec.image.src)+'" alt="'+_t(sec.image.alt||sec.title)+'" onclick="OI(\''+secImgKey+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
+  }
+  if(sec.type==='cards'){
+    h+='<div class="g '+_t(sec.grid||'g2')+'">';
+    (sec.cards||[]).forEach(function(c,ci){
+      var key='s'+si+'c'+ci;
+      var cardImgHtml='';
+      if(c.image&&c.image.src){
+        window.IMGDATA[key]={src:c.image.src,name:(c.image.alt||c.modalTitle||'infographic')+'.'+_extOf(c.image.src)};
+        cardImgHtml='<div class="diagram"><img src="'+_t(c.image.src)+'" alt="'+_t(c.image.alt||c.modalTitle)+'" onclick="event.stopPropagation();OI(\''+key+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
+      }
+      /* 하위 팝업(서브 모달) 버튼: 카드 팝업 하단에 버튼으로 표시, 클릭 시 해당 내용으로 전환 */
+      var subBtnsHtml='';
+      (c.subs||[]).forEach(function(sub,bi){
+        var skey=key+'_'+_t(sub.id||('sub'+bi));
+        window.MD[skey]={t:_t(sub.modalTitle||sub.btnLabel),
+          b:'<button class="sub-back" onclick="OM(\''+key+'\')">← 이전으로</button>'+_t(sub.modalBody)};
+        subBtnsHtml+='<button class="sub-btn" onclick="OM(\''+skey+'\')">'+_t(sub.btnLabel)+'</button>';
+      });
+      if(subBtnsHtml)subBtnsHtml='<div class="sub-btns">'+subBtnsHtml+'</div>';
+      window.MD[key]={t:c.modalTitle,b:cardImgHtml+c.modalBody+subBtnsHtml};
+      h+='<div class="card" onclick="OM(\''+key+'\')" data-sec="'+si+'" data-card="'+ci+'">'+
+         '<span class="plus">+</span>'+
+         '<span class="tag '+_t(c.tagClass||'tn')+'">'+_t(c.tag)+'</span>'+
+         '<span class="ico">'+_t(c.ico)+'</span>'+
+         '<h3>'+_t(c.title)+'</h3><p>'+_t(c.desc)+'</p></div>';
+    });
+    h+='</div>';
+  }else if(sec.type==='table'&&sec.table){
+    h+='<div class="mt-box"><table class="mt"><tr>';
+    (sec.table.headers||[]).forEach(function(x){h+='<th>'+_t(x)+'</th>';});
+    h+='</tr>';
+    (sec.table.rows||[]).forEach(function(r){
+      h+='<tr>';(r||[]).forEach(function(cell){h+='<td>'+_t(cell)+'</td>';});h+='</tr>';
+    });
+    h+='</table></div>';
+  }else if(sec.type==='boxes'){
+    (sec.boxes||[]).forEach(function(b){h+='<div class="'+_t(b.kind||'note')+'">'+_t(b.html)+'</div>';});
+  }
+  if(sec.type!=='boxes'){
+    (sec.extraBoxes||[]).forEach(function(b){h+='<div class="'+_t(b.kind||'note')+'">'+_t(b.html)+'</div>';});
+  }
+  h+='<div class="back-bottom"><a href="index.html">메인으로 돌아가기 →</a></div>';
+  h+='</section>';
+  return h;
+}
+
+(function(){
+  fetch(window.GUIDE_DATA_PATH+'?_='+(new Date().getTime()))
+    .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+    .then(function(data){renderGuide(data);})
+    .catch(function(err){
+      document.getElementById('wrap').innerHTML='<div class="bad" style="margin:40px 0">자료를 불러오지 못했습니다. 새로고침 해주세요.<br><small>'+_t(err&&err.message)+'</small></div>';
+    });
+})();
+</script>
+<script src="admin.js"></script>
+
+</body>
+</html>
