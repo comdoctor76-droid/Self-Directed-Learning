@@ -127,10 +127,13 @@ function SV_SAVE(){
   var d=window.__curImg;
   if(!d)return;
   if(window.showSaveFilePicker){
-    var pPromise=window.showSaveFilePicker({
-      suggestedName:d.name,
-      types:[{description:'Image',accept:_svAccept(d.name)}]
-    });
+    var t0=Date.now(),pPromise;
+    try{
+      pPromise=window.showSaveFilePicker({
+        suggestedName:d.name,
+        types:[{description:'Image',accept:_svAccept(d.name)}]
+      });
+    }catch(e){CPB();_svFallback(d);return;}
     CPB();
     pPromise.then(function(handle){
       return fetch(d.src).then(function(r){return r.blob();}).then(function(blob){
@@ -139,14 +142,19 @@ function SV_SAVE(){
         });
       });
     }).catch(function(err){
-      if(err&&err.name==='AbortError')return;
-      fetch(d.src).then(function(r){return r.blob();}).then(function(blob){
-        __saveBlob(blob,d.name);
-      }).catch(function(){window.open(d.src,'_blank');});
+      /* 저장 위치 선택창이 실제로 열렸다가 사용자가 취소한 경우에만 조용히 종료.
+         창이 뜨지도 못하고 즉시 거부되면(일부 브라우저·인앱브라우저) 일반 다운로드로 대체 */
+      if(err&&err.name==='AbortError'&&Date.now()-t0>=500)return;
+      _svFallback(d);
     });
     return;
   }
   CPB();
+  _svFallback(d);
+}
+/* 저장 위치 선택을 쓸 수 없을 때: 모바일은 공유 시트(사진/갤러리에 저장), 그 외는 일반 다운로드 */
+function _svFallback(d){
+  if(!d)return;
   fetch(d.src).then(function(r){return r.blob();}).then(function(blob){
     var file=null;
     try{file=new File([blob],d.name,{type:blob.type||'image/png'});}catch(e){}
@@ -173,9 +181,16 @@ function _svAccept(name){
 function __saveBlob(blob,name){
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');
-  a.href=url;a.download=name;
-  document.body.appendChild(a);a.click();a.remove();
-  setTimeout(function(){URL.revokeObjectURL(url);},1500);
+  if(typeof a.download==='undefined'){
+    /* download 속성 미지원(구형 인앱브라우저 등)은 새 창으로 열어 저장 유도 */
+    window.open(url,'_blank');
+    setTimeout(function(){URL.revokeObjectURL(url);},4000);
+    return;
+  }
+  a.href=url;a.download=name;a.rel='noopener';a.style.display='none';
+  document.body.appendChild(a);a.click();
+  /* 즉시 제거하면 일부 브라우저에서 다운로드가 취소되므로 지연 제거 */
+  setTimeout(function(){if(a.parentNode)a.remove();URL.revokeObjectURL(url);},4000);
 }
 </script>
 
