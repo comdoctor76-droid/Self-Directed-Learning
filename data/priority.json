@@ -18,13 +18,11 @@
       "no": "SECTION 01",
       "title": "3대질병 중요하지만 한번에 설명하긴 어렵다",
       "desc": "꼭 선택해야 한다면 우선순위는?",
-      "type": "boxes",
-      "boxes": [
-        {
-          "kind": "note",
-          "html": "내용을 준비 중입니다."
-        }
-      ]
+      "image": {
+        "src": "assets/mechanism/priority-s1.webp",
+        "alt": "선택과 집중을 위한 3대 질병의 양상 이해하기"
+      },
+      "type": "boxes"
     }
   ],
   "footer": "본 자료는 이해를 돕기 위한 <b>교육용 요약 자료</b>입니다.<br>© 스스로 학습하기"
