@@ -16,12 +16,64 @@ function OM(key) {
   if (!data || !bg || !title || !body) return;
   title.innerHTML = data.t;
   body.innerHTML = data.b;
-  bg.style.cssText = 'display:block;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(20,25,38,0.75);z-index:9999;overflow-y:auto;-webkit-overflow-scrolling:touch;';
+  bg.style.cssText = 'display:block;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(20,25,38,0.75);z-index:9999;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;';
 }
 function CM() {
   var bg = document.getElementById('MB');
   if (bg) bg.style.display = 'none';
 }
+
+/* ★ 팝업이 떠 있는 동안에는 뒤쪽 본문이 함께 스크롤되지 않도록 잠금
+   (열림/닫힘 함수를 감싸서 현재 열린 팝업이 있는지 확인 후 동기화) */
+(function(){
+  var IDS=['MB','IMB','PRPOP','SVPOP','PDFB'];
+  var locked=false,savedY=0;
+  function anyOpen(){
+    for(var i=0;i<IDS.length;i++){
+      var el=document.getElementById(IDS[i]);
+      if(el&&el.style.display&&el.style.display!=='none')return true;
+    }
+    return false;
+  }
+  function sync(){
+    var want=anyOpen();
+    if(want===locked)return;
+    var b=document.body;
+    if(!b)return;
+    if(want){
+      savedY=window.pageYOffset||document.documentElement.scrollTop||0;
+      b.style.position='fixed';
+      b.style.top=(-savedY)+'px';
+      b.style.left='0';
+      b.style.right='0';
+      b.style.width='100%';
+      b.style.overflow='hidden';
+      locked=true;
+    }else{
+      b.style.position='';
+      b.style.top='';
+      b.style.left='';
+      b.style.right='';
+      b.style.width='';
+      b.style.overflow='';
+      locked=false;
+      window.scrollTo(0,savedY);
+    }
+  }
+  window.__scrollLockSync=sync;
+  var NAMES=['OM','CM','OI','CI','OPA','CPA','OPB','CPB','OPDF','CPDF'];
+  for(var i=0;i<NAMES.length;i++){
+    (function(n){
+      var fn=window[n];
+      if(typeof fn!=='function')return;
+      window[n]=function(){
+        var r=fn.apply(this,arguments);
+        sync();
+        return r;
+      };
+    })(NAMES[i]);
+  }
+})();
 </script>
 
 <style>
