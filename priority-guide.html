@@ -545,13 +545,18 @@ function renderSection(sec,si){
         window.IMGDATA[key]={src:c.image.src,name:(c.image.alt||c.modalTitle||'infographic')+'.'+_extOf(c.image.src)};
         cardImgHtml='<div class="diagram"><img src="'+_t(c.image.src)+'" alt="'+_t(c.image.alt||c.modalTitle)+'" onclick="event.stopPropagation();OI(\''+key+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
       }
-      /* 본문 아래에 배치되는 이미지 (팝업 맨 하단) */
+      /* 본문 아래에 배치되는 이미지 (팝업 맨 하단). 객체 하나 또는 배열,
+         각 항목에 heading을 주면 이미지 위에 소제목이 붙는다 */
       var cardImgBotHtml='';
-      if(c.bottomImage&&c.bottomImage.src){
-        var bkey=key+'_bot';
-        window.IMGDATA[bkey]={src:c.bottomImage.src,name:(c.bottomImage.alt||c.modalTitle||'infographic')+'.'+_extOf(c.bottomImage.src)};
-        cardImgBotHtml='<div class="diagram"><img src="'+_t(c.bottomImage.src)+'" alt="'+_t(c.bottomImage.alt||c.modalTitle)+'" onclick="event.stopPropagation();OI(\''+bkey+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
-      }
+      var botList=[];
+      if(c.bottomImage){botList=(Object.prototype.toString.call(c.bottomImage)==='[object Array]')?c.bottomImage:[c.bottomImage];}
+      botList.forEach(function(bi,bn){
+        if(!bi||!bi.src)return;
+        var bkey=key+'_bot'+(bn?bn:'');
+        window.IMGDATA[bkey]={src:bi.src,name:(bi.alt||bi.heading||c.modalTitle||'infographic')+'.'+_extOf(bi.src)};
+        if(bi.heading)cardImgBotHtml+='<h4>'+_t(bi.heading)+'</h4>';
+        cardImgBotHtml+='<div class="diagram"><img src="'+_t(bi.src)+'" alt="'+_t(bi.alt||bi.heading||c.modalTitle)+'" onclick="event.stopPropagation();OI(\''+bkey+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
+      });
       /* 하위 팝업(서브 모달) 버튼: 카드 팝업 하단에 버튼으로 표시, 클릭 시 해당 내용으로 전환 */
       var subBtnsHtml='';
       (c.subs||[]).forEach(function(sub,bi){
