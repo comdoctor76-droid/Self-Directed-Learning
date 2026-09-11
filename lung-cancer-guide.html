@@ -503,7 +503,14 @@ function renderSection(sec,si){
         window.IMGDATA[key]={src:c.image.src,name:(c.image.alt||c.modalTitle||'infographic')+'.'+_extOf(c.image.src)};
         cardImgHtml='<div class="diagram"><img src="'+_t(c.image.src)+'" alt="'+_t(c.image.alt||c.modalTitle)+'" onclick="event.stopPropagation();OI(\''+key+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
       }
-      window.MD[key]={t:c.modalTitle,b:cardImgHtml+c.modalBody};
+      /* 본문 아래에 배치되는 이미지 (팝업 맨 하단) */
+      var cardImgBotHtml='';
+      if(c.bottomImage&&c.bottomImage.src){
+        var bkey=key+'_bot';
+        window.IMGDATA[bkey]={src:c.bottomImage.src,name:(c.bottomImage.alt||c.modalTitle||'infographic')+'.'+_extOf(c.bottomImage.src)};
+        cardImgBotHtml='<div class="diagram"><img src="'+_t(c.bottomImage.src)+'" alt="'+_t(c.bottomImage.alt||c.modalTitle)+'" onclick="event.stopPropagation();OI(\''+bkey+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
+      }
+      window.MD[key]={t:c.modalTitle,b:cardImgHtml+c.modalBody+cardImgBotHtml};
       h+='<div class="card" onclick="OM(\''+key+'\')" data-sec="'+si+'" data-card="'+ci+'">'+
          '<span class="plus">+</span>'+
          '<span class="tag '+_t(c.tagClass||'tn')+'">'+_t(c.tag)+'</span>'+
