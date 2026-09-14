@@ -555,6 +555,7 @@ function renderSection(sec,si){
         var bkey=key+'_bot'+(bn?bn:'');
         window.IMGDATA[bkey]={src:bi.src,name:(bi.alt||bi.heading||c.modalTitle||'infographic')+'.'+_extOf(bi.src)};
         if(bi.heading)cardImgBotHtml+='<h4>'+_t(bi.heading)+'</h4>';
+        if(bi.html)cardImgBotHtml+=_t(bi.html);
         cardImgBotHtml+='<div class="diagram"><img src="'+_t(bi.src)+'" alt="'+_t(bi.alt||bi.heading||c.modalTitle)+'" onclick="event.stopPropagation();OI(\''+bkey+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
       });
       /* 하위 팝업(서브 모달) 버튼: 카드 팝업 하단에 버튼으로 표시, 클릭 시 해당 내용으로 전환 */
