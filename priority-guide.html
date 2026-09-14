@@ -567,10 +567,15 @@ function renderSection(sec,si){
   if(sec.desc)h+='<p>'+_t(sec.desc)+'</p>';
   if(sec.hint)h+='<span class="hint">'+_t(sec.hint)+'</span>';
   h+='</div>';
-  if(sec.image&&sec.image.src){
-    var secImgKey='sec'+si;
-    window.IMGDATA[secImgKey]={src:sec.image.src,name:(sec.image.alt||sec.title||'infographic')+'.'+_extOf(sec.image.src)};
-    h+='<div class="diagram"><img src="'+_t(sec.image.src)+'" alt="'+_t(sec.image.alt||sec.title)+'" onclick="OI(\''+secImgKey+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
+  /* 섹션 대표 이미지 — 객체 하나 또는 배열(여러 장을 위에서 아래로 배치) */
+  if(sec.image){
+    var secImgs=(Object.prototype.toString.call(sec.image)==='[object Array]')?sec.image:[sec.image];
+    secImgs.forEach(function(sim,sn){
+      if(!sim||!sim.src)return;
+      var secImgKey='sec'+si+(sn?'_'+sn:'');
+      window.IMGDATA[secImgKey]={src:sim.src,name:(sim.alt||sec.title||'infographic')+'.'+_extOf(sim.src)};
+      h+='<div class="diagram"><img src="'+_t(sim.src)+'" alt="'+_t(sim.alt||sec.title)+'" onclick="OI(\''+secImgKey+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
+    });
   }
   if(sec.type==='cards'){
     h+='<div class="g '+_t(sec.grid||'g2')+'">';

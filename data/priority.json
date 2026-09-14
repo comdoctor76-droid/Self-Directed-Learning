@@ -21,10 +21,16 @@
       "id": "s1",
       "no": "SECTION 01",
       "title": "건강보험제도가 있는데, 굳이 보험을 더 가입해야 하나요?",
-      "image": {
-        "src": "assets/mechanism/priority-s1-sec.webp",
-        "alt": "본인부담상한제와 산정특례의 적용범위 — 급여/비급여/기타 항목별 보장 여부"
-      },
+      "image": [
+        {
+          "src": "assets/mechanism/priority-s1-sec.webp",
+          "alt": "본인부담상한제와 산정특례의 적용범위 — 급여/비급여/기타 항목별 보장 여부"
+        },
+        {
+          "src": "assets/mechanism/priority-s1-sec2.webp",
+          "alt": "국민건강보험 본인부담률 — 의원·병원·종합병원·상급종합병원별 외래/입원/약제 부담률"
+        }
+      ],
       "type": "cards",
       "grid": "g2",
       "cards": [
