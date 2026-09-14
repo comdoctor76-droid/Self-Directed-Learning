@@ -39,6 +39,7 @@ function OI(key){
   img.alt=d.name;
   bg.style.display='block';
   bg.scrollTop=0;
+  _preloadBlob(d);
 }
 function CI(){
   var bg=document.getElementById('IMB');
@@ -91,84 +92,141 @@ function PR_GO(){
   if(pimg.complete)afterReady();
 }
 
-/* 전송하기: 모바일은 OS 공유 시트(카카오톡 등), 데스크톱(공유 불가)은 안내 문구 + 다운로드로 대체 */
+/* ── 저장/공유 공통 ──────────────────────────────────────────────
+   navigator.share()와 showSaveFilePicker()는 "사용자가 방금 누른 순간"에만
+   호출할 수 있다. fetch 이후에 부르면 제스처가 만료되어 모바일에서 아무 일도
+   일어나지 않으므로, 라이트박스를 열 때 이미지를 미리 받아둔다. */
+window.__curBlob=null;
+function _preloadBlob(d){
+  window.__curBlob=null;
+  if(!d||!d.src)return;
+  var src=d.src;
+  fetch(src).then(function(r){return r.ok?r.blob():null;}).then(function(b){
+    if(b&&window.__curImg&&window.__curImg.src===src)window.__curBlob=b;
+  }).catch(function(){});
+}
+function _fileOf(blob,name){
+  if(!blob)return null;
+  try{return new File([blob],name,{type:blob.type||'image/png'});}catch(e){return null;}
+}
+function _canShareFile(f){
+  return !!(f&&navigator.share&&navigator.canShare&&navigator.canShare({files:[f]}));
+}
+function _isInApp(){
+  return /KAKAOTALK|NAVER\(inapp|FB_IAB|FBAN|FBAV|Instagram|Line\//i.test(navigator.userAgent||'');
+}
+function _svMsg(text){
+  var msg=document.getElementById('SV_MSG');
+  var pop=document.getElementById('SVPOP');
+  if(msg&&pop&&getComputedStyle(pop).display!=='none'){
+    msg.textContent=text;msg.style.display='block';
+    return;
+  }
+  if(msg){msg.textContent=text;msg.style.display='block';}
+  if(pop)pop.style.display='flex';
+}
+/* 마지막 수단: 인앱브라우저는 다운로드가 막혀 있어 외부 브라우저/새 탭으로 연다 */
+function _openOutside(d){
+  var url=new URL(d.src,location.href).href;
+  if(/KAKAOTALK/i.test(navigator.userAgent||'')){
+    _svMsg('카카오톡 안에서는 저장이 제한됩니다. 외부 브라우저로 열어 저장해주세요.');
+    location.href='kakaotalk://web/openExternal?url='+encodeURIComponent(url);
+    return;
+  }
+  _svMsg('이미지를 새 창에서 열었습니다. 길게 눌러 저장해주세요.');
+  window.open(url,'_blank');
+}
+
+/* 전송하기: OS 공유 시트(카카오톡 등). 공유를 쓸 수 없으면 저장으로 대체 */
 function SV_SEND(){
   var d=window.__curImg;
   if(!d)return;
   var msg=document.getElementById('SV_MSG');
   if(msg){msg.style.display='none';msg.textContent='';}
-  fetch(d.src).then(function(res){return res.blob();}).then(function(blob){
-    var file=null;
-    try{file=new File([blob],d.name,{type:blob.type||'image/png'});}catch(e){}
-    if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
-      navigator.share({files:[file],title:d.name}).then(function(){
-        CPB();
-      }).catch(function(err){
+  var blob=window.__curBlob,f=_fileOf(blob,d.name);
+  if(_canShareFile(f)){
+    navigator.share({files:[f],title:d.name}).then(function(){CPB();CPA();})
+      .catch(function(err){
         if(err&&err.name==='AbortError')return;
-        __saveBlob(blob,d.name);
-        CPB();
+        __saveBlob(blob,d.name,d);
+        CPB();CPA();
       });
-      return;
-    }
-    if(msg){
-      msg.textContent='카카오톡 전송은 모바일에서 가능합니다. PC에서는 다운로드를 이용해주세요.';
-      msg.style.display='block';
-    }
-    __saveBlob(blob,d.name);
-  }).catch(function(){
-    window.open(d.src,'_blank');
-  });
+    return;
+  }
+  if(!blob){
+    /* 아직 이미지를 다 받지 못한 경우 — 받은 뒤 저장으로 대체 */
+    fetch(d.src).then(function(r){return r.blob();}).then(function(b){
+      window.__curBlob=b;
+      _svMsg('전송 시트를 열 수 없어 저장으로 진행합니다.');
+      __saveBlob(b,d.name,d);
+    }).catch(function(){_openOutside(d);});
+    return;
+  }
+  _svMsg('카카오톡 전송은 모바일에서 가능합니다. PC에서는 다운로드를 이용해주세요.');
+  __saveBlob(blob,d.name,d);
 }
 
-/* 다운로드: 데스크톱(File System Access API 지원)은 저장 위치 선택,
-   미지원 데스크톱(Safari/Firefox)은 <a download> 방식,
-   모바일은 OS 공유 시트를 통해 "사진에 저장/갤러리에 저장" 유도 */
+/* 다운로드
+   1) PC(File System Access API 지원) → 저장 위치를 직접 물어봄
+   2) 모바일 → OS 공유 시트: 카카오톡으로 전송하거나 '사진/갤러리에 저장'
+   3) 그 외 → 일반 다운로드, 인앱브라우저는 외부 브라우저로 유도 */
 function SV_SAVE(){
   var d=window.__curImg;
   if(!d)return;
-  if(window.showSaveFilePicker){
+  var msg=document.getElementById('SV_MSG');
+  if(msg){msg.style.display='none';msg.textContent='';}
+  var blob=window.__curBlob;
+
+  /* 1) PC — 저장 위치 선택창 */
+  if(window.showSaveFilePicker&&!_isInApp()){
     var t0=Date.now(),pPromise;
     try{
       pPromise=window.showSaveFilePicker({
         suggestedName:d.name,
         types:[{description:'Image',accept:_svAccept(d.name)}]
       });
-    }catch(e){CPB();_svFallback(d);return;}
-    CPB();
+    }catch(e){CPB();CPA();_svFallback(d,blob);return;}
+    CPB();CPA();
     pPromise.then(function(handle){
-      return fetch(d.src).then(function(r){return r.blob();}).then(function(blob){
-        return handle.createWritable().then(function(w){
-          return w.write(blob).then(function(){return w.close();});
+      return (blob?Promise.resolve(blob):fetch(d.src).then(function(r){return r.blob();}))
+        .then(function(b){
+          return handle.createWritable().then(function(w){
+            return w.write(b).then(function(){return w.close();});
+          });
         });
-      });
     }).catch(function(err){
-      /* 저장 위치 선택창이 실제로 열렸다가 사용자가 취소한 경우에만 조용히 종료.
-         창이 뜨지도 못하고 즉시 거부되면(일부 브라우저·인앱브라우저) 일반 다운로드로 대체 */
+      /* 선택창이 실제로 열렸다가 사용자가 취소한 경우에만 조용히 종료.
+         창이 뜨지도 못하고 즉시 거부되면 일반 저장으로 대체 */
       if(err&&err.name==='AbortError'&&Date.now()-t0>=500)return;
-      _svFallback(d);
+      _svFallback(d,blob);
     });
     return;
   }
-  CPB();
-  _svFallback(d);
+
+  /* 2) 모바일 — 공유 시트(카카오톡 전송 / 사진·갤러리에 저장) */
+  var f=_fileOf(blob,d.name);
+  if(_canShareFile(f)){
+    CPB();CPA();
+    navigator.share({files:[f],title:d.name}).catch(function(err){
+      if(err&&err.name==='AbortError')return;
+      __saveBlob(blob,d.name,d);
+    });
+    return;
+  }
+
+  /* 3) 일반 저장 */
+  CPB();CPA();
+  _svFallback(d,blob);
 }
-/* 저장 위치 선택을 쓸 수 없을 때: 모바일은 공유 시트(사진/갤러리에 저장), 그 외는 일반 다운로드 */
-function _svFallback(d){
+
+/* 공유 시트도 선택창도 쓸 수 없을 때의 저장 경로 */
+function _svFallback(d,blob){
   if(!d)return;
-  fetch(d.src).then(function(r){return r.blob();}).then(function(blob){
-    var file=null;
-    try{file=new File([blob],d.name,{type:blob.type||'image/png'});}catch(e){}
-    if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
-      navigator.share({files:[file],title:d.name}).catch(function(err){
-        if(err&&err.name==='AbortError')return;
-        __saveBlob(blob,d.name);
-      });
-      return;
-    }
-    __saveBlob(blob,d.name);
-  }).catch(function(){
-    window.open(d.src,'_blank');
-  });
+  if(blob){__saveBlob(blob,d.name,d);return;}
+  fetch(d.src).then(function(r){return r.blob();}).then(function(b){
+    window.__curBlob=b;
+    __saveBlob(b,d.name,d);
+  }).catch(function(){_openOutside(d);});
 }
 function _svAccept(name){
   var ext=(name.split('.').pop()||'png').toLowerCase();
@@ -178,15 +236,18 @@ function _svAccept(name){
   o[m]=['.'+ext];
   return o;
 }
-function __saveBlob(blob,name){
-  var url=URL.createObjectURL(blob);
+function __saveBlob(blob,name,d){
+  if(!blob){if(d)_openOutside(d);return;}
   var a=document.createElement('a');
-  if(typeof a.download==='undefined'){
-    /* download 속성 미지원(구형 인앱브라우저 등)은 새 창으로 열어 저장 유도 */
-    window.open(url,'_blank');
-    setTimeout(function(){URL.revokeObjectURL(url);},4000);
+  /* download 속성을 못 쓰거나 인앱브라우저면 다운로드가 조용히 막히므로 외부로 유도 */
+  if(typeof a.download==='undefined'||_isInApp()){
+    if(d){_openOutside(d);return;}
+    var u0=URL.createObjectURL(blob);
+    window.open(u0,'_blank');
+    setTimeout(function(){URL.revokeObjectURL(u0);},4000);
     return;
   }
+  var url=URL.createObjectURL(blob);
   a.href=url;a.download=name;a.rel='noopener';a.style.display='none';
   document.body.appendChild(a);a.click();
   /* 즉시 제거하면 일부 브라우저에서 다운로드가 취소되므로 지연 제거 */
