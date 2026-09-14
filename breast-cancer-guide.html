@@ -651,6 +651,17 @@ function renderSection(sec,si){
   }else if(sec.type==='boxes'){
     (sec.boxes||[]).forEach(function(b){h+='<div class="'+_t(b.kind||'note')+'">'+_t(b.html)+'</div>';});
   }
+  /* 섹션 하단 이미지 — 카드/표 아래에 배치. 객체 하나 또는 배열 */
+  if(sec.bottomImage){
+    var secBotImgs=(Object.prototype.toString.call(sec.bottomImage)==='[object Array]')?sec.bottomImage:[sec.bottomImage];
+    secBotImgs.forEach(function(sbi,sbn){
+      if(!sbi||!sbi.src)return;
+      var sbKey='sec'+si+'bot'+(sbn?sbn:'');
+      window.IMGDATA[sbKey]={src:sbi.src,name:(sbi.alt||sec.title||'infographic')+'.'+_extOf(sbi.src)};
+      if(sbi.heading)h+='<h4 class="sec-h4">'+_t(sbi.heading)+'</h4>';
+      h+='<div class="diagram"><img src="'+_t(sbi.src)+'" alt="'+_t(sbi.alt||sec.title)+'" onclick="OI(\''+sbKey+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
+    });
+  }
   if(sec.type!=='boxes'){
     (sec.extraBoxes||[]).forEach(function(b){h+='<div class="'+_t(b.kind||'note')+'">'+_t(b.html)+'</div>';});
   }
