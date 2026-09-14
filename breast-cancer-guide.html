@@ -8,20 +8,31 @@
 <link rel="stylesheet" href="admin.css">
 
 <script>
+window.__mdStack=[];
 function OM(key){
   var bg=document.getElementById('MB');
   var title=document.getElementById('MT');
   var body=document.getElementById('MC');
   var data=window.MD?window.MD[key]:null;
   if(!data||!bg||!title||!body)return;
+  /* 팝업 이동 경로를 쌓아두어 뒤로가기/바깥 클릭 시 직전 팝업으로 돌아간다 */
+  var st=window.__mdStack,i=st.indexOf(key);
+  if(i>=0){st.length=i+1;}else{st.push(key);}
   title.innerHTML=data.t;
   body.innerHTML=data.b;
   body.scrollTop=0;
   bg.style.cssText='display:block;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(20,25,38,0.75);z-index:9999;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;';
 }
 function CM(){
+  window.__mdStack=[];
   var bg=document.getElementById('MB');
   if(bg)bg.style.display='none';
+}
+/* 하위 팝업에서 한 단계 뒤로 — 남은 단계가 없으면 완전히 닫는다 */
+function MBACK(){
+  var st=window.__mdStack||[];
+  if(st.length>1){st.pop();OM(st[st.length-1]);return;}
+  CM();
 }
 
 /* ★ 인포그래픽 라이트박스 */
@@ -229,7 +240,7 @@ function __saveBlob(blob,name){
     }
   }
   window.__scrollLockSync=sync;
-  var NAMES=['OM','CM','OI','CI','OPA','CPA','OPB','CPB','OPDF','CPDF'];
+  var NAMES=['OM','CM','MBACK','OI','CI','OPA','CPA','OPB','CPB','OPDF','CPDF'];
   for(var i=0;i<NAMES.length;i++){
     (function(n){
       var fn=window[n];
@@ -473,7 +484,7 @@ footer b{color:#FFB37E}
 <div id="PRINTAREA"><img id="PRINT_IMG" src="" alt=""></div>
 
 <!-- 모달 -->
-<div id="MB" onclick="if(event.target===this)CM()">
+<div id="MB" onclick="if(event.target===this)MBACK()">
   <div class="mbox">
     <div class="mh">
       <h3 id="MT"></h3>
@@ -562,11 +573,21 @@ function renderSection(sec,si){
       var subBtnsHtml='';
       (c.subs||[]).forEach(function(sub,bi){
         var skey=key+'_'+_t(sub.id||('sub'+bi));
+        var subImgHtml='';
+        if(sub.image&&sub.image.src){
+          window.IMGDATA[skey]={src:sub.image.src,name:(sub.image.alt||sub.modalTitle||sub.btnLabel||'infographic')+'.'+_extOf(sub.image.src)};
+          subImgHtml='<div class="diagram"><img src="'+_t(sub.image.src)+'" alt="'+_t(sub.image.alt||sub.modalTitle||sub.btnLabel)+'" onclick="event.stopPropagation();OI(\''+skey+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
+        }
         window.MD[skey]={t:_t(sub.modalTitle||sub.btnLabel),
-          b:'<button class="sub-back" onclick="OM(\''+key+'\')">← 이전으로</button>'+_t(sub.modalBody)};
+          b:'<button class="sub-back" onclick="MBACK()">← 이전으로</button>'+subImgHtml+_t(sub.modalBody)};
         subBtnsHtml+='<button class="sub-btn" onclick="OM(\''+skey+'\')">'+_t(sub.btnLabel)+'</button>';
       });
-      if(subBtnsHtml)subBtnsHtml='<div class="sub-btns">'+subBtnsHtml+'</div>';
+      if(subBtnsHtml){
+        var subHead='';
+        if(c.subsHeading)subHead+='<h4>'+_t(c.subsHeading)+'</h4>';
+        if(c.subsDesc)subHead+='<p>'+_t(c.subsDesc)+'</p>';
+        subBtnsHtml=subHead+'<div class="sub-btns">'+subBtnsHtml+'</div>';
+      }
       window.MD[key]={t:c.modalTitle,b:cardImgHtml+c.modalBody+cardImgBotHtml+subBtnsHtml};
       h+='<div class="card" onclick="OM(\''+key+'\')" data-sec="'+si+'" data-card="'+ci+'">'+
          '<span class="plus">+</span>'+
