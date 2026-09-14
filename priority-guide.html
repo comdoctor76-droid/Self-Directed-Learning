@@ -21,6 +21,7 @@ function OM(key){
   title.innerHTML=data.t;
   body.innerHTML=data.b;
   body.scrollTop=0;
+  bg.scrollTop=0;
   bg.style.cssText='display:block;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(20,25,38,0.75);z-index:9999;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;';
 }
 function CM(){
@@ -31,8 +32,24 @@ function CM(){
 /* 하위 팝업에서 한 단계 뒤로 — 남은 단계가 없으면 완전히 닫는다 */
 function MBACK(){
   var st=window.__mdStack||[];
-  if(st.length>1){st.pop();OM(st[st.length-1]);return;}
+  if(st.length>1){
+    st.pop();
+    OM(st[st.length-1]);
+    /* 돌아왔을 때 사례 선택 버튼이 바로 보이도록 스크롤 */
+    var bg=document.getElementById('MB'),btns=document.querySelector('#MC .sub-btns');
+    if(bg&&btns){
+      var y=btns.getBoundingClientRect().top+bg.scrollTop-90;
+      bg.scrollTop=y>0?y:0;
+    }
+    return;
+  }
   CM();
+}
+/* 같은 묶음의 다른 하위 팝업으로 바로 이동 — 되돌아가기는 항상 부모 팝업으로 */
+function OMSIB(pkey,skey){
+  var st=window.__mdStack,i=st.indexOf(pkey);
+  if(i>=0)st.length=i+1;
+  OM(skey);
 }
 
 /* ★ 인포그래픽 라이트박스 */
@@ -240,7 +257,7 @@ function __saveBlob(blob,name){
     }
   }
   window.__scrollLockSync=sync;
-  var NAMES=['OM','CM','MBACK','OI','CI','OPA','CPA','OPB','CPB','OPDF','CPDF'];
+  var NAMES=['OM','CM','MBACK','OMSIB','OI','CI','OPA','CPA','OPB','CPB','OPDF','CPDF'];
   for(var i=0;i<NAMES.length;i++){
     (function(n){
       var fn=window[n];
@@ -352,10 +369,14 @@ footer b{color:#FFB37E}
 .mb .note{background:#FFF9E8;border-left:4px solid #E5A00D;border-radius:0 8px 8px 0;padding:12px 14px;margin:11px 0;font-size:15.5px}
 .mb .bad{background:#FCEEED;border-left:4px solid #D6403A;border-radius:0 8px 8px 0;padding:12px 14px;margin:11px 0;font-size:15.5px}
 /* 팝업 내 하위 항목 버튼 */
-.mb .sub-btns{display:flex;flex-direction:column;gap:10px;margin-top:18px}
-.mb .sub-btn{display:block;width:100%;text-align:left;background:#FFF3EA;border:2px solid #F6C9A8;color:#C94F0A;
+.mb .sub-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;align-items:stretch}
+.mb .sub-btn.cur{background:#E8651A;border-color:#E8651A;color:#fff;cursor:default}
+.mb .sub-nav{margin-top:22px;padding-top:16px;border-top:2px dashed #EEE7DF}
+.mb .sub-nav-h{font-size:14px;font-weight:800;color:#6B7078;margin-bottom:8px;letter-spacing:.2px}
+.mb .sub-back-b{margin-top:12px;margin-bottom:0}
+.mb .sub-btn{display:block;width:100%;text-align:center;background:#FFF3EA;border:2px solid #F6C9A8;color:#C94F0A;
   font-family:inherit;font-size:15.5px;font-weight:800;padding:14px 16px;border-radius:12px;cursor:pointer;position:relative}
-.mb .sub-btn::after{content:'→';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-weight:900}
+.mb .sub-btn::after{content:'→';display:block;margin-top:6px;font-weight:900;font-size:15px;opacity:.85}
 .mb .sub-btn:hover{background:#FFE6D2;border-color:#E8651A}
 .mb .sub-btn:active{transform:scale(.98)}
 .mb .sub-back{display:inline-flex;align-items:center;gap:6px;background:#EEE7DF;border:none;color:#3A3E45;
@@ -419,6 +440,10 @@ footer b{color:#FFB37E}
   .mh h3{font-size:17px}
   .nav-back span.label{display:none}
   body{font-size:16px}
+  .mb .sub-btns{gap:6px}
+  .mb .sub-btn{font-size:13px;font-weight:800;padding:11px 7px;border-radius:10px;line-height:1.35;word-break:keep-all}
+  .mb .sub-btn::after{font-size:13px;margin-top:4px}
+  .mb .sub-nav-h{font-size:13px}
   .imb-btn{font-size:13.5px;padding:11px 15px}
   .pp-btn{font-size:13.5px;padding:11px 14px}
 }
@@ -569,24 +594,38 @@ function renderSection(sec,si){
         if(bi.html)cardImgBotHtml+=_t(bi.html);
         cardImgBotHtml+='<div class="diagram"><img src="'+_t(bi.src)+'" alt="'+_t(bi.alt||bi.heading||c.modalTitle)+'" onclick="event.stopPropagation();OI(\''+bkey+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
       });
-      /* 하위 팝업(서브 모달) 버튼: 카드 팝업 하단에 버튼으로 표시, 클릭 시 해당 내용으로 전환 */
-      var subBtnsHtml='';
-      (c.subs||[]).forEach(function(sub,bi){
-        var skey=key+'_'+_t(sub.id||('sub'+bi));
+      /* 하위 팝업(서브 모달): 부모 팝업 하단에 가로 버튼으로 표시하고,
+         각 하위 팝업 하단에도 같은 버튼 + 돌아가기를 두어 바로 이동할 수 있게 한다 */
+      var subList=c.subs||[];
+      var subKeys=subList.map(function(sub,bi){return key+'_'+_t(sub.id||('sub'+bi));});
+      function _subBtns(cur){
+        var h='<div class="sub-btns">';
+        subList.forEach(function(sub,bi){
+          h+='<button class="sub-btn'+(bi===cur?' cur':'')+'" onclick="OMSIB(\''+key+'\',\''+subKeys[bi]+'\')">'+
+             _t(sub.btnLabel)+'</button>';
+        });
+        return h+'</div>';
+      }
+      subList.forEach(function(sub,bi){
+        var skey=subKeys[bi];
         var subImgHtml='';
         if(sub.image&&sub.image.src){
           window.IMGDATA[skey]={src:sub.image.src,name:(sub.image.alt||sub.modalTitle||sub.btnLabel||'infographic')+'.'+_extOf(sub.image.src)};
           subImgHtml='<div class="diagram"><img src="'+_t(sub.image.src)+'" alt="'+_t(sub.image.alt||sub.modalTitle||sub.btnLabel)+'" onclick="event.stopPropagation();OI(\''+skey+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
         }
         window.MD[skey]={t:_t(sub.modalTitle||sub.btnLabel),
-          b:'<button class="sub-back" onclick="MBACK()">← 이전으로</button>'+subImgHtml+_t(sub.modalBody)};
-        subBtnsHtml+='<button class="sub-btn" onclick="OM(\''+skey+'\')">'+_t(sub.btnLabel)+'</button>';
+          b:'<button class="sub-back" onclick="MBACK()">← 이전으로</button>'+subImgHtml+_t(sub.modalBody)+
+            '<div class="sub-nav">'+
+            (c.subsHeading?'<div class="sub-nav-h">'+_t(c.subsHeading)+'</div>':'')+
+            _subBtns(bi)+
+            '<button class="sub-back sub-back-b" onclick="MBACK()">← 돌아가기</button>'+
+            '</div>'};
       });
-      if(subBtnsHtml){
-        var subHead='';
-        if(c.subsHeading)subHead+='<h4>'+_t(c.subsHeading)+'</h4>';
-        if(c.subsDesc)subHead+='<p>'+_t(c.subsDesc)+'</p>';
-        subBtnsHtml=subHead+'<div class="sub-btns">'+subBtnsHtml+'</div>';
+      var subBtnsHtml='';
+      if(subList.length){
+        if(c.subsHeading)subBtnsHtml+='<h4>'+_t(c.subsHeading)+'</h4>';
+        if(c.subsDesc)subBtnsHtml+='<p>'+_t(c.subsDesc)+'</p>';
+        subBtnsHtml+=_subBtns(-1);
       }
       window.MD[key]={t:c.modalTitle,b:cardImgHtml+c.modalBody+cardImgBotHtml+subBtnsHtml};
       h+='<div class="card" onclick="OM(\''+key+'\')" data-sec="'+si+'" data-card="'+ci+'">'+
