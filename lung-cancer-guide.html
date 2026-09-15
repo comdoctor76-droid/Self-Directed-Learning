@@ -619,11 +619,13 @@ function renderSection(sec,si){
       var botList=[];
       if(c.bottomImage){botList=(Object.prototype.toString.call(c.bottomImage)==='[object Array]')?c.bottomImage:[c.bottomImage];}
       botList.forEach(function(bi,bn){
-        if(!bi||!bi.src)return;
-        var bkey=key+'_bot'+(bn?bn:'');
-        window.IMGDATA[bkey]={src:bi.src,name:(bi.alt||bi.heading||c.modalTitle||'infographic')+'.'+_extOf(bi.src)};
+        if(!bi||(!bi.src&&!bi.html))return;
         if(bi.heading)cardImgBotHtml+='<h4>'+_t(bi.heading)+'</h4>';
         if(bi.html)cardImgBotHtml+=_t(bi.html);
+        /* src 없이 html만 주면 이미지 없는 본문 블록으로 쓰인다(이미지 아래 글) */
+        if(!bi.src)return;
+        var bkey=key+'_bot'+(bn?bn:'');
+        window.IMGDATA[bkey]={src:bi.src,name:(bi.alt||bi.heading||c.modalTitle||'infographic')+'.'+_extOf(bi.src)};
         cardImgBotHtml+='<div class="diagram"><img src="'+_t(bi.src)+'" alt="'+_t(bi.alt||bi.heading||c.modalTitle)+'" onclick="event.stopPropagation();OI(\''+bkey+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
       });
       window.MD[key]={t:c.modalTitle,b:cardImgHtml+c.modalBody+cardImgBotHtml};
