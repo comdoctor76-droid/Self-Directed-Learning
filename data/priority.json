@@ -12,6 +12,10 @@
       "label": "① 건강보험제도만으로 충분한가"
     },
     {
+      "href": "#s2",
+      "label": "② 실손보험, 왜 다시 봐야 하나"
+    },
+    {
       "href": "#s5",
       "label": "⑤ 3대질병 가입 우선순위"
     }
@@ -165,6 +169,23 @@
         "src": "assets/mechanism/priority-s1-sec.webp",
         "alt": "본인부담상한제와 산정특례의 적용범위 — 급여/비급여/기타 항목별 보장 여부"
       }
+    },
+    {
+      "id": "s2",
+      "no": "SECTION 02",
+      "title": "내가 낸 병원비를 돌려받으려 실손보험 가입했는데 또 가입해야 한다고? 왜?",
+      "bottomImage": [
+        {
+          "heading": "실손의료비 변천사 — 1세대~5세대 담보·보장비율·공제 비교",
+          "src": "assets/mechanism/priority-s2-1.webp",
+          "alt": "실손의료비 변천사 (1~5세대 비교)"
+        },
+        {
+          "heading": "실손 면부책 변천사 — 세대별 보상·면책 항목 비교",
+          "src": "assets/mechanism/priority-s2-2.webp",
+          "alt": "실손 면부책 변천사 (1~5세대 비교)"
+        }
+      ]
     },
     {
       "id": "s5",
