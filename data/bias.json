@@ -34,6 +34,10 @@
       "no": "SECTION 01",
       "title": "국민건강보험 입원 vs 통원 본인부담률의 구조적 불균형",
       "desc": "핵심 숫자 하나 — 상급종합병원 외래 이용 시 진찰료 100%에 더해 외래진료비의 60%를 환자가 부담합니다.",
+      "image": {
+        "src": "assets/mechanism/bias-s1-sec.webp",
+        "alt": "3대 중증 질환, 왜 암 대비가 최우선일까"
+      },
       "type": "cards",
       "grid": "g2",
       "cards": [
