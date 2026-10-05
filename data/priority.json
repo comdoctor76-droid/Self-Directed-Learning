@@ -25,10 +25,16 @@
       "id": "s1",
       "no": "SECTION 01",
       "title": "건강보험제도가 있는데, 굳이 보험을 더 가입해야 하나요?",
-      "image": {
-        "src": "assets/mechanism/priority-s1-sec2.webp",
-        "alt": "국민건강보험 본인부담률 — 의원·병원·종합병원·상급종합병원별 외래/입원/약제 부담률"
-      },
+      "image": [
+        {
+          "src": "assets/mechanism/priority-s1-sec0.webp",
+          "alt": "대한민국 3대 중증 질환, 민간 의료보험이 필요한 진짜 이유 — 국가 의료제도와 실손의 구멍, 뇌·심장 질환(입원 위주) vs 암 질환(통원 위주) 치료 양상 비교, 우선순위 전략"
+        },
+        {
+          "src": "assets/mechanism/priority-s1-sec2.webp",
+          "alt": "국민건강보험 본인부담률 — 의원·병원·종합병원·상급종합병원별 외래/입원/약제 부담률"
+        }
+      ],
       "type": "cards",
       "grid": "g2",
       "cards": [
