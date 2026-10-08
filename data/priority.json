@@ -31,8 +31,8 @@
           "alt": "3대 중증 질환, 민간 의료보험이 필요한 진짜 이유"
         },
         {
-          "src": "assets/mechanism/priority-s1-coverage-receipt.webp",
-          "alt": "국민건강보험 본인부담률과 진료비 계산서·영수증 서식"
+          "src": "assets/mechanism/priority-s1-sec2.webp",
+          "alt": "국민건강보험 본인부담률 — 의원·병원·종합병원·상급종합병원별 외래/입원/약제 부담률"
         }
       ],
       "type": "cards",
@@ -58,9 +58,9 @@
               "alt": "본인부담상한제 적용 제외 항목(누적 제외 대상) 총정리"
             },
             {
-              "heading": "본인부담률과 진료비 계산서·영수증 서식",
-              "src": "assets/mechanism/priority-s1-coverage-receipt.webp",
-              "alt": "국민건강보험 본인부담률과 진료비 계산서·영수증 서식"
+              "heading": "진료비 계산서·영수증 서식",
+              "src": "assets/mechanism/priority-s1c0-bot7.webp",
+              "alt": "진료비 계산서·영수증 (국민건강보험 요양급여의 기준에 관한 규칙 별지 제6호서식)"
             },
             {
               "heading": "감면받은 병원비 — 본인부담상한제에서는 제외하는데, 상해질병급여치료지원금에서는 포함해준다",
