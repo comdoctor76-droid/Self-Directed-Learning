@@ -33,6 +33,10 @@
         {
           "src": "assets/mechanism/priority-s1-sec2.webp",
           "alt": "국민건강보험 본인부담률 — 의원·병원·종합병원·상급종합병원별 외래/입원/약제 부담률"
+        },
+        {
+          "src": "assets/mechanism/priority-s1-receipt-2024.webp",
+          "alt": "진료비 계산서·영수증 서식 (2024.7.18 개정)"
         }
       ],
       "type": "cards",
