@@ -371,6 +371,9 @@ section{padding:52px 0 20px}
 .sh .no{display:block;color:#E8651A;font-weight:900;font-size:14px;letter-spacing:1.5px;margin-bottom:6px}
 .sh h2{font-size:26px;font-weight:900;color:#1A2744}
 .sh p{color:#6B7078;margin-top:7px;font-size:16px}
+.art{background:#fff;border:2px solid #EEE7DF;border-radius:16px;padding:22px 20px 26px}
+.art-sub{margin-top:22px;padding:18px 18px 10px;border:1.5px solid #EEE7DF;border-radius:14px;background:#FBF8F5}
+.art-sub-t{font-size:18px;font-weight:900;color:#1A2744;margin:0 0 12px}
 .hint{display:inline-block;background:#FFF3EA;color:#C94F0A;font-size:14px;font-weight:700;border-radius:999px;padding:6px 14px;margin-top:10px}
 
 /* GRID */
@@ -697,6 +700,43 @@ function renderSection(sec,si){
          '<span class="ico">'+_t(c.ico)+'</span>'+
          '<h3>'+_t(c.title)+'</h3><p>'+_t(c.desc)+'</p></div>';
     });
+    h+='</div>';
+  }else if(sec.type==='article'&&sec.article){
+    /* 카드 팝업을 열지 않고 본문을 섹션 안에 그대로 펼쳐 보여주는 유형.
+       article = {image, modalBody, bottomImage, subsHeading, subsDesc, subs} (카드와 같은 구조) */
+    var a=sec.article, akey='s'+si+'a';
+    h+='<div class="art mb">';
+    if(a.image&&a.image.src){
+      window.IMGDATA[akey]={src:a.image.src,name:(a.image.alt||sec.title||'infographic')+'.'+_extOf(a.image.src)};
+      h+='<div class="diagram"><img src="'+_t(a.image.src)+'" alt="'+_t(a.image.alt||sec.title)+'" onclick="OI(\''+akey+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
+    }
+    h+=_t(a.modalBody);
+    var aBot=[];
+    if(a.bottomImage){aBot=(Object.prototype.toString.call(a.bottomImage)==='[object Array]')?a.bottomImage:[a.bottomImage];}
+    aBot.forEach(function(bi,bn){
+      if(!bi||(!bi.src&&!bi.html))return;
+      if(bi.heading)h+='<h4>'+_t(bi.heading)+'</h4>';
+      if(bi.html)h+=_t(bi.html);
+      if(!bi.src)return;
+      var bkey=akey+'_bot'+(bn?bn:'');
+      window.IMGDATA[bkey]={src:bi.src,name:(bi.alt||bi.heading||sec.title||'infographic')+'.'+_extOf(bi.src)};
+      h+='<div class="diagram"><img src="'+_t(bi.src)+'" alt="'+_t(bi.alt||bi.heading||sec.title)+'" onclick="OI(\''+bkey+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
+    });
+    /* 하위 사례(예전 서브 팝업)도 펼쳐서 차례로 보여준다 */
+    var aSubs=a.subs||[];
+    if(aSubs.length){
+      if(a.subsHeading)h+='<h4>'+_t(a.subsHeading)+'</h4>';
+      if(a.subsDesc)h+='<p>'+_t(a.subsDesc)+'</p>';
+      aSubs.forEach(function(sub,bi){
+        var skey=akey+'_'+_t(sub.id||('sub'+bi));
+        h+='<div class="art-sub"><h3 class="art-sub-t">'+_t(sub.modalTitle||sub.btnLabel)+'</h3>';
+        if(sub.image&&sub.image.src){
+          window.IMGDATA[skey]={src:sub.image.src,name:(sub.image.alt||sub.modalTitle||sub.btnLabel||'infographic')+'.'+_extOf(sub.image.src)};
+          h+='<div class="diagram"><img src="'+_t(sub.image.src)+'" alt="'+_t(sub.image.alt||sub.modalTitle||sub.btnLabel)+'" onclick="OI(\''+skey+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
+        }
+        h+=_t(sub.modalBody)+'</div>';
+      });
+    }
     h+='</div>';
   }else if(sec.type==='table'&&sec.table){
     h+='<div class="mt-box"><table class="mt"><tr>';
