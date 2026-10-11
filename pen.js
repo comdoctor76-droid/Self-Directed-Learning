@@ -32,6 +32,7 @@
   var ink = {};        /* 레이어id -> [{c,w,p:[[x,y],…]}] */
   var cur = null, curSurf = null, swallow = false;
   var cv, ctx, dpr = 1, pending = 0;
+  var touches = 0, multi = false;   /* 눌린 손가락 수 / 두 손가락 제스처(확대·이동) 진행 중 */
 
   /* ── 스타일 ───────────────────────────────────────────────── */
   var CSS =
@@ -89,9 +90,16 @@
   }
 
   /* ── 그리기 ───────────────────────────────────────────────── */
+  function zoom() {
+    var vv = window.visualViewport;
+    return (vv && vv.scale > 1) ? vv.scale : 1;
+  }
   function sizeCanvas() {
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
     var w = window.innerWidth, h = window.innerHeight;
+    /* 두 손가락으로 확대해 보는 동안에는 캔버스 해상도도 함께 올려 선이 깨지지 않게 한다
+       (픽셀 수 상한 안에서) */
+    var want = Math.min(window.devicePixelRatio || 1, 2) * zoom();
+    dpr = Math.max(1, Math.min(want, 4, Math.sqrt(14e6 / Math.max(1, w * h))));
     cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
     cv.style.width = w + 'px'; cv.style.height = h + 'px';
   }
@@ -144,7 +152,17 @@
   /* 손가락 모드에서는 손가락이 선을 그어야 하므로 브라우저의 스크롤·확대 제스처를 막는다.
      (preventDefault 만으로는 터치 스크롤이 막히지 않는다 — touch-action 이 결정한다) */
   function applyTouchAction() {
-    document.documentElement.style.touchAction = (penOn && inputMode === 'touch') ? 'none' : '';
+    /* 손가락 모드: 한 손가락 스크롤만 막고(→ 그리기), 두 손가락 확대·이동은 브라우저에 맡긴다 */
+    document.documentElement.style.touchAction = (penOn && inputMode === 'touch') ? 'pinch-zoom' : '';
+  }
+  /* 진행 중이던 획을 없던 일로 — 두 손가락 제스처(확대·이동)가 시작됐을 때 */
+  function dropStroke() {
+    if (cur && cur !== 'E' && curSurf) {
+      var arr = store(curSurf.id), i = arr.indexOf(cur);
+      if (i >= 0) arr.splice(i, 1);
+    }
+    cur = null; curSurf = null;
+    schedule();
   }
   function inBar(t) {
     while (t && t !== document) {
@@ -154,7 +172,15 @@
     return false;
   }
   function onDown(e) {
-    if (!drawable(e) || inBar(e.target)) return;
+    if (e.pointerType === 'touch') {
+      if (e.isPrimary) { touches = 0; multi = false; }   /* 새 터치 시퀀스 — 집계 초기화 */
+      touches++;
+      if (touches >= 2) {            /* 두 번째 손가락 → 확대·이동 제스처: 그리던 획은 버린다 */
+        multi = true; dropStroke(); swallow = false;
+        return;
+      }
+    }
+    if (multi || !drawable(e) || inBar(e.target)) return;
     e.preventDefault(); e.stopPropagation();
     swallow = true;
     curSurf = surface();
@@ -172,8 +198,14 @@
     else cur.p.push(p);
     schedule();
   }
-  function onUp() {
+  function onUp(e) {
+    if (e && e.pointerType === 'touch') {
+      touches = Math.max(0, touches - 1);
+      if (touches === 0) multi = false;
+    }
     if (!cur) return;
+    /* 브라우저가 제스처(확대·이동)로 가져가며 취소한 경우 — 찍힌 점은 지운다 */
+    if (e && e.type === 'pointercancel') { dropStroke(); swallow = false; return; }
     cur = null; curSurf = null;
     setTimeout(function () { swallow = false; }, 0);
     schedule();
@@ -182,6 +214,20 @@
     if (!swallow) return;
     swallow = false;
     e.preventDefault(); e.stopPropagation();
+  }
+
+  /* 확대 상태에서도 도구 막대가 화면 오른쪽 아래(보이는 영역 기준)에 같은 크기로 보이게 */
+  function followBar() {
+    var bar = document.getElementById('PENBAR'), vv = window.visualViewport;
+    if (!bar || !vv) return;
+    var z = vv.scale || 1;
+    if (Math.abs(z - 1) < 0.01 && vv.offsetLeft < 1 && vv.offsetTop < 1) {
+      bar.style.transform = ''; return;
+    }
+    var dx = (vv.offsetLeft + vv.width) - window.innerWidth;
+    var dy = (vv.offsetTop + vv.height) - window.innerHeight;
+    bar.style.transformOrigin = '100% 100%';
+    bar.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + (1 / z) + ')';
   }
 
   /* ── 툴바 ─────────────────────────────────────────────────── */
@@ -252,7 +298,7 @@
       var mb = bar.querySelector('#PEN_M'), touch = inputMode === 'touch';
       mb.textContent = touch ? '👆' : '✍️';
       mb.title = touch
-        ? '손가락(정전식) 모드 — 손가락·정전식 펜으로 그립니다. 누르면 펜 전용 모드로'
+        ? '손가락(정전식) 모드 — 한 손가락은 그리기, 두 손가락은 확대·이동. 누르면 펜 전용 모드로'
         : '펜(스타일러스) 모드 — 손가락은 스크롤, 펜만 그립니다. 누르면 손가락 모드로';
       mb.setAttribute('aria-label', mb.title);
       mb.classList.toggle('on', touch);
@@ -294,12 +340,25 @@
     window.addEventListener('pointercancel', onUp, true);
     document.addEventListener('click', onClick, true);
     window.addEventListener('scroll', schedule, true);
+    /* 레이아웃 폭(확대해도 변하지 않는 값)이 바뀌면 본문이 재배치되어 필기 위치가 어긋난다 → 비운다 */
+    function layoutW() { return document.documentElement.clientWidth || window.innerWidth; }
     window.addEventListener('resize', function () {
-      /* 가로폭이 바뀌면 본문이 재배치되므로 필기 위치가 어긋난다 → 비운다 */
-      if (Math.abs(window.innerWidth - start._w) > 1) { ink = {}; start._w = window.innerWidth; }
+      if (Math.abs(layoutW() - start._w) > 1) { ink = {}; start._w = layoutW(); }
       sizeCanvas(); schedule();
     });
-    start._w = window.innerWidth;
+    start._w = layoutW();
+    /* 두 손가락 확대·이동 중: 해상도 재조정(끝난 뒤 한 번) + 도구 막대를 보이는 영역에 붙여 둔다 */
+    var vv = window.visualViewport;
+    if (vv) {
+      var tmr = 0;
+      var onVV = function () {
+        followBar();
+        if (tmr) clearTimeout(tmr);
+        tmr = setTimeout(function () { tmr = 0; sizeCanvas(); schedule(); }, 160);
+      };
+      vv.addEventListener('resize', onVV);
+      vv.addEventListener('scroll', onVV);
+    }
   }
 
   if (!window.PointerEvent) return;   /* 포인터 이벤트 미지원 환경은 조용히 비활성화 */
