@@ -32,6 +32,10 @@
       "no": "SECTION 02",
       "title": "급여? 비급여? 뭔가요?",
       "desc": "급여, 비급여!! 단순히 급여가 아닌게 비급여, 비급여가 아닌게 급여가 아니다 !!",
+      "image": {
+        "src": "assets/mechanism/receipt-s2-sec.webp",
+        "alt": "국민건강보험 본인부담률"
+      },
       "type": "cards",
       "grid": "g2",
       "cards": [
