@@ -24,6 +24,11 @@
   var ERASE_R = 16;    /* 지우개 반경(px) */
 
   var penOn = false, erasing = false, color = COLORS[1].c;
+  /* 입력 방식 — 'pen': 스타일러스·마우스만 그리고 손가락은 스크롤(기본)
+                 'touch': 손가락·정전식 펜도 그린다(브라우저 스크롤 제스처 차단) */
+  var MODE_KEY = 'pen_input_mode';
+  var inputMode = 'pen';
+  try { if (localStorage.getItem(MODE_KEY) === 'touch') inputMode = 'touch'; } catch (_) {}
   var ink = {};        /* 레이어id -> [{c,w,p:[[x,y],…]}] */
   var cur = null, curSurf = null, swallow = false;
   var cv, ctx, dpr = 1, pending = 0;
@@ -132,7 +137,14 @@
 
   /* ── 입력 (손가락은 제외 → 항상 스크롤) ──────────────────── */
   function drawable(e) {
-    return penOn && e.pointerType !== 'touch';
+    if (!penOn) return false;
+    if (inputMode === 'touch') return true;          /* 손가락·정전식 펜 포함 전부 */
+    return e.pointerType !== 'touch';                /* 펜 모드: 손가락은 스크롤 */
+  }
+  /* 손가락 모드에서는 손가락이 선을 그어야 하므로 브라우저의 스크롤·확대 제스처를 막는다.
+     (preventDefault 만으로는 터치 스크롤이 막히지 않는다 — touch-action 이 결정한다) */
+  function applyTouchAction() {
+    document.documentElement.style.touchAction = (penOn && inputMode === 'touch') ? 'none' : '';
   }
   function inBar(t) {
     while (t && t !== document) {
@@ -152,7 +164,8 @@
     schedule();
   }
   function onMove(e) {
-    if (!cur || e.pointerType === 'touch') return;
+    if (!cur) return;
+    if (e.pointerType === 'touch' && inputMode !== 'touch') return;
     e.preventDefault();
     var p = toContent(curSurf, e.clientX, e.clientY);
     if (cur === 'E') eraseAt(curSurf, p);
@@ -193,7 +206,9 @@
             'aria-label="' + COLORS[i].n + '"></button>';
     }
     bar.innerHTML =
-      '<div id="PEN_X" role="group" aria-label="판서 도구">' + sw +
+      '<div id="PEN_X" role="group" aria-label="판서 도구">' +
+        '<button type="button" class="pen-b" id="PEN_M" title="입력 방식 전환" aria-label="입력 방식 전환"></button>' +
+        '<span class="pen-hr"></span>' + sw +
         '<span class="pen-hr"></span>' +
         '<button type="button" class="pen-b" id="PEN_E" title="지우개" aria-label="지우개">🧽</button>' +
         '<button type="button" class="pen-b" id="PEN_C" title="전체 지우기" aria-label="전체 지우기">🗑</button>' +
@@ -207,11 +222,21 @@
       bar.classList.toggle('open', penOn);
       tog.classList.toggle('on', penOn);
       if (!penOn) { erasing = false; sync(); }
+      applyTouchAction();
     });
+    function setMode(m) {
+      inputMode = m;
+      try { localStorage.setItem(MODE_KEY, m); } catch (_) {}
+      cur = null; curSurf = null;            /* 진행 중이던 획은 끊는다 */
+      applyTouchAction();
+      sync();
+    }
     bar.addEventListener('click', function (e) {
       var t = e.target;
       if (t.classList && t.classList.contains('pen-sw')) {
         color = t.getAttribute('data-c'); erasing = false; sync();
+      } else if (t.id === 'PEN_M') {
+        setMode(inputMode === 'touch' ? 'pen' : 'touch');
       } else if (t.id === 'PEN_E') {
         erasing = !erasing; sync();
       } else if (t.id === 'PEN_C') {
@@ -224,8 +249,16 @@
         sws[i].classList.toggle('on', !erasing && sws[i].getAttribute('data-c') === color);
       }
       bar.querySelector('#PEN_E').classList.toggle('on', erasing);
+      var mb = bar.querySelector('#PEN_M'), touch = inputMode === 'touch';
+      mb.textContent = touch ? '👆' : '✍️';
+      mb.title = touch
+        ? '손가락(정전식) 모드 — 손가락·정전식 펜으로 그립니다. 누르면 펜 전용 모드로'
+        : '펜(스타일러스) 모드 — 손가락은 스크롤, 펜만 그립니다. 누르면 손가락 모드로';
+      mb.setAttribute('aria-label', mb.title);
+      mb.classList.toggle('on', touch);
     }
     sync();
+    applyTouchAction();
   }
 
   /* ── 창이 닫히거나 내용이 바뀌면 그 레이어의 필기를 비운다 ── */
