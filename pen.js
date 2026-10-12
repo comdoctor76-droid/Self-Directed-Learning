@@ -97,16 +97,11 @@
   }
 
   /* ── 그리기 ───────────────────────────────────────────────── */
-  function zoom() {
-    var vv = window.visualViewport;
-    return (vv && vv.scale > 1) ? vv.scale : 1;
-  }
   function sizeCanvas() {
     var w = window.innerWidth, h = window.innerHeight;
-    /* 두 손가락으로 확대해 보는 동안에는 캔버스 해상도도 함께 올려 선이 깨지지 않게 한다
-       (픽셀 수 상한 안에서) */
-    var want = Math.min(window.devicePixelRatio || 1, 2) * zoom();
-    dpr = Math.max(1, Math.min(want, 4, Math.sqrt(14e6 / Math.max(1, w * h))));
+    /* 확대(핀치) 중에도 해상도를 올리지 않는다. 확대 배율만큼 캔버스를 키우면 태블릿 브라우저가
+       너무 큰 캔버스를 화면에 그리지 못해 "확대 중엔 안 보이고 축소하면 보이는" 현상이 생긴다 */
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
     cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
     cv.style.width = w + 'px'; cv.style.height = h + 'px';
   }
@@ -380,7 +375,7 @@
       var onVV = function () {
         followBar();
         if (tmr) clearTimeout(tmr);
-        tmr = setTimeout(function () { tmr = 0; sizeCanvas(); schedule(); }, 160);
+        tmr = setTimeout(function () { tmr = 0; schedule(); }, 60);
       };
       vv.addEventListener('resize', onVV);
       vv.addEventListener('scroll', onVV);
