@@ -153,7 +153,9 @@
      (preventDefault 만으로는 터치 스크롤이 막히지 않는다 — touch-action 이 결정한다) */
   function applyTouchAction() {
     /* 손가락 모드: 한 손가락 스크롤만 막고(→ 그리기), 두 손가락 확대·이동은 브라우저에 맡긴다 */
-    document.documentElement.style.touchAction = (penOn && inputMode === 'touch') ? 'pinch-zoom' : '';
+    var ta = 'pinch-zoom';
+    try { if (window.CSS && CSS.supports && !CSS.supports('touch-action', 'pinch-zoom')) ta = 'none'; } catch (_) {}
+    document.documentElement.style.touchAction = (penOn && inputMode === 'touch') ? ta : '';
   }
   /* 진행 중이던 획을 없던 일로 — 두 손가락 제스처(확대·이동)가 시작됐을 때 */
   function dropStroke() {
@@ -204,8 +206,14 @@
       if (touches === 0) multi = false;
     }
     if (!cur) return;
-    /* 브라우저가 제스처(확대·이동)로 가져가며 취소한 경우 — 찍힌 점은 지운다 */
-    if (e && e.type === 'pointercancel') { dropStroke(); swallow = false; return; }
+    /* pointercancel: 브라우저가 입력을 가져간 경우.
+       · 두 번째 손가락이 닿아 확대·이동이 시작됐거나(multi) 점 2개 이하의 찍힌 점이면 지운다
+       · 그 외(한 손가락·펜 획 도중 스크롤 등으로 취소)에는 그린 데까지 남기고 끊기만 한다
+         — 취소 때마다 획을 통째로 지우면 "그려졌다가 바로 사라지는" 현상이 된다 */
+    if (e && e.type === 'pointercancel') {
+      var stub = cur !== 'E' && cur.p && cur.p.length < 3;
+      if (multi || stub) { dropStroke(); swallow = false; return; }
+    }
     cur = null; curSurf = null;
     setTimeout(function () { swallow = false; }, 0);
     schedule();
@@ -338,6 +346,13 @@
     window.addEventListener('pointermove', onMove, { passive: false });
     window.addEventListener('pointerup', onUp, true);
     window.addEventListener('pointercancel', onUp, true);
+    /* 획이 진행 중이면 브라우저 스크롤을 막는다. pointerdown/pointermove 의 preventDefault 는 스크롤을 못 막고
+       non-passive touchmove 의 preventDefault 만 막을 수 있다. 포인터 이벤트가 터치 이벤트보다 먼저 오므로
+       획을 시작한 입력(펜 모드의 스타일러스, 손가락 모드의 한 손가락)만 정확히 걸린다.
+       두 손가락은 막지 않아 확대·이동은 그대로 된다. */
+    window.addEventListener('touchmove', function (e) {
+      if (cur && e.touches && e.touches.length === 1 && e.cancelable) e.preventDefault();
+    }, { passive: false, capture: true });
     document.addEventListener('click', onClick, true);
     window.addEventListener('scroll', schedule, true);
     /* 레이아웃 폭(확대해도 변하지 않는 값)이 바뀌면 본문이 재배치되어 필기 위치가 어긋난다 → 비운다 */
