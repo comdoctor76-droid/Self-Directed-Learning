@@ -1,8 +1,10 @@
 /* ═══════════════════════════════════════════════════════════════
    pen.js — 강의용 판서(펜) 오버레이
    · 스타일러스(pointerType='pen')와 마우스로만 그린다. 손가락은 항상 스크롤.
-   · 필기는 '내용 좌표'로 저장하고 화면에는 스크롤 위치만큼 옮겨 그리므로
-     본문/팝업을 스크롤하면 글씨도 함께 따라 올라간다.
+   · 필기는 레이어마다 정한 '기준 요소'(본문 body, 팝업 #MC, 확대창 그림 #IMG_IMG …)에 대한
+     상대 좌표(기준 요소 폭으로 나눈 값)로 저장한다. 그릴 때는 그 순간의 기준 요소 위치와
+     캔버스 자신의 위치를 둘 다 측정해 변환하므로, 스크롤·핀치 확대(특히 iOS Safari 의
+     fixed 요소 어긋남)와 무관하게 글씨가 내용에 붙어 있다.
    · 팝업(#MB)·확대창(#IMB)·PDF 뷰어(#PDFB)는 각각 별도 레이어를 쓰고,
      그 창을 닫거나 다른 카드로 바꾸면 해당 필기는 자동으로 지워진다.
    · 저장하지 않으므로 페이지를 벗어나면 모든 필기가 사라진다.
@@ -55,7 +57,7 @@
     '#PEN_T{width:52px;height:52px;border-radius:50%;border:1px solid rgba(255,255,255,.26);' +
       'background:linear-gradient(135deg,#2C3F6E,#1A2744);color:#fff;font-size:22px;line-height:1;' +
       'cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.32);padding:0;' +
-      'display:flex;align-items:center;justify-content:center}' +
+      'display:flex;align-items:center;justify-content:center;touch-action:none}' +
     '#PEN_T.on{background:linear-gradient(135deg,#E8651A,#C94F0A)}' +
     '#PEN_T:active,.pen-b:active,.pen-sw:active{transform:scale(.94)}' +
     '@media print{#PEN_CV,#PENBAR{display:none !important}}' +
@@ -80,25 +82,31 @@
     }
     return { id: 'doc', el: null };
   }
-  function geom(s) {
-    if (s.el) {
-      var r = s.el.getBoundingClientRect();
-      return { x: s.el.scrollLeft, y: s.el.scrollTop,
-               l: r.left, t: r.top, w: r.width, h: r.height };
-    }
-    return { x: window.pageXOffset || 0, y: window.pageYOffset || 0,
-             l: 0, t: 0, w: window.innerWidth, h: window.innerHeight };
+  /* 레이어별 기준 요소 — 필기를 이 요소에 붙여 둔다 */
+  function anchor(s) {
+    var a = null;
+    if (s.id === 'IMB') a = document.getElementById('IMG_IMG');
+    else if (s.id === 'MB') a = document.getElementById('MC');
+    else if (s.id === 'PDFB') a = s.el.firstElementChild;
+    else a = document.body;
+    if (!a || !a.getBoundingClientRect) a = s.el || document.documentElement;
+    var r = a.getBoundingClientRect();
+    if (!(r.width > 0)) r = { left: r.left, top: r.top, width: 1 };
+    return r;
   }
   function store(id) { return ink[id] || (ink[id] = []); }
-  /* 화면 좌표 → 내용 좌표 (스크롤해도 변하지 않는 값) */
+  /* 화면 좌표 → 기준 요소 상대 좌표 (폭 1 기준으로 정규화) */
   function toContent(s, cx, cy) {
-    var g = geom(s);
-    return [cx - g.l + g.x, cy - g.t + g.y];
+    var a = anchor(s);
+    return [(cx - a.left) / a.width, (cy - a.top) / a.width];
   }
+  function vpW() { return document.documentElement.clientWidth || window.innerWidth; }
+  function vpH() { return document.documentElement.clientHeight || window.innerHeight; }
 
   /* ── 그리기 ───────────────────────────────────────────────── */
   function sizeCanvas() {
-    var w = window.innerWidth, h = window.innerHeight;
+    /* innerWidth/innerHeight 는 iOS 에서 확대 중 '보이는 영역' 크기를 돌려주므로 레이아웃 뷰포트를 쓴다 */
+    var w = vpW(), h = vpH();
     /* 확대(핀치) 중에도 해상도를 올리지 않는다. 확대 배율만큼 캔버스를 키우면 태블릿 브라우저가
        너무 큰 캔버스를 화면에 그리지 못해 "확대 중엔 안 보이고 축소하면 보이는" 현상이 생긴다 */
     dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -112,10 +120,15 @@
     ctx.clearRect(0, 0, cv.width / dpr, cv.height / dpr);
     var s = surface(), arr = ink[s.id];
     if (!arr || !arr.length) return;
-    var g = geom(s);
+    var a = anchor(s), c = cv.getBoundingClientRect();
     ctx.save();
-    if (s.el) { ctx.beginPath(); ctx.rect(g.l, g.t, g.w, g.h); ctx.clip(); }
-    ctx.translate(g.l - g.x, g.t - g.y);
+    if (s.el) {
+      var r = s.el.getBoundingClientRect();
+      ctx.beginPath(); ctx.rect(r.left - c.left, r.top - c.top, r.width, r.height); ctx.clip();
+    }
+    /* 기준 요소 상대 좌표 → 캔버스 좌표. 두 rect 를 같은 순간에 재므로 뷰포트 기준이 어긋나도 상쇄된다 */
+    ctx.translate(a.left - c.left, a.top - c.top);
+    ctx.scale(a.width, a.width);
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     for (var i = 0; i < arr.length; i++) {
       var st = arr[i], p = st.p;
@@ -123,7 +136,7 @@
       ctx.strokeStyle = st.c; ctx.lineWidth = st.w;
       ctx.beginPath();
       ctx.moveTo(p[0][0], p[0][1]);
-      if (p.length === 1) ctx.lineTo(p[0][0] + 0.1, p[0][1]);
+      if (p.length === 1) ctx.lineTo(p[0][0] + st.w * 0.03, p[0][1]);
       else for (var j = 1; j < p.length; j++) ctx.lineTo(p[j][0], p[j][1]);
       ctx.stroke();
     }
@@ -134,7 +147,8 @@
     pending = window.requestAnimationFrame ? requestAnimationFrame(paint) : setTimeout(paint, 16);
   }
   function eraseAt(s, p) {
-    var arr = store(s.id), r2 = ERASE_R * ERASE_R;
+    var er = ERASE_R / anchor(s).width;
+    var arr = store(s.id), r2 = er * er;
     for (var i = arr.length - 1; i >= 0; i--) {
       var pts = arr[i].p;
       for (var j = 0; j < pts.length; j++) {
@@ -194,7 +208,7 @@
     curSurf = surface();
     var p = toContent(curSurf, e.clientX, e.clientY);
     if (erasing) { cur = 'E'; eraseAt(curSurf, p); }
-    else { cur = { c: color, w: LINE, p: [p] }; store(curSurf.id).push(cur); }
+    else { cur = { c: color, w: LINE / anchor(curSurf).width, p: [p] }; store(curSurf.id).push(cur); }
     schedule();
   }
   function onMove(e) {
@@ -231,17 +245,65 @@
   }
 
   /* 확대 상태에서도 도구 막대가 화면 오른쪽 아래(보이는 영역 기준)에 같은 크기로 보이게 */
+  var BAR_KEY = 'pen_bar_pos', BAR_M = 16;
+  var barPos = { r: 0, b: 0 };   /* 기본 위치(오른쪽 아래 16px)에서 더 안쪽으로 옮긴 거리(화면 px) */
+  try { var bp = JSON.parse(localStorage.getItem(BAR_KEY) || 'null'); if (bp && isFinite(bp.r) && isFinite(bp.b)) barPos = bp; } catch (_) {}
+  function clampBar(bar) {
+    var r = bar.getBoundingClientRect(), z = zoomNow();
+    var w = r.width * z || 60, h = r.height * z || 60;   /* 화면상 크기 */
+    var vw = (window.visualViewport ? window.visualViewport.width * z : vpW());
+    var vh = (window.visualViewport ? window.visualViewport.height * z : vpH());
+    barPos.r = Math.max(0, Math.min(barPos.r, vw - w - BAR_M * 2));
+    barPos.b = Math.max(0, Math.min(barPos.b, vh - h - BAR_M * 2));
+  }
+  function zoomNow() { var vv = window.visualViewport; return (vv && vv.scale) || 1; }
+  /* 도구 막대를 '보이는 영역'의 오른쪽 아래(옮긴 위치 반영)에, 확대해도 같은 크기로 둔다.
+     transform 을 지운 상태의 실제 위치를 재서 맞추므로 iOS 의 fixed 요소 어긋남에도 맞는다 */
   function followBar() {
     var bar = document.getElementById('PENBAR'), vv = window.visualViewport;
-    if (!bar || !vv) return;
-    var z = vv.scale || 1;
-    if (Math.abs(z - 1) < 0.01 && vv.offsetLeft < 1 && vv.offsetTop < 1) {
-      bar.style.transform = ''; return;
+    if (!bar) return;
+    var z = zoomNow();
+    bar.style.transform = '';
+    bar.style.right = BAR_M + 'px'; bar.style.bottom = BAR_M + 'px';
+    if (!vv || (Math.abs(z - 1) < 0.01 && vv.offsetLeft < 1 && vv.offsetTop < 1)) {
+      bar.style.right = (BAR_M + barPos.r) + 'px'; bar.style.bottom = (BAR_M + barPos.b) + 'px';
+      return;
     }
-    var dx = (vv.offsetLeft + vv.width) - window.innerWidth;
-    var dy = (vv.offsetTop + vv.height) - window.innerHeight;
+    var r = bar.getBoundingClientRect();
+    var wantR = vv.offsetLeft + vv.width - (BAR_M + barPos.r) / z;
+    var wantB = vv.offsetTop + vv.height - (BAR_M + barPos.b) / z;
     bar.style.transformOrigin = '100% 100%';
-    bar.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + (1 / z) + ')';
+    bar.style.transform = 'translate(' + (wantR - r.right) + 'px,' + (wantB - r.bottom) + 'px) scale(' + (1 / z) + ')';
+  }
+  /* ✏️ 버튼을 누른 채 끌면 도구 막대 이동 (짧게 누르면 기존처럼 켜기/끄기) */
+  function dragBar(bar, tog) {
+    var d = null, moved = false;
+    tog.addEventListener('pointerdown', function (e) {
+      d = { x: e.clientX, y: e.clientY, r: barPos.r, b: barPos.b, id: e.pointerId };
+      moved = false;
+      try { tog.setPointerCapture(e.pointerId); } catch (_) {}
+    });
+    tog.addEventListener('pointermove', function (e) {
+      if (!d || e.pointerId !== d.id) return;
+      var z = zoomNow();
+      var dx = (e.clientX - d.x) * z, dy = (e.clientY - d.y) * z;   /* 화면 px */
+      if (!moved && dx * dx + dy * dy < 36) return;
+      moved = true;
+      barPos.r = d.r - dx; barPos.b = d.b - dy;
+      clampBar(bar); followBar();
+      e.preventDefault();
+    });
+    function end(e) {
+      if (!d || (e && e.pointerId !== d.id)) return;
+      d = null;
+      if (moved) {
+        try { localStorage.setItem(BAR_KEY, JSON.stringify(barPos)); } catch (_) {}
+        tog.__dragged = true;   /* 바로 뒤따르는 click 은 무시 */
+        setTimeout(function () { tog.__dragged = false; }, 350);
+      }
+    }
+    tog.addEventListener('pointerup', end);
+    tog.addEventListener('pointercancel', end);
   }
 
   /* ── 툴바 ─────────────────────────────────────────────────── */
@@ -277,7 +339,9 @@
     document.body.appendChild(bar);
 
     var tog = bar.querySelector('#PEN_T');
-    tog.addEventListener('click', function () {
+    dragBar(bar, tog);
+    tog.addEventListener('click', function (e) {
+      if (tog.__dragged) { e.preventDefault(); return; }
       penOn = !penOn;
       bar.classList.toggle('open', penOn);
       tog.classList.toggle('on', penOn);
@@ -348,6 +412,7 @@
   function start() {
     build();
     watch();
+    followBar();            /* 저장해 둔 도구 막대 위치 적용 */
     document.addEventListener('pointerdown', onDown, true);
     window.addEventListener('pointermove', onMove, { passive: false });
     window.addEventListener('pointerup', onUp, true);
@@ -362,10 +427,13 @@
     document.addEventListener('click', onClick, true);
     window.addEventListener('scroll', schedule, true);
     /* 레이아웃 폭(확대해도 변하지 않는 값)이 바뀌면 본문이 재배치되어 필기 위치가 어긋난다 → 비운다 */
-    function layoutW() { return document.documentElement.clientWidth || window.innerWidth; }
+    function layoutW() { return vpW(); }
     window.addEventListener('resize', function () {
-      if (Math.abs(layoutW() - start._w) > 1) { ink = {}; start._w = layoutW(); }
-      sizeCanvas(); schedule();
+      if (Math.abs(layoutW() - start._w) > 1) {
+        /* 본문·팝업은 글이 다시 흘러 위치가 어긋나므로 비우고, 확대창 그림·PDF 위 필기는 그림 비율로 저장돼 있어 유지 */
+        ink.doc = []; ink.MB = []; start._w = layoutW();
+      }
+      sizeCanvas(); schedule(); followBar();
     });
     start._w = layoutW();
     /* 두 손가락 확대·이동 중: 해상도 재조정(끝난 뒤 한 번) + 도구 막대를 보이는 영역에 붙여 둔다 */
