@@ -714,6 +714,35 @@ function renderSection(sec,si){
     var aBot=[];
     if(a.bottomImage){aBot=(Object.prototype.toString.call(a.bottomImage)==='[object Array]')?a.bottomImage:[a.bottomImage];}
     aBot.forEach(function(bi,bn){
+      /* 본문 중간에 카드(버튼) 묶음 — 누르면 기존 카드처럼 팝업으로 열린다 */
+      if(bi&&bi.cards&&bi.cards.length){
+        h+='<div class="g '+_t(bi.grid||'g2')+'" style="margin:6px 0 18px">';
+        bi.cards.forEach(function(c,ci){
+          var ck=akey+'_c'+bn+'_'+ci, ib='';
+          if(c.image&&c.image.src){
+            window.IMGDATA[ck]={src:c.image.src,name:(c.image.alt||c.modalTitle||'infographic')+'.'+_extOf(c.image.src)};
+            ib='<div class="diagram"><img src="'+_t(c.image.src)+'" alt="'+_t(c.image.alt||c.modalTitle)+'" onclick="event.stopPropagation();OI(\''+ck+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
+          }
+          var cb='';
+          (c.bottomImage?[].concat(c.bottomImage):[]).forEach(function(x,xn){
+            if(!x)return;
+            if(x.heading)cb+='<h4>'+_t(x.heading)+'</h4>';
+            if(x.html)cb+=_t(x.html);
+            if(!x.src)return;
+            var xk=ck+'_bot'+xn;
+            window.IMGDATA[xk]={src:x.src,name:(x.alt||x.heading||c.modalTitle||'infographic')+'.'+_extOf(x.src)};
+            cb+='<div class="diagram"><img src="'+_t(x.src)+'" alt="'+_t(x.alt||x.heading||c.modalTitle)+'" onclick="event.stopPropagation();OI(\''+xk+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
+          });
+          window.MD[ck]={t:_t(c.modalTitle||c.title),b:ib+_t(c.modalBody)+cb};
+          h+='<div class="card" onclick="OM(\''+ck+'\')">'+
+             '<span class="plus">+</span>'+
+             '<span class="tag '+_t(c.tagClass||'tn')+'">'+_t(c.tag)+'</span>'+
+             '<span class="ico">'+_t(c.ico)+'</span>'+
+             '<h3>'+_t(c.title)+'</h3><p>'+_t(c.desc)+'</p></div>';
+        });
+        h+='</div>';
+        return;
+      }
       if(!bi||(!bi.src&&!bi.html))return;
       if(bi.heading)h+='<h4>'+_t(bi.heading)+'</h4>';
       if(bi.html)h+=_t(bi.html);
