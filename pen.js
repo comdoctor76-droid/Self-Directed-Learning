@@ -58,7 +58,14 @@
       'display:flex;align-items:center;justify-content:center}' +
     '#PEN_T.on{background:linear-gradient(135deg,#E8651A,#C94F0A)}' +
     '#PEN_T:active,.pen-b:active,.pen-sw:active{transform:scale(.94)}' +
-    '@media print{#PEN_CV,#PENBAR{display:none !important}}';
+    '@media print{#PEN_CV,#PENBAR{display:none !important}}' +
+    /* 손가락 모드: 한 손가락 스크롤 차단(→ 그리기). 팝업·확대창·PDF 뷰어는 각자 스크롤되는 요소라
+       html 의 touch-action 이 닿지 않으므로 그 요소들에도 같은 규칙을 건다. (OM 이 cssText 를 통째로 다시 쓰므로
+       인라인 스타일이 아니라 클래스 규칙으로) */
+    'html.pen-touch,html.pen-touch #MB,html.pen-touch #IMB,html.pen-touch #PDFB,' +
+    'html.pen-touch #MB *,html.pen-touch #IMB *,html.pen-touch #PDFB *{touch-action:pinch-zoom !important}' +
+    'html.pen-touch-none,html.pen-touch-none #MB,html.pen-touch-none #IMB,html.pen-touch-none #PDFB,' +
+    'html.pen-touch-none #MB *,html.pen-touch-none #IMB *,html.pen-touch-none #PDFB *{touch-action:none !important}';
 
   /* ── 레이어 판별 ──────────────────────────────────────────── */
   function shown(el) {
@@ -155,7 +162,11 @@
     /* 손가락 모드: 한 손가락 스크롤만 막고(→ 그리기), 두 손가락 확대·이동은 브라우저에 맡긴다 */
     var ta = 'pinch-zoom';
     try { if (window.CSS && CSS.supports && !CSS.supports('touch-action', 'pinch-zoom')) ta = 'none'; } catch (_) {}
-    document.documentElement.style.touchAction = (penOn && inputMode === 'touch') ? ta : '';
+    var on = penOn && inputMode === 'touch';
+    document.documentElement.style.touchAction = on ? ta : '';
+    var cl = document.documentElement.classList;
+    cl.toggle('pen-touch', on && ta === 'pinch-zoom');
+    cl.toggle('pen-touch-none', on && ta === 'none');
   }
   /* 진행 중이던 획을 없던 일로 — 두 손가락 제스처(확대·이동)가 시작됐을 때 */
   function dropStroke() {
