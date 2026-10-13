@@ -32,17 +32,18 @@
   /* 1) 동기 확인 — 화면이 그려지기 전에 판단한다 */
   var s = sess();
   if (!s) { document.documentElement.style.visibility = 'hidden'; toLogin(); return; }
-  if (s.mustChange || !s.consent) { document.documentElement.style.visibility = 'hidden'; toLogin('setup'); return; }
+  if (s.mustChange || !s.consent || s.profile === false) { document.documentElement.style.visibility = 'hidden'; toLogin('setup'); return; }
 
   /* 2) 엔진 불러오기 (운영 모드는 supabase 라이브러리 먼저) */
   function load(src) { return new Promise(function (ok, no) { var x = document.createElement('script'); x.src = src; x.onload = ok; x.onerror = no; document.head.appendChild(x); }); }
-  var ready = (C.mode === 'supabase' ? load(BASE + 'vendor/supabase.js') : Promise.resolve())
+  var VEND = { supabase: ['vendor/supabase.js'], firebase: ['vendor/firebase-app-compat.js', 'vendor/firebase-auth-compat.js', 'vendor/firebase-firestore-compat.js', 'vendor/firebase-functions-compat.js'] }[C.mode] || [];
+  var ready = VEND.reduce(function (p, v) { return p.then(function () { return load(BASE + v); }); }, Promise.resolve())
     .then(function () { return window.AUTH ? null : load(BASE + 'auth-core.js'); });
 
   /* 서버 쪽 확인: 계정이 삭제됐거나 초기화됐으면 다시 로그인 */
   ready.then(function () { return window.AUTH.refresh(); }).then(function (r) {
     if (!r) { window.AUTH.clearSession(); toLogin('expired'); }
-    else if (r.mustChange) toLogin('setup');
+    else if (r.mustChange || r.profile === false) toLogin('setup');
   }).catch(function () { /* 네트워크 오류 시에는 이 기기 기록을 믿고 계속 */ });
 
   /* 3) 학습 기록 */
@@ -77,7 +78,7 @@
       '@media print{.auth-chip{display:none}}';
     document.head.appendChild(st);
     var c = document.createElement('span'); c.className = 'auth-chip';
-    c.innerHTML = '👤 <span>' + (s.name || s.emp) + '님</span>' + (s.role === 'admin' ? ' · <a href="' + BASE + 'admin.html">관리자</a>' : '') +
+    c.innerHTML = '👤 <span>' + (s.name || s.emp) + '님</span> · <a href="' + BASE + 'profile.html?back=' + encodeURIComponent(location.href) + '">내 정보</a>' + (s.role === 'admin' ? ' · <a href="' + BASE + 'admin.html">관리자</a>' : '') +
       '<button type="button">로그아웃</button>';
     c.querySelector('button').onclick = function () {
       ready.then(function () { return window.AUTH.logout(); }).finally(function () { location.href = BASE + 'login.html?next=' + encodeURIComponent(location.href); });

@@ -1,0 +1,30 @@
+// ═══════════════════════════════════════════════════════════════
+// 스스로 학습하기 로그인 — Firestore 보안 규칙
+// ⚠ 기존 '고객 컨설팅 관리' 프로그램과 같은 Firebase 프로젝트를 쓴다면, 이 파일로 덮어쓰지 말고
+//   기존 규칙 안에 아래 sdl_members / sdl_activity 두 블록과 함수들만 추가해야 합니다.
+// ═══════════════════════════════════════════════════════════════
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    function signedEmp() { return request.auth != null && request.auth.token.email.matches('^[0-9a-z]{6}@emp[.]local$'); }
+    function emp() { return request.auth.token.email.split('@')[0]; }
+    function isAdmin() { return signedEmp() && get(/databases/$(db)/documents/sdl_members/$(emp())).data.role == 'admin'; }
+    function selfKeysOnly() {
+      return request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['phone', 'company', 'region', 'vision_center', 'branch', 'must_change_pw', 'consent_at']);
+    }
+
+    match /sdl_members/{id} {
+      allow read: if signedEmp() && (id == emp() || isAdmin());
+      allow update: if isAdmin() || (signedEmp() && id == emp() && selfKeysOnly());
+      allow delete: if isAdmin() && resource.data.role != 'admin';
+      // 관리자는 일반 회원 등록. 최초 관리자 1회 생성은 관리자 사번 본인이 role=admin 으로만 가능
+      allow create: if (isAdmin() && request.resource.data.role == 'member')
+                    || (signedEmp() && id == emp() && id == '313766' && request.resource.data.role == 'admin');
+    }
+    match /sdl_activity/{a} {
+      allow create: if signedEmp() && request.resource.data.emp_id == emp();
+      allow read: if isAdmin();
+    }
+  }
+}

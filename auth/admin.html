@@ -5,7 +5,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="auth.css">
 <script src="auth-config.js"></script>
-<script>if((window.AUTH_CONFIG||{}).mode==='supabase')document.write('<script src="vendor/supabase.js"><\/script>');</script>
+<script>(function(m){var v={supabase:['vendor/supabase.js'],firebase:['vendor/firebase-app-compat.js','vendor/firebase-auth-compat.js','vendor/firebase-firestore-compat.js','vendor/firebase-functions-compat.js']}[m]||[];v.forEach(function(s){document.write('<script src="'+s+'"><\/script>');});})((window.AUTH_CONFIG||{}).mode);</script>
 <script src="auth-core.js"></script>
 <script src="vendor/chart.umd.js"></script>
 <style>
@@ -97,7 +97,7 @@ if(s.mustChange||!s.consent){location.replace('login.html?next='+encodeURICompon
 var B=A.backend();
 var PAGES={'index.html':'메인','sales-guide.html':'특약나열식 제안의 문제점','receipt-guide.html':'상담 1일차 · 의료비 영수증','priority-guide.html':'상담 2일차 · 중증질환과 보험','bias-guide.html':'고객이 범하는 인지적 오류','lung-cancer-guide.html':'폐암 가이드','breast-cancer-guide.html':'유방암 가이드','cancer-guide.html':'항암치료 가이드','corporate-guide.html':'법인컨설팅 가이드','test.html':'(체험) 시험 페이지','login':'로그인'};
 var KINDS={login:'로그인',page:'페이지 진입',section:'섹션 보기',card:'카드 열기',image:'그림 확대'};
-var FIELDS=[['emp_id','사번'],['name','성명'],['phone','전화번호'],['company','소속사'],['region','지역단'],['vision_center','비전센터'],['branch','지점'],['note','비고']];
+var FIELDS=[['emp_id','사번'],['name','성명'],['phone','연락처'],['company','소속사'],['region','지역단'],['vision_center','비전센터'],['branch','지점'],['note','비고']];
 document.getElementById('who').textContent=(s.name||s.emp)+' ('+s.emp+') · '+(A.config.mode==='supabase'?'운영 모드':'체험 모드 — 이 브라우저에만 저장');
 function h(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function toast(t){var e=document.getElementById('toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.display='none';},2200);}
@@ -133,9 +133,10 @@ function drawMembers(){
 ['mq','mf-co','mf-rg'].forEach(function(id){document.getElementById(id).oninput=drawMembers;});
 var MM=document.getElementById('MM'),MMC=document.getElementById('MMC');
 MM.onclick=function(e){if(e.target===MM)MM.classList.remove('on');};
-function editMember(m){var isNew=!m;m=m||{};
-  MMC.innerHTML='<h1 style="font-size:20px">'+(isNew?'사번 추가':'회원 정보 수정')+'</h1><p class="sub">'+(isNew?'처음 비밀번호는 사번으로 만들어집니다.':'사번 '+h(m.emp_id))+'</p><div class="msg"></div><div class="f2">'+
-  FIELDS.map(function(f){return'<label class="fld"'+(f[0]==='note'?' style="grid-column:1/-1"':'')+'><span>'+f[1]+(f[0]==='emp_id'?' (영문·숫자 6자리)':'')+'</span><input data-f="'+f[0]+'" value="'+h(m[f[0]])+'"'+(f[0]==='emp_id'&&!isNew?' disabled':'')+(f[0]==='emp_id'?' maxlength="6"':'')+'></label>';}).join('')+
+var ADDF=[['emp_id','사원번호'],['name','성명'],['phone','연락처']];
+function editMember(m){var isNew=!m;m=m||{};var FL=isNew?ADDF:FIELDS;
+  MMC.innerHTML='<h1 style="font-size:20px">'+(isNew?'사번 추가':'회원 정보 수정')+'</h1><p class="sub">'+(isNew?'처음 비밀번호는 사번입니다. 소속사·지역단·비전센터·지점은 본인이 첫 로그인 때 직접 입력합니다.':'사번 '+h(m.emp_id))+'</p><div class="msg"></div><div class="f2">'+
+  FL.map(function(f){return'<label class="fld"'+(f[0]==='note'?' style="grid-column:1/-1"':'')+'><span>'+f[1]+(f[0]==='emp_id'?' (영문·숫자 6자리)':'')+'</span><input data-f="'+f[0]+'" value="'+h(m[f[0]])+'"'+(f[0]==='emp_id'&&!isNew?' disabled':'')+(f[0]==='emp_id'?' maxlength="6"':'')+'></label>';}).join('')+
   '</div><div class="row"><button class="btn" id="sv">저장</button><button class="btn sec" id="cx">취소</button></div>';
   MM.classList.add('on');
   MMC.querySelector('#cx').onclick=function(){MM.classList.remove('on');};
@@ -146,15 +147,35 @@ function editMember(m){var isNew=!m;m=m||{};
 }
 document.getElementById('madd').onclick=function(){editMember(null);};
 document.getElementById('mbulk').onclick=function(){
-  MMC.innerHTML='<h1 style="font-size:20px">일괄 등록</h1><p class="sub">엑셀에서 복사해 붙여넣거나 쉼표로 구분해 한 줄에 한 명씩 입력하세요.<br>순서: 사번, 성명, 전화번호, 소속사, 지역단, 비전센터, 지점, 비고</p><div class="msg"></div>'+
-  '<textarea class="bulk" id="bt" placeholder="AB1234	홍길동	010-0000-0000	현대해상	서울지역단	강남비전센터	역삼지점	"></textarea><div class="row" style="margin-top:12px"><button class="btn" id="bg">등록</button><button class="btn sec" id="bc">취소</button></div>';
+  MMC.innerHTML='<h1 style="font-size:20px">일괄 등록</h1><p class="sub">엑셀에서 복사해 붙여넣으세요. <b>첫 줄은 헤더</b>이고, 칸은 띄어쓰기(또는 탭)로 구분합니다.<br>헤더: <b>사원번호 성명 연락처</b></p><div class="msg"></div>'+
+  '<textarea class="bulk" id="bt" placeholder="사원번호 성명 연락처\nAB1234 홍길동 010-1234-5678\nCD5678 김영희 010-9876-5432"></textarea>'+
+  '<div class="row" style="margin-top:12px"><button class="btn sec" id="bp">미리보기</button><button class="btn" id="bg">등록</button><button class="btn sec" id="bc">닫기</button></div><div id="bprev" style="margin-top:12px"></div>';
   MM.classList.add('on');MMC.querySelector('#bc').onclick=function(){MM.classList.remove('on');};
-  MMC.querySelector('#bg').onclick=async function(){var lines=MMC.querySelector('#bt').value.split(/\r?\n/).map(function(l){return l.trim();}).filter(Boolean),ok=0,bad=[];
-    for(var i=0;i<lines.length;i++){var c=lines[i].split(lines[i].indexOf('\t')>=0?'\t':',').map(function(x){return x.trim();});if(/^사번$/.test(c[0]))continue;
-      var o={};FIELDS.forEach(function(f,j){o[f[0]]=c[j]||'';});
-      if(!A.validId(o.emp_id)){bad.push((i+1)+'줄: 사번 형식 오류('+o.emp_id+')');continue;}
-      try{await B.upsertMember(o);ok++;}catch(e){bad.push((i+1)+'줄: '+(e.userMsg||e.message));}}
-    var m=MMC.querySelector('.msg');m.className='msg show '+(bad.length?'err':'ok');m.innerHTML=ok+'명 등록·갱신'+(bad.length?'<br>'+bad.map(h).join('<br>'):'');loadMembers();};
+  var HMAP={'사원번호':'emp_id','사번':'emp_id','성명':'name','이름':'name','연락처':'phone','전화번호':'phone','휴대폰':'phone','핸드폰':'phone'};
+  function parse(){var lines=MMC.querySelector('#bt').value.split(/\r?\n/).map(function(l){return l.trim();}).filter(Boolean);
+    if(!lines.length)return{err:'붙여넣은 내용이 없습니다.'};
+    var head=lines[0].split(/\s+/),cols=head.map(function(x){return HMAP[x.replace(/[^가-힣a-zA-Z]/g,'')]||null;});
+    if(cols.indexOf('emp_id')<0||cols.indexOf('name')<0)return{err:'첫 줄 헤더에 “사원번호”와 “성명”이 있어야 합니다. 예: 사원번호 성명 연락처'};
+    var rows=[],bad=[],seen={};
+    lines.slice(1).forEach(function(l,i){var t=l.split(/\s+/),o={};
+      /* 칸 수가 헤더보다 많으면(이름 사이 공백 등) 가운데를 성명으로 합친다 */
+      if(t.length>cols.length&&cols.length===3&&cols[0]==='emp_id'&&cols[1]==='name'&&cols[2]==='phone'){t=[t[0],t.slice(1,-1).join(' '),t[t.length-1]];}
+      cols.forEach(function(c,j){if(c)o[c]=(t[j]||'').trim();});
+      var n=i+2;
+      if(!A.validId(o.emp_id)){bad.push(n+'줄: 사원번호 형식 오류('+(o.emp_id||'빈칸')+')');return;}
+      if(!o.name){bad.push(n+'줄: 성명 없음');return;}
+      var k=A.normId(o.emp_id);if(seen[k]){bad.push(n+'줄: 사원번호 중복('+o.emp_id+')');return;}seen[k]=1;
+      rows.push({emp_id:o.emp_id,name:o.name,phone:o.phone||'',exists:members.some(function(x){return x.emp_id===k;})});});
+    return{rows:rows,bad:bad};}
+  function preview(){var r=parse(),pv=MMC.querySelector('#bprev'),m=MMC.querySelector('.msg');
+    if(r.err){m.className='msg show err';m.textContent=r.err;pv.innerHTML='';return null;}
+    m.className='msg show '+(r.bad.length?'err':'ok');m.innerHTML='등록 가능 '+r.rows.length+'명 (신규 '+r.rows.filter(function(x){return!x.exists;}).length+' · 기존 갱신 '+r.rows.filter(function(x){return x.exists;}).length+')'+(r.bad.length?'<br>'+r.bad.map(h).join('<br>'):'');
+    pv.innerHTML='<div class="scroll" style="max-height:240px"><table class="tbl"><tr><th>사원번호</th><th>성명</th><th>연락처</th><th>구분</th></tr>'+r.rows.map(function(x){return'<tr><td>'+h(A.normId(x.emp_id))+'</td><td>'+h(x.name)+'</td><td>'+h(x.phone)+'</td><td>'+(x.exists?'갱신':'신규')+'</td></tr>';}).join('')+'</table></div>';return r;}
+  MMC.querySelector('#bp').onclick=preview;
+  MMC.querySelector('#bg').onclick=async function(){var r=preview();if(!r||!r.rows.length)return;var b=this;b.disabled=true;var ok=0,fails=[];
+    for(var i=0;i<r.rows.length;i++){b.textContent='등록 중 '+(i+1)+'/'+r.rows.length;try{await B.upsertMember({emp_id:r.rows[i].emp_id,name:r.rows[i].name,phone:r.rows[i].phone});ok++;}catch(e){fails.push(r.rows[i].emp_id+': '+(e.userMsg||e.message));}}
+    b.disabled=false;b.textContent='등록';var m=MMC.querySelector('.msg');m.className='msg show '+(fails.length?'err':'ok');m.innerHTML=ok+'명 등록·갱신 완료'+(fails.length?'<br>'+fails.map(h).join('<br>'):'')+(r.bad.length?'<br>건너뜀: '+r.bad.length+'줄':'');
+    loadMembers();};
 };
 document.getElementById('mcsv').onclick=function(){csv([FIELDS.map(function(f){return f[1];}).concat(['권한','비번변경','카카오','등록일'])].concat(members.map(function(m){return FIELDS.map(function(f){return m[f[0]];}).concat([m.role,m.must_change_pw?'변경 전':'완료',m.kakao_linked?'연결':'',kst(m.created_at)]);})),'회원목록.csv');};
 

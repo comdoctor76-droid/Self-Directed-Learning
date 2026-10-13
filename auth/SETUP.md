@@ -8,20 +8,27 @@
 - 체험 모드는 **이 브라우저 안에만** 저장됩니다. 다른 기기·다른 브라우저와 공유되지 않습니다.
 - 관리자 화면: `auth/admin.html`
 
-## 운영 모드 준비 (무료, 사용자 계정 필요)
-1. **Supabase** (https://supabase.com) 가입 → New project 생성 (지역: Northeast Asia (Seoul))
-   - Project Settings → API 에서 **Project URL** 과 **anon public key** 를 알려 주세요.
-   - Authentication → Providers → Email: "Confirm email" 끄기
-   - Authentication → Sign In / Providers → "Allow manual linking" 켜기 (카카오 연결용)
-2. **카카오 디벨로퍼스** (https://developers.kakao.com) → 내 애플리케이션 추가
-   - 카카오 로그인 활성화, Redirect URI 에 `https://<프로젝트>.supabase.co/auth/v1/callback` 등록
-   - **REST API 키**와 보안 → **Client Secret** 을 알려 주세요. (사업자 인증·전화번호 동의항목은 필요 없음)
-3. 받은 값으로 제가 할 일
-   - `supabase/schema.sql` 실행(표·권한), `supabase/functions/admin-users` 배포, 카카오 공급자 설정
-   - 관리자 계정(313766) 1회 생성 — 요청하신 비밀번호는 이때만 쓰고 저장소에는 남기지 않음
-   - `auth/auth-config.js` 의 `mode` 를 `'supabase'` 로 바꾸고 URL·공개 키 입력 → 같은 시험 페이지로 운영 모드 시험
+## 운영 모드 준비 — Google Firebase (권장, 이미 쓰고 계신 서비스)
+**새 Firebase 프로젝트를 따로 만드는 것을 권장합니다.** 고객 컨설팅 관리 프로그램과 같은 프로젝트를 쓰면 로그인 계정과 보안 규칙이 섞입니다.
+같은 프로젝트를 꼭 써야 한다면: 컬렉션은 `sdl_members`·`sdl_activity` 로 분리되어 있고, `firebase/firestore.rules` 의 두 블록만 기존 규칙에 **추가**해야 합니다(덮어쓰기 금지).
 
-> 주의: Supabase 무료 프로젝트는 7일간 요청이 없으면 일시정지됩니다. 탑재 후에는 매일 자동 접속(GitHub Actions)으로 막습니다.
+1. Firebase 콘솔 → 프로젝트 만들기 → 웹 앱 추가 → 표시되는 `apiKey, authDomain, projectId, appId` 를 알려 주세요. (공개해도 되는 값)
+2. Authentication → 로그인 방법 → **이메일/비밀번호** 사용 설정
+3. Firestore Database 만들기 (위치: asia-northeast3 서울) → 규칙에 `firebase/firestore.rules` 붙여넣기
+4. `auth/auth-config.js` 의 `mode` 를 `'firebase'` 로, `firebase` 값 입력 → `auth/setup.html` 에서 관리자(313766) 계정 1회 생성
+
+| 기능 | 무료(Spark) | 유료 전환(Blaze) 필요 |
+|---|---|---|
+| 로그인·24시간 유지·최초 비번 변경·동의·소속 입력·내 정보 수정 | ✅ | |
+| 관리자 개별/일괄 등록·정보 수정·기록·통계 | ✅ | |
+| 관리자 **비밀번호 초기화**, 계정 **완전 삭제** | | ✅ `firebase/functions` 배포 |
+| 카카오 비밀번호 찾기 | | ✅ (추가 개발) |
+
+> Blaze 는 카드 등록이 필요한 종량제지만 무료 할당량(함수 월 200만 회 등)이 있어 이 규모에서는 실제 요금이 사실상 0원입니다.
+> Spark 에서는 '삭제'가 회원 정보만 지워 로그인을 막는 방식으로 동작하고, 비밀번호 초기화는 쓸 수 없습니다.
+
+## 운영 모드 대안 — Supabase
+`mode: 'supabase'` 와 `supabase/` 폴더 설정으로도 같은 기능을 쓸 수 있습니다(무료로 비밀번호 초기화·카카오까지 가능, 7일 미사용 시 일시정지).
 
 ## 탑재 (사용자 승인 후에만)
 각 학습 페이지와 메인의 `<head>` 맨 앞에 두 줄을 넣습니다.
@@ -37,7 +44,10 @@
 | `auth-config.js` | 모드·서버 주소·공개 키 (공개 가능 값만) |
 | `auth-core.js` | 로그인·회원·기록 엔진 (체험/운영 공통) |
 | `auth-guard.js` | 페이지에 심는 모듈 — 로그인 확인·원래 주소 복귀·학습 기록 |
-| `login.html` | 로그인·최초 비밀번호 변경·개인정보 동의·카카오 연결·비밀번호 찾기 |
+| `login.html` | 로그인·최초 비밀번호 변경·개인정보 동의·소속 정보 입력·이용 안내·비밀번호 찾기 |
+| `profile.html` | 내 정보(연락처·소속) 수정, 비밀번호 변경 |
+| `setup.html` | Firebase 관리자 계정 최초 1회 생성 |
 | `admin.html` | 회원 관리·접속/학습 기록·통계 |
 | `test.html` | 시험용 학습 페이지 |
-| `../supabase/schema.sql`, `../supabase/functions/admin-users/` | 운영 서버 설정 |
+| `../firebase/` | Firebase 보안 규칙·관리자 서버 함수 |
+| `../supabase/` | Supabase 대안 설정 |

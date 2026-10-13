@@ -5,8 +5,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="auth.css">
 <script src="auth-config.js"></script>
-<script>if((window.AUTH_CONFIG||{}).mode==='supabase')document.write('<script src="vendor/supabase.js"><\/script>');</script>
+<script>(function(m){var v={supabase:['vendor/supabase.js'],firebase:['vendor/firebase-app-compat.js','vendor/firebase-auth-compat.js','vendor/firebase-firestore-compat.js','vendor/firebase-functions-compat.js']}[m]||[];v.forEach(function(s){document.write('<script src="'+s+'"><\/script>');});})((window.AUTH_CONFIG||{}).mode);</script>
 <script src="auth-core.js"></script>
+<script src="../version.js"></script>
 </head><body>
 <div class="auth-bg"><div class="auth-card" id="card"></div></div>
 <script>
@@ -24,7 +25,7 @@ function h(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'
 function msg(t,kind){var m=card.querySelector('.msg');if(!m)return;m.className='msg show '+(kind||'err');m.textContent=t;}
 function busy(b,on){if(!b)return;b.disabled=on;if(on){b.__t=b.textContent;b.textContent='처리 중…';}else if(b.__t)b.textContent=b.__t;}
 function go(){try{sessionStorage.removeItem('sdl_next');}catch(e){} location.replace(NEXT);}
-function nextStep(s){ if(!s){viewLogin();return;} if(s.mustChange){viewChange();return;} if(!s.consent){viewConsent();return;} if(C.kakao&&!s.kakao&&!sessionStorage.getItem('sdl_kakao_skip')){viewKakaoOffer();return;} go(); }
+function nextStep(s){ if(!s){viewLogin();return;} if(s.mustChange){viewChange();return;} if(!s.consent){viewConsent();return;} if(!s.profile){viewProfile();return;} if(C.kakao&&C.mode!=='firebase'&&!s.kakao&&!sessionStorage.getItem('sdl_kakao_skip')){viewKakaoOffer();return;} viewNotice(); }
 
 function viewLogin(note){
   card.innerHTML='<span class="brand">스스로 학습하기</span><h1>사번으로 로그인</h1><p class="sub">사번(영문·숫자 6자리)과 비밀번호를 입력해 주세요.</p>'+
@@ -60,15 +61,40 @@ function viewConsent(){
   var b=card.querySelector('#go');
   b.onclick=function(){if(!card.querySelector('#ck').checked){msg('동의 항목에 체크해 주세요.');return;} busy(b,true); A.consent().then(function(){nextStep(A.session());}).catch(function(e){msg(e.userMsg||'저장하지 못했습니다.');}).finally(function(){busy(b,false);});};
 }
+function viewProfile(){
+  card.innerHTML='<span class="brand">처음 로그인</span><h1>내 소속 정보 입력</h1><p class="sub">학습 관리를 위해 소속을 입력해 주세요. 나중에 \'내 정보\'에서 고칠 수 있습니다.</p><div class="msg"></div>'+
+  '<label class="fld"><span>성명</span><input id="nm" disabled></label><label class="fld"><span>연락처</span><input id="ph" inputmode="tel" placeholder="010-0000-0000"></label>'+
+  '<label class="fld"><span>소속사 *</span><input id="co"></label><label class="fld"><span>지역단 *</span><input id="rg"></label>'+
+  '<label class="fld"><span>비전센터 *</span><input id="vc"></label><label class="fld"><span>지점 *</span><input id="br"></label><button class="btn" id="go">저장하고 시작하기</button>';
+  A.me().then(function(m){if(!m)return;card.querySelector('#nm').value=m.name||'';card.querySelector('#ph').value=m.phone||'';
+    card.querySelector('#co').value=m.company||'';card.querySelector('#rg').value=m.region||'';card.querySelector('#vc').value=m.vision_center||'';card.querySelector('#br').value=m.branch||'';});
+  var b=card.querySelector('#go');
+  b.onclick=function(){var v=function(id){return card.querySelector(id).value.trim();},o={phone:v('#ph'),company:v('#co'),region:v('#rg'),vision_center:v('#vc'),branch:v('#br')};
+    var miss=[['company','소속사'],['region','지역단'],['vision_center','비전센터'],['branch','지점']].filter(function(x){return !o[x[0]];}).map(function(x){return x[1];});
+    if(miss.length){msg(miss.join('·')+'을(를) 입력해 주세요.');return;}
+    busy(b,true);A.updateProfile(o).then(function(){nextStep(A.session());}).catch(function(e){msg(e.userMsg||'저장하지 못했습니다.');}).finally(function(){busy(b,false);});};
+}
+/* 로그인 직후 안내 — 매 로그인마다 한 번 보여주고 확인하면 학습 화면으로 */
+function viewNotice(){
+  var V=window.SITE_VERSION||{};
+  card.innerHTML='<span class="brand">안내</span><h1>이용 안내</h1>'+
+  '<div class="consent" style="max-height:none;font-size:14.5px;line-height:1.85">본 자료는 <b>교육을 이수한 교육생에게 공개되는 자료</b>로, 해당 사원번호를 타인에게 대여 시 <b style="color:#D6403A">계정이 정지될 수 있음</b>을 안내드립니다.<br><br>'+
+  '스스로 학습하는 목적 이외의 용도로 사용하지 마시고, 문의사항은 게시판을 활용하시거나 개별적인 연락 부탁드립니다.<br><br>'+
+  '<b>현대해상화재보험 호남지역단 이승학 전임강사</b></div>'+
+  '<p class="hint" style="margin:0 0 16px;text-align:right">버전 '+h(V.v||'')+(V.at?' · '+h(V.at):'')+'</p>'+
+  '<button class="btn" id="go">확인했습니다</button>';
+  card.querySelector('#go').onclick=go;
+}
 function viewKakaoOffer(){
   card.innerHTML='<span class="brand">비밀번호 찾기 준비</span><h1>카카오 계정 연결</h1><p class="sub">카카오 계정을 한 번 연결해 두면, 비밀번호를 잊었을 때 카카오로 본인 확인 후 직접 새로 만들 수 있습니다.</p><div class="msg"></div>'+
   '<button class="btn kakao" id="lk">💬 카카오 계정 연결하기</button><div style="height:10px"></div><button class="btn sec" id="sk">나중에 하기</button>'+
   '<p class="hint" style="margin-top:12px">연결하지 않아도 학습은 할 수 있습니다. 이 경우 비밀번호를 잊으면 관리자에게 초기화를 요청해 주세요.</p>';
   var b=card.querySelector('#lk');
   b.onclick=function(){busy(b,true); Promise.resolve(A.backend().linkKakao()).then(function(m){ if(m){A.writeSession(m); msg('카카오 계정이 연결되었습니다.','ok'); setTimeout(function(){nextStep(A.session());},700);} }).catch(function(e){msg(e.userMsg||'연결하지 못했습니다.');busy(b,false);});};
-  card.querySelector('#sk').onclick=function(){try{sessionStorage.setItem('sdl_kakao_skip','1');}catch(e){} go();};
+  card.querySelector('#sk').onclick=function(){try{sessionStorage.setItem('sdl_kakao_skip','1');}catch(e){} viewNotice();};
 }
 function viewForgot(){
+  if(C.mode==='firebase'){card.innerHTML='<span class="brand">비밀번호 찾기</span><h1>관리자에게 초기화 요청</h1><p class="sub">비밀번호를 잊으셨다면 관리자에게 초기화를 요청해 주세요. 초기화되면 비밀번호가 사번으로 돌아가고, 로그인 후 새로 만들게 됩니다.</p><div class="links"><button class="lnk" id="bk">← 로그인으로</button></div>';card.querySelector('#bk').onclick=function(){viewLogin();};return;}
   card.innerHTML='<span class="brand">비밀번호 찾기</span><h1>카카오로 본인 확인</h1><p class="sub">사번을 입력하고 카카오로 본인 확인을 하면 새 비밀번호를 만들 수 있습니다.</p><div class="msg"></div>'+
   '<label class="fld"><span>사번</span><input id="id" maxlength="6" autocapitalize="off" spellcheck="false"></label>'+
   (C.mode!=='supabase'?'<label class="fld"><span>새 비밀번호 (체험 모드)</span><input id="p1" type="password" autocomplete="new-password"></label><p class="hint">체험 모드에서는 카카오 화면 대신 확인이 끝난 것으로 처리합니다.</p>':'')+
