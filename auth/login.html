@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>로그인 · 스스로 학습하기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="auth.css">
+<script src="auth-config.js"></script>
+<script>if((window.AUTH_CONFIG||{}).mode==='supabase')document.write('<script src="vendor/supabase.js"><\/script>');</script>
+<script src="auth-core.js"></script>
+</head><body>
+<div class="auth-bg"><div class="auth-card" id="card"></div></div>
+<script>
+(function(){
+'use strict';
+var A=window.AUTH, C=A.config, qs=new URLSearchParams(location.search);
+var NEXT=qs.get('next')||(function(){try{return sessionStorage.getItem('sdl_next');}catch(e){return null;}})()||'../index.html';
+try{sessionStorage.setItem('sdl_next',NEXT);}catch(e){}
+/* 다른 사이트로 튕겨 나가지 않게 같은 사이트 주소만 허용 */
+try{var u=new URL(NEXT,location.href); if(u.origin!==location.origin) NEXT='../index.html';}catch(e){NEXT='../index.html';}
+var card=document.getElementById('card');
+if(C.mode!=='supabase'){var f=document.createElement('div');f.className='demo-flag';f.textContent='체험 모드 — 이 브라우저 안에만 저장됩니다';document.body.appendChild(f);}
+
+function h(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function msg(t,kind){var m=card.querySelector('.msg');if(!m)return;m.className='msg show '+(kind||'err');m.textContent=t;}
+function busy(b,on){if(!b)return;b.disabled=on;if(on){b.__t=b.textContent;b.textContent='처리 중…';}else if(b.__t)b.textContent=b.__t;}
+function go(){try{sessionStorage.removeItem('sdl_next');}catch(e){} location.replace(NEXT);}
+function nextStep(s){ if(!s){viewLogin();return;} if(s.mustChange){viewChange();return;} if(!s.consent){viewConsent();return;} if(C.kakao&&!s.kakao&&!sessionStorage.getItem('sdl_kakao_skip')){viewKakaoOffer();return;} go(); }
+
+function viewLogin(note){
+  card.innerHTML='<span class="brand">스스로 학습하기</span><h1>사번으로 로그인</h1><p class="sub">사번(영문·숫자 6자리)과 비밀번호를 입력해 주세요.</p>'+
+  '<div class="msg"></div>'+
+  '<label class="fld"><span>사번</span><input id="id" autocomplete="username" inputmode="text" maxlength="6" autocapitalize="off" spellcheck="false" placeholder="예: AB1234"></label>'+
+  '<label class="fld"><span>비밀번호</span><input id="pw" type="password" autocomplete="current-password" placeholder="처음이라면 사번을 입력"></label>'+
+  '<p class="hint">처음 로그인할 때 비밀번호는 사번입니다. 로그인 후 바로 새 비밀번호로 바꿉니다.</p>'+
+  '<button class="btn" id="go">로그인</button>'+
+  '<div class="links"><button class="lnk" id="fg">비밀번호를 잊으셨나요?</button><span style="color:#6B7078;font-size:12.5px">로그인 유지 '+(C.sessionHours||24)+'시간</span></div>';
+  if(note)msg(note.t,note.k);
+  var id=card.querySelector('#id'),pw=card.querySelector('#pw'),b=card.querySelector('#go');
+  function sub(){ if(!A.validId(id.value)){msg('사번은 영문·숫자 6자리입니다.');id.focus();return;} if(!pw.value){msg('비밀번호를 입력해 주세요.');pw.focus();return;}
+    busy(b,true); A.login(id.value,pw.value).then(nextStep).catch(function(e){msg(e.userMsg||'로그인하지 못했습니다.');}).finally(function(){busy(b,false);}); }
+  b.onclick=sub; pw.onkeydown=id.onkeydown=function(e){if(e.key==='Enter')sub();};
+  card.querySelector('#fg').onclick=viewForgot; id.focus();
+}
+function viewChange(){
+  card.innerHTML='<span class="brand">처음 로그인</span><h1>새 비밀번호 설정</h1><p class="sub">처음 비밀번호(사번)는 바로 바꿔야 학습 화면을 볼 수 있습니다.</p><div class="msg"></div>'+
+  '<label class="fld"><span>새 비밀번호</span><input id="p1" type="password" autocomplete="new-password"></label>'+
+  '<label class="fld"><span>새 비밀번호 확인</span><input id="p2" type="password" autocomplete="new-password"></label>'+
+  '<p class="hint">8자 이상, 영문과 숫자를 함께 넣어 주세요. 사번과 같은 비밀번호는 쓸 수 없습니다.</p><button class="btn" id="go">비밀번호 바꾸기</button>';
+  var b=card.querySelector('#go');
+  b.onclick=function(){var p1=card.querySelector('#p1').value,p2=card.querySelector('#p2').value,s=A.session();
+    var e=A.pwRule(p1); if(e){msg(e);return;} if(p1!==p2){msg('두 비밀번호가 다릅니다.');return;} if(s&&A.normId(p1)===s.emp){msg('사번과 같은 비밀번호는 쓸 수 없습니다.');return;}
+    busy(b,true); A.changePassword(p1).then(function(){nextStep(A.session());}).catch(function(e){msg(e.userMsg||'바꾸지 못했습니다.');}).finally(function(){busy(b,false);});};
+}
+function viewConsent(){
+  card.innerHTML='<span class="brand">개인정보 안내</span><h1>개인정보 수집·이용 동의</h1><p class="sub">학습 관리를 위해 아래 내용에 동의해 주세요.</p><div class="msg"></div>'+
+  '<div class="consent"><b>수집 항목</b> 사번, 성명, 전화번호, 소속사, 지역단, 비전센터, 지점, 비고(관리자가 등록), 접속 일시, 학습한 페이지·카드 기록<br>'+
+  '<b>이용 목적</b> 본인 확인, 비밀번호 찾기, 학습 현황 확인 및 교육 운영 통계<br><b>보관 기간</b> 계정 삭제 시까지(학습 기록은 최대 2년)<br>'+
+  '<b>열람 권한</b> 시스템 관리자<br>동의하지 않으면 학습 화면을 이용할 수 없습니다.</div>'+
+  '<label class="chk"><input type="checkbox" id="ck"> 위 내용을 확인했고 동의합니다.</label><button class="btn" id="go">동의하고 계속</button>';
+  var b=card.querySelector('#go');
+  b.onclick=function(){if(!card.querySelector('#ck').checked){msg('동의 항목에 체크해 주세요.');return;} busy(b,true); A.consent().then(function(){nextStep(A.session());}).catch(function(e){msg(e.userMsg||'저장하지 못했습니다.');}).finally(function(){busy(b,false);});};
+}
+function viewKakaoOffer(){
+  card.innerHTML='<span class="brand">비밀번호 찾기 준비</span><h1>카카오 계정 연결</h1><p class="sub">카카오 계정을 한 번 연결해 두면, 비밀번호를 잊었을 때 카카오로 본인 확인 후 직접 새로 만들 수 있습니다.</p><div class="msg"></div>'+
+  '<button class="btn kakao" id="lk">💬 카카오 계정 연결하기</button><div style="height:10px"></div><button class="btn sec" id="sk">나중에 하기</button>'+
+  '<p class="hint" style="margin-top:12px">연결하지 않아도 학습은 할 수 있습니다. 이 경우 비밀번호를 잊으면 관리자에게 초기화를 요청해 주세요.</p>';
+  var b=card.querySelector('#lk');
+  b.onclick=function(){busy(b,true); Promise.resolve(A.backend().linkKakao()).then(function(m){ if(m){A.writeSession(m); msg('카카오 계정이 연결되었습니다.','ok'); setTimeout(function(){nextStep(A.session());},700);} }).catch(function(e){msg(e.userMsg||'연결하지 못했습니다.');busy(b,false);});};
+  card.querySelector('#sk').onclick=function(){try{sessionStorage.setItem('sdl_kakao_skip','1');}catch(e){} go();};
+}
+function viewForgot(){
+  card.innerHTML='<span class="brand">비밀번호 찾기</span><h1>카카오로 본인 확인</h1><p class="sub">사번을 입력하고 카카오로 본인 확인을 하면 새 비밀번호를 만들 수 있습니다.</p><div class="msg"></div>'+
+  '<label class="fld"><span>사번</span><input id="id" maxlength="6" autocapitalize="off" spellcheck="false"></label>'+
+  (C.mode!=='supabase'?'<label class="fld"><span>새 비밀번호 (체험 모드)</span><input id="p1" type="password" autocomplete="new-password"></label><p class="hint">체험 모드에서는 카카오 화면 대신 확인이 끝난 것으로 처리합니다.</p>':'')+
+  '<button class="btn kakao" id="kk">💬 카카오로 본인 확인</button>'+
+  '<div class="msg info show" style="margin-top:14px">카카오 계정을 연결하지 않았다면 <b>관리자에게 비밀번호 초기화</b>를 요청해 주세요. 초기화되면 비밀번호가 사번으로 돌아갑니다.</div>'+
+  '<div class="links"><button class="lnk" id="bk">← 로그인으로</button></div>';
+  card.querySelector('#bk').onclick=function(){viewLogin();};
+  var b=card.querySelector('#kk');
+  b.onclick=function(){var id=card.querySelector('#id').value; if(!A.validId(id)){msg('사번은 영문·숫자 6자리입니다.');return;}
+    if(C.mode!=='supabase'){var p1=card.querySelector('#p1').value,e=A.pwRule(p1); if(e){msg(e);return;}
+      busy(b,true); A.backend().kakaoReset(id,p1).then(function(){viewLogin({t:'새 비밀번호로 바뀌었습니다. 로그인해 주세요.',k:'ok'});}).catch(function(e){msg(e.userMsg||'처리하지 못했습니다.');}).finally(function(){busy(b,false);}); return;}
+    busy(b,true); A.backend().kakaoSignIn(id).catch(function(e){msg(e.userMsg||'시작하지 못했습니다.');busy(b,false);});};
+}
+function viewResetNew(){
+  card.innerHTML='<span class="brand">비밀번호 찾기</span><h1>새 비밀번호 설정</h1><p class="sub">카카오 본인 확인이 끝났습니다.</p><div class="msg"></div>'+
+  '<label class="fld"><span>새 비밀번호</span><input id="p1" type="password" autocomplete="new-password"></label><label class="fld"><span>새 비밀번호 확인</span><input id="p2" type="password" autocomplete="new-password"></label><button class="btn" id="go">저장</button>';
+  var b=card.querySelector('#go');
+  b.onclick=function(){var p1=card.querySelector('#p1').value,p2=card.querySelector('#p2').value,e=A.pwRule(p1); if(e){msg(e);return;} if(p1!==p2){msg('두 비밀번호가 다릅니다.');return;}
+    busy(b,true); A.backend().kakaoResetFinish(p1).then(function(m){A.writeSession(m); nextStep(A.session());}).catch(function(e){msg(e.userMsg||'저장하지 못했습니다.');}).finally(function(){busy(b,false);});};
+}
+
+/* 시작: 카카오에서 돌아온 경우 처리 → 이미 로그인돼 있으면 남은 단계로 */
+(async function(){
+  var k=qs.get('kakao');
+  try{
+    if(k==='linked'){var m=await A.backend().kakaoLinkedDone(); if(m)A.writeSession(m);}
+    if(k==='reset'){viewResetNew();return;}
+  }catch(e){}
+  var s=A.session(), why=qs.get('why');
+  if(s && why!=='expired'){ nextStep(s); return; }
+  viewLogin(why==='expired'?{t:'로그인 시간이 지났거나 계정 정보가 바뀌었습니다. 다시 로그인해 주세요.',k:'info'}:null);
+})();
+})();
+</script>
+</body></html>

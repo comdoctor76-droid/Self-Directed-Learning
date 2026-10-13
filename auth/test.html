@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="auth-config.js"></script>
+<script src="auth-guard.js"></script>
+<title>로그인 모듈 시험 페이지</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Noto Sans KR',sans-serif;background:#F7F2EB;color:#1A2744}
+.hero{background:linear-gradient(135deg,#1A2744 0%,#2C3F6E 60%,#3d5390 100%);color:#fff;padding:60px 20px 64px}
+.hero-in{max-width:1000px;margin:0 auto}.hero h1{font-size:28px;font-weight:900}.hero p{opacity:.9;margin-top:8px}
+.badge{display:inline-block;background:#E8651A;border-radius:999px;padding:6px 14px;font-weight:700;font-size:13px;margin-bottom:12px}
+main{max-width:1000px;margin:0 auto;padding:20px}section{padding:40px 0 20px;min-height:70vh}section h2{font-size:22px;margin-bottom:14px}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card{background:#fff;border:2px solid #EEE7DF;border-radius:16px;padding:20px;cursor:pointer}
+.card h3{font-size:17px}.card p{color:#6B7078;font-size:14px}img{max-width:100%;border-radius:12px;cursor:zoom-in}
+#MB{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);align-items:center;justify-content:center}#MB .in{background:#fff;border-radius:16px;padding:24px;max-width:480px}
+</style>
+<script>
+window.MD={c1:{t:'시험 카드 1 — 본인부담상한제',b:'카드 1 내용'},c2:{t:'시험 카드 2 — 산정특례',b:'카드 2 내용'}};
+window.IMGDATA={i1:{src:'../assets/mechanism/priority-s1-sec.webp',name:'적용범위 표.webp'}};
+function OM(k){var d=MD[k];document.getElementById('MT').textContent=d.t;document.getElementById('MC').textContent=d.b;document.getElementById('MB').style.display='flex';}
+function CM(){document.getElementById('MB').style.display='none';}
+function OI(k){alert('그림 확대: '+IMGDATA[k].name);}
+</script>
+</head><body>
+<div class="hero"><div class="hero-in"><span class="badge">로그인 모듈 시험</span><h1>시험용 학습 페이지</h1><p>로그인 후 카드를 열거나 그림을 누르면 관리자 화면 기록에 남습니다.</p></div></div>
+<main>
+<section id="s1"><h2>SECTION 01 · 카드</h2><div class="g"><div class="card" onclick="OM('c1')"><h3>시험 카드 1</h3><p>본인부담상한제</p></div><div class="card" onclick="OM('c2')"><h3>시험 카드 2</h3><p>산정특례</p></div></div></section>
+<section id="s2"><h2>SECTION 02 · 그림</h2><img src="../assets/mechanism/priority-s1-sec.webp" onclick="OI('i1')" alt=""></section>
+</main>
+<div id="MB" onclick="CM()"><div class="in"><h3 id="MT"></h3><p id="MC"></p></div></div>
+</body></html>
