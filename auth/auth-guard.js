@@ -34,9 +34,9 @@
   if (!s) { document.documentElement.style.visibility = 'hidden'; toLogin(); return; }
   if (s.mustChange || !s.consent || s.profile === false) { document.documentElement.style.visibility = 'hidden'; toLogin('setup'); return; }
 
-  /* 2) 엔진 불러오기 (운영 모드는 supabase 라이브러리 먼저) */
+  /* 2) 엔진 불러오기 (운영 모드는 Firebase 라이브러리 먼저) */
   function load(src) { return new Promise(function (ok, no) { var x = document.createElement('script'); x.src = src; x.onload = ok; x.onerror = no; document.head.appendChild(x); }); }
-  var VEND = { supabase: ['vendor/supabase.js'], firebase: ['vendor/firebase-app-compat.js', 'vendor/firebase-auth-compat.js', 'vendor/firebase-firestore-compat.js', 'vendor/firebase-functions-compat.js'] }[C.mode] || [];
+  var VEND = { firebase: ['vendor/firebase-app-compat.js', 'vendor/firebase-auth-compat.js', 'vendor/firebase-firestore-compat.js', 'vendor/firebase-functions-compat.js'] }[C.mode] || [];
   var ready = VEND.reduce(function (p, v) { return p.then(function () { return load(BASE + v); }); }, Promise.resolve())
     .then(function () { return window.AUTH ? null : load(BASE + 'auth-core.js'); });
 

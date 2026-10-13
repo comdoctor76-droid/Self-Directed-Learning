@@ -13,7 +13,6 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;color:var(--navy);backgroun
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;width:100%;font:inherit;font-size:16px;font-weight:800;border:none;border-radius:12px;padding:13px 16px;cursor:pointer;background:linear-gradient(135deg,var(--org),var(--org2));color:#fff}
 .btn:disabled{opacity:.55;cursor:default}
 .btn.sec{background:#fff;color:var(--navy);border:1.5px solid var(--line)}
-.btn.kakao{background:#FEE500;color:#191919}
 .btn.sm{width:auto;font-size:13.5px;padding:8px 12px;border-radius:10px}
 .row{display:flex;gap:8px}
 .msg{font-size:14px;border-radius:10px;padding:10px 12px;margin-bottom:14px;display:none}

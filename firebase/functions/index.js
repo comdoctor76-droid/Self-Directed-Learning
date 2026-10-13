@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
 // adminUsers — 관리자 전용 서버 함수 (Firebase Cloud Functions, Blaze 요금제 필요)
-//   action: 'reset'(비밀번호를 사번으로 초기화) | 'delete'(계정 완전 삭제) | 'unlink_kakao'
+//   action: 'reset'(비밀번호를 사번으로 초기화) | 'delete'(계정 완전 삭제)
 //   이 사이트 규모의 사용량은 Blaze 무료 할당량(월 200만 회 호출) 안이라 실제 요금은 0원 수준.
 // 배포: firebase deploy --only functions
 // ═══════════════════════════════════════════════════════════════
@@ -33,9 +33,6 @@ exports.adminUsers = onCall({ region: 'asia-northeast3' }, async (req) => {
       if (row.exists && row.data().role === 'admin') throw new HttpsError('failed-precondition', '관리자 계정은 삭제할 수 없습니다');
       if (user) await admin.auth().deleteUser(user.uid);
       if (row.exists) await ref.delete();
-      return { ok: true };
-    case 'unlink_kakao':
-      if (row.exists) await ref.update({ kakao_linked: false });
       return { ok: true };
     default:
       throw new HttpsError('invalid-argument', '알 수 없는 요청');

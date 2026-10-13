@@ -5,7 +5,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="auth.css">
 <script src="auth-config.js"></script>
-<script>(function(m){var v={supabase:['vendor/supabase.js'],firebase:['vendor/firebase-app-compat.js','vendor/firebase-auth-compat.js','vendor/firebase-firestore-compat.js','vendor/firebase-functions-compat.js']}[m]||[];v.forEach(function(s){document.write('<script src="'+s+'"><\/script>');});})((window.AUTH_CONFIG||{}).mode);</script>
+<script>(function(m){var v={firebase:['vendor/firebase-app-compat.js','vendor/firebase-auth-compat.js','vendor/firebase-firestore-compat.js','vendor/firebase-functions-compat.js']}[m]||[];v.forEach(function(s){document.write('<script src="'+s+'"><\/script>');});})((window.AUTH_CONFIG||{}).mode);</script>
 <script src="auth-core.js"></script>
 <script src="../version.js"></script>
 </head><body>
@@ -19,13 +19,13 @@ try{sessionStorage.setItem('sdl_next',NEXT);}catch(e){}
 /* 다른 사이트로 튕겨 나가지 않게 같은 사이트 주소만 허용 */
 try{var u=new URL(NEXT,location.href); if(u.origin!==location.origin) NEXT='../index.html';}catch(e){NEXT='../index.html';}
 var card=document.getElementById('card');
-if(C.mode!=='supabase'){var f=document.createElement('div');f.className='demo-flag';f.textContent='체험 모드 — 이 브라우저 안에만 저장됩니다';document.body.appendChild(f);}
+if(C.mode!=='firebase'){var f=document.createElement('div');f.className='demo-flag';f.textContent='체험 모드 — 이 브라우저 안에만 저장됩니다';document.body.appendChild(f);}
 
 function h(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function msg(t,kind){var m=card.querySelector('.msg');if(!m)return;m.className='msg show '+(kind||'err');m.textContent=t;}
 function busy(b,on){if(!b)return;b.disabled=on;if(on){b.__t=b.textContent;b.textContent='처리 중…';}else if(b.__t)b.textContent=b.__t;}
 function go(){try{sessionStorage.removeItem('sdl_next');}catch(e){} location.replace(NEXT);}
-function nextStep(s){ if(!s){viewLogin();return;} if(s.mustChange){viewChange();return;} if(!s.consent){viewConsent();return;} if(!s.profile){viewProfile();return;} if(C.kakao&&C.mode!=='firebase'&&!s.kakao&&!sessionStorage.getItem('sdl_kakao_skip')){viewKakaoOffer();return;} viewNotice(); }
+function nextStep(s){ if(!s){viewLogin();return;} if(s.mustChange){viewChange();return;} if(!s.consent){viewConsent();return;} if(!s.profile){viewProfile();return;} viewNotice(); }
 
 function viewLogin(note){
   card.innerHTML='<span class="brand">스스로 학습하기</span><h1>사번으로 로그인</h1><p class="sub">사번(영문·숫자 6자리)과 비밀번호를 입력해 주세요.</p>'+
@@ -85,44 +85,26 @@ function viewNotice(){
   '<button class="btn" id="go">확인했습니다</button>';
   card.querySelector('#go').onclick=go;
 }
-function viewKakaoOffer(){
-  card.innerHTML='<span class="brand">비밀번호 찾기 준비</span><h1>카카오 계정 연결</h1><p class="sub">카카오 계정을 한 번 연결해 두면, 비밀번호를 잊었을 때 카카오로 본인 확인 후 직접 새로 만들 수 있습니다.</p><div class="msg"></div>'+
-  '<button class="btn kakao" id="lk">💬 카카오 계정 연결하기</button><div style="height:10px"></div><button class="btn sec" id="sk">나중에 하기</button>'+
-  '<p class="hint" style="margin-top:12px">연결하지 않아도 학습은 할 수 있습니다. 이 경우 비밀번호를 잊으면 관리자에게 초기화를 요청해 주세요.</p>';
-  var b=card.querySelector('#lk');
-  b.onclick=function(){busy(b,true); Promise.resolve(A.backend().linkKakao()).then(function(m){ if(m){A.writeSession(m); msg('카카오 계정이 연결되었습니다.','ok'); setTimeout(function(){nextStep(A.session());},700);} }).catch(function(e){msg(e.userMsg||'연결하지 못했습니다.');busy(b,false);});};
-  card.querySelector('#sk').onclick=function(){try{sessionStorage.setItem('sdl_kakao_skip','1');}catch(e){} viewNotice();};
-}
+/* 비밀번호 분실: 관리자에게 초기화 요청만 남긴다 (로그인 없이) */
 function viewForgot(){
-  if(C.mode==='firebase'){card.innerHTML='<span class="brand">비밀번호 찾기</span><h1>관리자에게 초기화 요청</h1><p class="sub">비밀번호를 잊으셨다면 관리자에게 초기화를 요청해 주세요. 초기화되면 비밀번호가 사번으로 돌아가고, 로그인 후 새로 만들게 됩니다.</p><div class="links"><button class="lnk" id="bk">← 로그인으로</button></div>';card.querySelector('#bk').onclick=function(){viewLogin();};return;}
-  card.innerHTML='<span class="brand">비밀번호 찾기</span><h1>카카오로 본인 확인</h1><p class="sub">사번을 입력하고 카카오로 본인 확인을 하면 새 비밀번호를 만들 수 있습니다.</p><div class="msg"></div>'+
-  '<label class="fld"><span>사번</span><input id="id" maxlength="6" autocapitalize="off" spellcheck="false"></label>'+
-  (C.mode!=='supabase'?'<label class="fld"><span>새 비밀번호 (체험 모드)</span><input id="p1" type="password" autocomplete="new-password"></label><p class="hint">체험 모드에서는 카카오 화면 대신 확인이 끝난 것으로 처리합니다.</p>':'')+
-  '<button class="btn kakao" id="kk">💬 카카오로 본인 확인</button>'+
-  '<div class="msg info show" style="margin-top:14px">카카오 계정을 연결하지 않았다면 <b>관리자에게 비밀번호 초기화</b>를 요청해 주세요. 초기화되면 비밀번호가 사번으로 돌아갑니다.</div>'+
+  card.innerHTML='<span class="brand">비밀번호 찾기</span><h1>비밀번호 초기화 요청</h1><p class="sub">사번과 성명을 남기면 관리자에게 초기화 요청이 전달됩니다.</p><div class="msg"></div>'+
+  '<label class="fld"><span>사번</span><input id="id" maxlength="6" autocapitalize="off" spellcheck="false" placeholder="예: AB1234"></label>'+
+  '<label class="fld"><span>성명</span><input id="nm" autocomplete="name"></label>'+
+  '<button class="btn" id="go">초기화 요청 보내기</button>'+
+  '<p class="hint" style="margin-top:12px">관리자가 초기화하면 비밀번호가 <b>사번</b>으로 돌아갑니다. 사번으로 로그인한 뒤 새 비밀번호를 만들어 주세요.</p>'+
   '<div class="links"><button class="lnk" id="bk">← 로그인으로</button></div>';
   card.querySelector('#bk').onclick=function(){viewLogin();};
-  var b=card.querySelector('#kk');
-  b.onclick=function(){var id=card.querySelector('#id').value; if(!A.validId(id)){msg('사번은 영문·숫자 6자리입니다.');return;}
-    if(C.mode!=='supabase'){var p1=card.querySelector('#p1').value,e=A.pwRule(p1); if(e){msg(e);return;}
-      busy(b,true); A.backend().kakaoReset(id,p1).then(function(){viewLogin({t:'새 비밀번호로 바뀌었습니다. 로그인해 주세요.',k:'ok'});}).catch(function(e){msg(e.userMsg||'처리하지 못했습니다.');}).finally(function(){busy(b,false);}); return;}
-    busy(b,true); A.backend().kakaoSignIn(id).catch(function(e){msg(e.userMsg||'시작하지 못했습니다.');busy(b,false);});};
-}
-function viewResetNew(){
-  card.innerHTML='<span class="brand">비밀번호 찾기</span><h1>새 비밀번호 설정</h1><p class="sub">카카오 본인 확인이 끝났습니다.</p><div class="msg"></div>'+
-  '<label class="fld"><span>새 비밀번호</span><input id="p1" type="password" autocomplete="new-password"></label><label class="fld"><span>새 비밀번호 확인</span><input id="p2" type="password" autocomplete="new-password"></label><button class="btn" id="go">저장</button>';
   var b=card.querySelector('#go');
-  b.onclick=function(){var p1=card.querySelector('#p1').value,p2=card.querySelector('#p2').value,e=A.pwRule(p1); if(e){msg(e);return;} if(p1!==p2){msg('두 비밀번호가 다릅니다.');return;}
-    busy(b,true); A.backend().kakaoResetFinish(p1).then(function(m){A.writeSession(m); nextStep(A.session());}).catch(function(e){msg(e.userMsg||'저장하지 못했습니다.');}).finally(function(){busy(b,false);});};
+  b.onclick=function(){var id=card.querySelector('#id').value,nm=card.querySelector('#nm').value;
+    if(!A.validId(id)){msg('사번은 영문·숫자 6자리입니다.');return;} if(!nm.trim()){msg('성명을 입력해 주세요.');return;}
+    busy(b,true); A.requestReset(id,nm).then(function(){
+      card.innerHTML='<span class="brand">비밀번호 찾기</span><h1>요청이 접수되었습니다</h1><div class="msg ok show">관리자가 확인 후 초기화합니다. 초기화되면 <b>사번</b>을 비밀번호로 입력해 로그인하고 새 비밀번호를 만들어 주세요.</div><button class="btn sec" id="bk2">로그인으로</button>';
+      card.querySelector('#bk2').onclick=function(){viewLogin();};
+    }).catch(function(e){msg(e.userMsg||'요청을 보내지 못했습니다.');}).finally(function(){busy(b,false);});};
 }
 
-/* 시작: 카카오에서 돌아온 경우 처리 → 이미 로그인돼 있으면 남은 단계로 */
+/* 시작: 이미 로그인돼 있으면 남은 단계로 */
 (async function(){
-  var k=qs.get('kakao');
-  try{
-    if(k==='linked'){var m=await A.backend().kakaoLinkedDone(); if(m)A.writeSession(m);}
-    if(k==='reset'){viewResetNew();return;}
-  }catch(e){}
   var s=A.session(), why=qs.get('why');
   if(s && why!=='expired'){ nextStep(s); return; }
   viewLogin(why==='expired'?{t:'로그인 시간이 지났거나 계정 정보가 바뀌었습니다. 다시 로그인해 주세요.',k:'info'}:null);

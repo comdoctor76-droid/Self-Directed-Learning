@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════
 // 스스로 학습하기 로그인 — Firestore 보안 규칙
 // ⚠ 기존 '고객 컨설팅 관리' 프로그램과 같은 Firebase 프로젝트를 쓴다면, 이 파일로 덮어쓰지 말고
-//   기존 규칙 안에 아래 sdl_members / sdl_activity 두 블록과 함수들만 추가해야 합니다.
+//   기존 규칙 안에 아래 sdl_members / sdl_activity / sdl_reset_requests 세 블록과 함수들만 추가해야 합니다.
 // ═══════════════════════════════════════════════════════════════
 rules_version = '2';
 service cloud.firestore {
@@ -25,6 +25,14 @@ service cloud.firestore {
     match /sdl_activity/{a} {
       allow create: if signedEmp() && request.resource.data.emp_id == emp();
       allow read: if isAdmin();
+    }
+    // 비밀번호 초기화 요청: 로그인 전이므로 누구나 '새로' 남길 수 있음(사번·성명·시각만). 이미 있으면 덮어쓰기 불가
+    match /sdl_reset_requests/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['emp_id', 'name', 'at'])
+                    && request.resource.data.emp_id == id
+                    && id.matches('^[0-9a-z]{6}$')
+                    && request.resource.data.name is string && request.resource.data.name.size() <= 30;
+      allow read, delete: if isAdmin();
     }
   }
 }

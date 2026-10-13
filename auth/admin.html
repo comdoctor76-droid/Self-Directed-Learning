@@ -5,7 +5,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="auth.css">
 <script src="auth-config.js"></script>
-<script>(function(m){var v={supabase:['vendor/supabase.js'],firebase:['vendor/firebase-app-compat.js','vendor/firebase-auth-compat.js','vendor/firebase-firestore-compat.js','vendor/firebase-functions-compat.js']}[m]||[];v.forEach(function(s){document.write('<script src="'+s+'"><\/script>');});})((window.AUTH_CONFIG||{}).mode);</script>
+<script>(function(m){var v={firebase:['vendor/firebase-app-compat.js','vendor/firebase-auth-compat.js','vendor/firebase-firestore-compat.js','vendor/firebase-functions-compat.js']}[m]||[];v.forEach(function(s){document.write('<script src="'+s+'"><\/script>');});})((window.AUTH_CONFIG||{}).mode);</script>
 <script src="auth-core.js"></script>
 <script src="vendor/chart.umd.js"></script>
 <style>
@@ -50,11 +50,17 @@ textarea.bulk{width:100%;min-height:150px;font:inherit;font-size:13.5px;padding:
 </head><body>
 <div class="top"><div class="top-in">
   <h1>🔐 관리자 · 스스로 학습하기</h1><div class="who" id="who"></div>
-  <div class="tabs"><button class="on" data-t="m">👥 회원 관리</button><button data-t="a">🕒 접속·학습 기록</button><button data-t="s">📊 통계</button></div>
+  <div class="tabs"><button class="on" data-t="m">👥 회원 관리 <span id="rqbadge" class="tag t-need" style="display:none;margin-left:4px"></span></button><button data-t="a">🕒 접속·학습 기록</button><button data-t="s">📊 통계</button></div>
 </div></div>
 <div class="wrap">
   <!-- 회원 관리 -->
   <div class="panel on" id="P-m">
+    <div class="box" id="rqbox"><h2>🔑 비밀번호 초기화 요청 <span class="small" id="rqcount"></span></h2>
+      <div class="bar"><label class="chk" style="margin:0"><input type="checkbox" id="rqall"> 전체 선택</label>
+        <button class="btn sm" id="rqreset">선택 초기화 (비밀번호 → 사번)</button><button class="btn sm sec" id="rqdel">선택 요청 삭제</button><button class="btn sm sec" id="rqref">새로고침</button></div>
+      <div class="scroll" style="max-height:38vh"><table class="tbl" id="rqtbl"></table></div>
+      <p class="small" style="margin-top:8px">사원이 로그인 화면의 '비밀번호를 잊으셨나요?'에서 사번·성명을 남기면 여기에 쌓입니다. 초기화하면 다음 로그인 때 사번으로 들어가 새 비밀번호를 만들게 됩니다.</p>
+    </div>
     <div class="box"><h2>회원 목록 <span class="small" id="mcount"></span></h2>
       <div class="bar"><input id="mq" placeholder="사번·성명·소속 검색" style="flex:1;min-width:180px">
         <select id="mf-co"><option value="">소속사 전체</option></select><select id="mf-rg"><option value="">지역단 전체</option></select>
@@ -98,7 +104,7 @@ var B=A.backend();
 var PAGES={'index.html':'메인','sales-guide.html':'특약나열식 제안의 문제점','receipt-guide.html':'상담 1일차 · 의료비 영수증','priority-guide.html':'상담 2일차 · 중증질환과 보험','bias-guide.html':'고객이 범하는 인지적 오류','lung-cancer-guide.html':'폐암 가이드','breast-cancer-guide.html':'유방암 가이드','cancer-guide.html':'항암치료 가이드','corporate-guide.html':'법인컨설팅 가이드','test.html':'(체험) 시험 페이지','login':'로그인'};
 var KINDS={login:'로그인',page:'페이지 진입',section:'섹션 보기',card:'카드 열기',image:'그림 확대'};
 var FIELDS=[['emp_id','사번'],['name','성명'],['phone','연락처'],['company','소속사'],['region','지역단'],['vision_center','비전센터'],['branch','지점'],['note','비고']];
-document.getElementById('who').textContent=(s.name||s.emp)+' ('+s.emp+') · '+(A.config.mode==='supabase'?'운영 모드':'체험 모드 — 이 브라우저에만 저장');
+document.getElementById('who').textContent=(s.name||s.emp)+' ('+s.emp+') · '+(A.config.mode==='firebase'?'운영 모드 (Firebase)':'체험 모드 — 이 브라우저에만 저장');
 function h(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function toast(t){var e=document.getElementById('toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.display='none';},2200);}
 function fail(e){toast('⚠ '+(e.userMsg||e.message||'오류'));}
@@ -122,12 +128,11 @@ function drawMembers(){
   document.getElementById('mcount').textContent='· '+l.length+'명 / 전체 '+members.length+'명';
   var t='<tr>'+FIELDS.map(function(f){return'<th>'+f[1]+'</th>';}).join('')+'<th>상태</th><th>관리</th></tr>';
   l.forEach(function(m){t+='<tr>'+FIELDS.map(function(f){return'<td>'+h(m[f[0]])+'</td>';}).join('')+'<td>'+
-    (m.role==='admin'?'<span class="tag t-admin">관리자</span> ':'')+(m.must_change_pw?'<span class="tag t-need">비번 변경 전</span> ':'<span class="tag t-ok">사용 중</span> ')+(m.kakao_linked?'<span class="tag t-k">카카오</span>':'')+
-    '</td><td class="act"><button data-e="'+m.emp_id+'">수정</button><button data-r="'+m.emp_id+'">초기화</button>'+(m.kakao_linked?'<button data-k="'+m.emp_id+'">카카오 해제</button>':'')+(m.role!=='admin'?'<button class="d" data-d="'+m.emp_id+'">삭제</button>':'')+'</td></tr>';});
+    (m.role==='admin'?'<span class="tag t-admin">관리자</span> ':'')+(m.must_change_pw?'<span class="tag t-need">비번 변경 전</span> ':'<span class="tag t-ok">사용 중</span> ')+
+    '</td><td class="act"><button data-e="'+m.emp_id+'">수정</button><button data-r="'+m.emp_id+'">초기화</button>'+(m.role!=='admin'?'<button class="d" data-d="'+m.emp_id+'">삭제</button>':'')+'</td></tr>';});
   var tb=document.getElementById('mtbl');tb.innerHTML=t;
   tb.querySelectorAll('[data-e]').forEach(function(b){b.onclick=function(){editMember(members.filter(function(m){return m.emp_id===b.dataset.e;})[0]);};});
   tb.querySelectorAll('[data-r]').forEach(function(b){b.onclick=function(){if(!confirm(b.dataset.r+' 의 비밀번호를 사번으로 초기화할까요?'))return;B.resetPassword(b.dataset.r).then(function(){toast('초기화했습니다. 다음 로그인 때 비밀번호를 바꾸게 됩니다.');return loadMembers();}).catch(fail);};});
-  tb.querySelectorAll('[data-k]').forEach(function(b){b.onclick=function(){if(!confirm(b.dataset.k+' 의 카카오 연결을 해제할까요?'))return;B.unlinkKakao(b.dataset.k).then(function(){toast('카카오 연결을 해제했습니다.');return loadMembers();}).catch(fail);};});
   tb.querySelectorAll('[data-d]').forEach(function(b){b.onclick=function(){if(!confirm(b.dataset.d+' 계정을 삭제할까요? 되돌릴 수 없습니다.'))return;B.deleteMember(b.dataset.d).then(function(){toast('삭제했습니다.');return loadMembers();}).catch(fail);};});
 }
 ['mq','mf-co','mf-rg'].forEach(function(id){document.getElementById(id).oninput=drawMembers;});
@@ -177,7 +182,7 @@ document.getElementById('mbulk').onclick=function(){
     b.disabled=false;b.textContent='등록';var m=MMC.querySelector('.msg');m.className='msg show '+(fails.length?'err':'ok');m.innerHTML=ok+'명 등록·갱신 완료'+(fails.length?'<br>'+fails.map(h).join('<br>'):'')+(r.bad.length?'<br>건너뜀: '+r.bad.length+'줄':'');
     loadMembers();};
 };
-document.getElementById('mcsv').onclick=function(){csv([FIELDS.map(function(f){return f[1];}).concat(['권한','비번변경','카카오','등록일'])].concat(members.map(function(m){return FIELDS.map(function(f){return m[f[0]];}).concat([m.role,m.must_change_pw?'변경 전':'완료',m.kakao_linked?'연결':'',kst(m.created_at)]);})),'회원목록.csv');};
+document.getElementById('mcsv').onclick=function(){csv([FIELDS.map(function(f){return f[1];}).concat(['권한','비번변경','등록일'])].concat(members.map(function(m){return FIELDS.map(function(f){return m[f[0]];}).concat([m.role,m.must_change_pw?'변경 전':'완료',kst(m.created_at)]);})),'회원목록.csv');};
 
 /* ── 기록 ── */
 var acts=[];
@@ -212,7 +217,30 @@ function loadStats(){var r=range('sf','st');return B.listActivity(r).then(functi
   var g=topN(rg,10);chart('c5','bar',g.map(function(x){return x[0];}),g.map(function(x){return x[1];}));
 }).catch(fail);}
 document.getElementById('sgo').onclick=loadStats;
-loadMembers();
+/* ── 비밀번호 초기화 요청 ── */
+var reqs=[];
+function loadReqs(){return B.listRequests().then(function(l){reqs=l.sort(function(a,b){return a.at<b.at?-1:1;});drawReqs();}).catch(fail);}
+function drawReqs(){
+  var n=reqs.length,bd=document.getElementById('rqbadge');bd.style.display=n?'inline-block':'none';bd.textContent=n;
+  document.getElementById('rqcount').textContent='· 대기 '+n+'건';
+  var t='<tr><th style="width:36px"></th><th>요청 일시</th><th>사번</th><th>입력한 성명</th><th>등록된 성명</th><th>확인</th></tr>';
+  if(!n)t+='<tr><td colspan="6" style="text-align:center;color:#6B7078;padding:18px">대기 중인 요청이 없습니다.</td></tr>';
+  reqs.forEach(function(r){var m=members.filter(function(x){return x.emp_id===r.emp_id;})[0];
+    var st=!m?'<span class="tag t-need">미등록 사번</span>':(m.name===r.name?'<span class="tag t-ok">성명 일치</span>':'<span class="tag t-need">성명 불일치</span>');
+    t+='<tr><td><input type="checkbox" class="rqck" value="'+h(r.emp_id)+'"></td><td style="white-space:nowrap">'+kst(r.at)+'</td><td>'+h(r.emp_id)+'</td><td>'+h(r.name)+'</td><td>'+h(m?m.name:'-')+'</td><td>'+st+'</td></tr>';});
+  document.getElementById('rqtbl').innerHTML=t;document.getElementById('rqall').checked=false;
+}
+function picked(){return Array.prototype.map.call(document.querySelectorAll('.rqck:checked'),function(x){return x.value;});}
+document.getElementById('rqall').onchange=function(){var on=this.checked;document.querySelectorAll('.rqck').forEach(function(x){x.checked=on;});};
+document.getElementById('rqref').onclick=function(){loadMembers().then(loadReqs);};
+async function resolve(reset){var ids=picked();if(!ids.length){toast('요청을 선택해 주세요.');return;}
+  if(!confirm(ids.length+'건을 '+(reset?'초기화(비밀번호 → 사번)':'삭제(초기화하지 않음)')+'할까요?'))return;
+  try{var r=await B.resolveRequests(ids,reset);toast((reset?'초기화 ':'삭제 ')+r.done.length+'건'+(r.fail.length?' · 실패 '+r.fail.length+'건':''));
+    if(r.fail.length)alert('처리하지 못한 요청\n'+r.fail.join('\n'));}catch(e){fail(e);}
+  await loadMembers();await loadReqs();}
+document.getElementById('rqreset').onclick=function(){resolve(true);};
+document.getElementById('rqdel').onclick=function(){resolve(false);};
+loadMembers().then(loadReqs);
 })();
 </script>
 </body></html>
