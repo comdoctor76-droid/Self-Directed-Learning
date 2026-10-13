@@ -63,5 +63,29 @@
   "page": "index.html",
   "sel": ".lcard.soon",
   "note": "유방암 카드 뒤에 새 카드 2장 추가 — '보험설계의 기술'(상담 4일차), '왜(Way)를 알았으니 걸론(What)은?'(실전설계)"
+ },
+ {
+  "id": "c061-1",
+  "v": "v1.61",
+  "at": "2026-10-14 08:40",
+  "page": "index.html",
+  "sel": "a.lcard[href=\"lung-cancer-guide.html\"]",
+  "note": "폐암 카드 — 라벨 '성장을 위한 상담 5일차', 내용 수정"
+ },
+ {
+  "id": "c061-2",
+  "v": "v1.61",
+  "at": "2026-10-14 08:40",
+  "page": "index.html",
+  "sel": "a.lcard[href=\"breast-cancer-guide.html\"]",
+  "note": "유방암 카드 — 라벨 '상담 5일차', 제목 '유방암 표준치료 및 비용가이드', 내용 수정"
+ },
+ {
+  "id": "c061-3",
+  "v": "v1.61",
+  "at": "2026-10-14 08:40",
+  "page": "index.html",
+  "sel": ".lcard.soon",
+  "note": "'보험설계의 기술'(상담 4일차) 카드를 5일차 카드 앞으로 이동"
  }
 ]
