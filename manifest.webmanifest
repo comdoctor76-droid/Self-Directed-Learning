@@ -1,0 +1,16 @@
+{
+  "name": "스스로 학습하기",
+  "short_name": "스스로 학습",
+  "description": "플래너를 위한 니즈환기 자료 인터랙티브 가이드",
+  "lang": "ko",
+  "start_url": "./index.html?src=home",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FBF8F5",
+  "theme_color": "#1A2744",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
