@@ -262,9 +262,6 @@
             </div>
           </div>
         </div>
-        <div class="text-[11px] sm:text-xs font-bold text-orange-600 bg-orange-50 px-3 py-1 rounded-xl flex items-center gap-1.5 border border-orange-100">
-          <i class="ph-bold ph-timer text-orange-500 text-sm"></i> <span>2초 간격 애니메이션</span>
-        </div>
       </div>
 
     </main>
@@ -276,10 +273,6 @@
       <div class="flex items-center gap-2 w-full md:w-auto justify-between md:justify-start">
         <button id="prevBtn" class="shrink-0 whitespace-nowrap flex items-center gap-1 px-4 py-2 rounded-xl bg-stone-100 hover:bg-orange-100 text-stone-600 hover:text-orange-600 text-xs sm:text-sm font-bold transition">
           <i class="ph-bold ph-caret-left text-base"></i> 이전
-        </button>
-
-        <button id="playBtn" class="shrink-0 whitespace-nowrap flex items-center gap-1.5 px-5 py-2 rounded-xl bg-orange-500 hover:bg-orange-400 text-white text-xs sm:text-sm font-bold transition shadow-md shadow-orange-500/30">
-          <i class="ph-fill ph-play-circle text-lg" id="playIcon"></i> <span id="playText">자동 재생 (2초)</span>
         </button>
 
         <button id="nextBtn" class="shrink-0 whitespace-nowrap flex items-center gap-1 px-4 py-2 rounded-xl bg-stone-100 hover:bg-orange-100 text-stone-600 hover:text-orange-600 text-xs sm:text-sm font-bold transition">
@@ -350,13 +343,40 @@
       { step: 24, type: "bottom", col: "cancer", text: "건보제도 외", highlightColor: "text-orange-600", title: "[암 하단] 건보제도 외", desc: "비급여 항암제 등은 건보제도 지원 범위를 벗어납니다." }
     ];
 
+    /* ── 등장 순서(프레임) ──
+       한 프레임 = 한 번에 나오는 단계 묶음. 앞쪽(1~11) 프레임은 0.5초 간격, 이후는 2초 간격 */
+    const FAST_MS = 500, SLOW_MS = 2000, START_MS = 600;
+    const TOP_FRAMES = [
+      { steps: [1, 2], title: "암 · 2대질병 기본 보장의 큰 원 그리기", desc: "오렌지색(암)과 청록색(2대질병) 원형으로 두 보장 영역을 화면 가득 크게 형성합니다." },
+      { steps: [7] }, { steps: [3] }, { steps: [5] }, { steps: [10] }, { steps: [8] },
+      { steps: [4, 6], title: "2대질병의 핵심: '치료비' 원형 배치와 [치료비] 표시", desc: "고액 수술비와 장기 치료비 보장이 1순위 핵심입니다." },
+      { steps: [9] }, { steps: [11] }
+    ];
     let isSixMode = false;
     let presentationSteps = scenario5;
-    let currentStepIndex = 1;
+    let frames = [];
+    let currentStepIndex = 1;          // 현재 프레임 번호(1부터)
     let isAutoPlaying = false;
-    let playIntervalId = null;
+    let playTimerId = null;
     let isViewAllMode = false;
-    const AUTO_PLAY_DELAY = 2000;
+
+    function buildFrames() {
+      const byStep = {};
+      presentationSteps.forEach(s => { byStep[s.step] = s; });
+      const mk = (f, fast) => {
+        const first = byStep[f.steps[0]];
+        return { steps: f.steps, fast: fast, title: f.title || first.title, desc: f.desc || first.desc,
+                 type: first.type, col: first.col };
+      };
+      frames = TOP_FRAMES.map(f => mk(f, true));
+      frames.push(mk({ steps: [12] }, false));
+      presentationSteps.filter(s => s.type === "bottom").forEach(s => frames.push(mk({ steps: [s.step] }, false)));
+    }
+    function shownSet(upTo) {
+      const set = new Set();
+      for (let k = 0; k < upTo; k++) frames[k].steps.forEach(x => set.add(x));
+      return set;
+    }
 
     // DOM 참조
     const stepCounterEl = document.getElementById('stepCounterNumber');
@@ -366,9 +386,6 @@
     const explanationDotEl = document.getElementById('explanationDot');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
-    const playBtn = document.getElementById('playBtn');
-    const playIcon = document.getElementById('playIcon');
-    const playText = document.getElementById('playText');
     const viewAllBtn = document.getElementById('viewAllBtn');
     const stepPillContainer = document.getElementById('stepPillContainer');
     const cancerBottomContainer = document.getElementById('cancerBottomContainer');
@@ -380,211 +397,133 @@
     function buildBottomTextDOM() {
       cancerBottomContainer.innerHTML = '';
       twoDiseaseBottomContainer.innerHTML = '';
-
-      const cancerItems = presentationSteps.filter(s => s.type === "bottom" && s.col === "cancer");
-      cancerItems.forEach((item, idx) => {
-        const span = document.createElement('span');
-        span.id = `bottom-step-${item.step}`;
-        span.className = `step-obj step-hidden transition-all duration-300 font-extrabold ${item.highlightColor}`;
-        span.textContent = item.text;
-        cancerBottomContainer.appendChild(span);
-
-        if (idx < cancerItems.length - 1) {
-          const comma = document.createElement('span');
-          comma.id = `bottom-comma-${item.step}`;
-          comma.className = 'step-obj step-hidden text-stone-400 font-bold';
-          comma.textContent = ',';
-          cancerBottomContainer.appendChild(comma);
-        }
-      });
-
-      const twoItems = presentationSteps.filter(s => s.type === "bottom" && s.col === "two");
-      twoItems.forEach((item, idx) => {
-        const span = document.createElement('span');
-        span.id = `bottom-step-${item.step}`;
-        span.className = `step-obj step-hidden transition-all duration-300 font-extrabold ${item.highlightColor}`;
-        span.textContent = item.text;
-        twoDiseaseBottomContainer.appendChild(span);
-
-        if (idx < twoItems.length - 1) {
-          const comma = document.createElement('span');
-          comma.id = `bottom-comma-${item.step}`;
-          comma.className = 'step-obj step-hidden text-stone-400 font-bold';
-          comma.textContent = ',';
-          twoDiseaseBottomContainer.appendChild(comma);
-        }
+      [["cancer", cancerBottomContainer], ["two", twoDiseaseBottomContainer]].forEach(([col, box]) => {
+        const items = presentationSteps.filter(s => s.type === "bottom" && s.col === col);
+        items.forEach((item, idx) => {
+          const span = document.createElement('span');
+          span.id = `bottom-step-${item.step}`;
+          span.className = `step-obj step-hidden transition-all duration-300 font-extrabold ${item.highlightColor}`;
+          span.textContent = item.text;
+          box.appendChild(span);
+          if (idx < items.length - 1) {
+            const comma = document.createElement('span');
+            comma.id = `bottom-comma-${item.step}`;
+            comma.className = 'step-obj step-hidden text-stone-400 font-bold';
+            comma.textContent = ',';
+            box.appendChild(comma);
+          }
+        });
       });
     }
 
     function renderStepPills() {
       stepPillContainer.innerHTML = '';
-      totalStepEl.textContent = `/ ${presentationSteps.length}`;
-      presentationSteps.forEach(stepInfo => {
+      totalStepEl.textContent = `/ ${frames.length}`;
+      frames.forEach((f, k) => {
         const btn = document.createElement('button');
-        btn.id = `pill-${stepInfo.step}`;
+        btn.id = `pill-${k + 1}`;
         btn.className = 'w-6 h-6 rounded-full text-[10px] font-bold transition-all flex items-center justify-center border border-stone-200';
-        btn.textContent = stepInfo.step;
-        btn.title = stepInfo.title;
-        btn.onclick = () => {
-          stopPlay();
-          isViewAllMode = false;
-          goToStep(stepInfo.step);
-        };
+        btn.textContent = k + 1;
+        btn.title = f.title;
+        btn.onclick = () => { stopPlay(); isViewAllMode = false; goToStep(k + 1); };
         stepPillContainer.appendChild(btn);
       });
     }
 
+    function setShown(el, on) {
+      if (!el) return;
+      el.classList.toggle('step-hidden', !on);
+      el.classList.toggle('step-visible', on);
+    }
+
     function updateVisualStates() {
       stepCounterEl.textContent = currentStepIndex;
-      const currentData = presentationSteps[currentStepIndex - 1];
+      const cur = frames[currentStepIndex - 1];
+      const shown = shownSet(currentStepIndex);
+      const curSteps = (isViewAllMode ? [] : cur.steps);
 
-      explanationTitleEl.textContent = isViewAllMode ? "전체 인포그래픽 완성" : currentData.title;
-      explanationDescEl.textContent = isViewAllMode 
-        ? "암(진단비 필수) vs 2대질병(치료비 필수) 특성 교차 비교 완료" 
-        : currentData.desc;
+      explanationTitleEl.textContent = isViewAllMode ? "전체 인포그래픽 완성" : cur.title;
+      explanationDescEl.textContent = isViewAllMode
+        ? "암(진단비 필수) vs 2대질병(치료비 필수) 특성 교차 비교 완료"
+        : cur.desc;
+      explanationDotEl.className = isViewAllMode ? "w-3 h-3 rounded-full bg-teal-500 shadow-md"
+        : (cur.type === "bottom" && cur.col === "two"
+            ? "w-3 h-3 rounded-full bg-teal-500 shadow-md animate-ping"
+            : "w-3 h-3 rounded-full bg-orange-500 shadow-md animate-ping");
 
-      if (isViewAllMode) {
-        explanationDotEl.className = "w-3 h-3 rounded-full bg-teal-500 shadow-md";
-      } else {
-        explanationDotEl.className = currentData.type === "bottom" && currentData.col === "two"
-          ? "w-3 h-3 rounded-full bg-teal-500 shadow-md animate-ping"
-          : "w-3 h-3 rounded-full bg-orange-500 shadow-md animate-ping";
-      }
-
-      // 상단 다이어그램 요소들 (Step 1 ~ 12) 제어
+      // 상단 다이어그램 요소들 (Step 1 ~ 12)
       for (let s = 1; s <= 12; s++) {
         const el = document.getElementById(`step-elem-${s}`);
         if (!el) continue;
-        const isShown = isViewAllMode || s <= currentStepIndex;
-        const isCurrent = !isViewAllMode && s === currentStepIndex;
-
-        if (isShown) {
-          el.classList.remove('step-hidden');
-          el.classList.add('step-visible');
-        } else {
-          el.classList.remove('step-visible');
-          el.classList.add('step-hidden');
-        }
-
-        if (isCurrent) {
-          el.classList.add('active-highlight');
-        } else {
-          el.classList.remove('active-highlight');
-        }
+        setShown(el, isViewAllMode || shown.has(s));
+        el.classList.toggle('active-highlight', curSteps.includes(s));
       }
-
-      // 하단 텍스트 항목들 제어
+      // 하단 텍스트 항목들
       presentationSteps.filter(s => s.type === "bottom").forEach(s => {
+        const on = isViewAllMode || shown.has(s.step);
         const textEl = document.getElementById(`bottom-step-${s.step}`);
-        const commaEl = document.getElementById(`bottom-comma-${s.step}`);
-        const isShown = isViewAllMode || s.step <= currentStepIndex;
-        const isCurrent = !isViewAllMode && s.step === currentStepIndex;
-
-        if (textEl) {
-          if (isShown) {
-            textEl.classList.remove('step-hidden');
-            textEl.classList.add('step-visible');
-          } else {
-            textEl.classList.remove('step-visible');
-            textEl.classList.add('step-hidden');
-          }
-
-          if (isCurrent) {
-            textEl.classList.add('word-active');
-          } else {
-            textEl.classList.remove('word-active');
-          }
-        }
-
-        if (commaEl) {
-          if (isShown) {
-            commaEl.classList.remove('step-hidden');
-            commaEl.classList.add('step-visible');
-          } else {
-            commaEl.classList.remove('step-visible');
-            commaEl.classList.add('step-hidden');
-          }
-        }
+        setShown(textEl, on);
+        if (textEl) textEl.classList.toggle('word-active', curSteps.includes(s.step));
+        setShown(document.getElementById(`bottom-comma-${s.step}`), on);
       });
-
-      // 네비게이션 칩 갱신
-      presentationSteps.forEach(s => {
-        const pill = document.getElementById(`pill-${s.step}`);
-        if (pill) {
-          if (isViewAllMode) {
-            pill.className = 'w-6 h-6 rounded-full text-[10px] font-bold transition-all flex items-center justify-center bg-stone-200 text-stone-600 border-stone-300';
-          } else if (s.step === currentStepIndex) {
-            const bgClass = (s.type === 'bottom' && s.col === 'two') ? 'bg-teal-500 border-teal-500 shadow-teal-500/50' : 'bg-orange-500 border-orange-500 shadow-orange-500/50';
-            pill.className = `w-7 h-7 rounded-full text-[11px] font-bold transition-all flex items-center justify-center text-white shadow-md scale-110 ${bgClass}`;
-          } else if (s.step < currentStepIndex) {
-            pill.className = 'w-6 h-6 rounded-full text-[10px] font-bold transition-all flex items-center justify-center bg-orange-100 text-orange-600 border-orange-200';
-          } else {
-            pill.className = 'w-6 h-6 rounded-full text-[10px] font-medium transition-all flex items-center justify-center bg-stone-50 text-stone-400 border-stone-200 hover:bg-stone-100';
-          }
+      // 네비게이션 칩
+      frames.forEach((f, k) => {
+        const pill = document.getElementById(`pill-${k + 1}`);
+        if (!pill) return;
+        const n = k + 1;
+        if (isViewAllMode) {
+          pill.className = 'w-6 h-6 rounded-full text-[10px] font-bold transition-all flex items-center justify-center bg-stone-200 text-stone-600 border-stone-300';
+        } else if (n === currentStepIndex) {
+          const bgClass = (f.type === 'bottom' && f.col === 'two') ? 'bg-teal-500 border-teal-500 shadow-teal-500/50' : 'bg-orange-500 border-orange-500 shadow-orange-500/50';
+          pill.className = `w-7 h-7 rounded-full text-[11px] font-bold transition-all flex items-center justify-center text-white shadow-md scale-110 ${bgClass}`;
+        } else if (n < currentStepIndex) {
+          pill.className = 'w-6 h-6 rounded-full text-[10px] font-bold transition-all flex items-center justify-center bg-orange-100 text-orange-600 border-orange-200';
+        } else {
+          pill.className = 'w-6 h-6 rounded-full text-[10px] font-medium transition-all flex items-center justify-center bg-stone-50 text-stone-400 border-stone-200 hover:bg-stone-100';
         }
       });
     }
 
-    function goToStep(step) {
-      currentStepIndex = Math.max(1, Math.min(presentationSteps.length, step));
+    function goToStep(n) {
+      currentStepIndex = Math.max(1, Math.min(frames.length, n));
       isViewAllMode = false;
       updateVisualStates();
     }
+    function nextStep() { if (currentStepIndex < frames.length) goToStep(currentStepIndex + 1); }
+    function prevStep() { if (currentStepIndex > 1) goToStep(currentStepIndex - 1); }
 
-    function nextStep() {
-      if (currentStepIndex < presentationSteps.length) {
-        goToStep(currentStepIndex + 1);
-      } else {
-        if (isAutoPlaying) stopPlay();
-      }
+    /* 자동 진행: 페이지가 열리면 저절로 시작 (버튼 없음). 이전/다음/번호를 누르면 멈추고 직접 넘긴다 */
+    function scheduleNext() {
+      if (!isAutoPlaying) return;
+      if (currentStepIndex >= frames.length) { isAutoPlaying = false; return; }
+      const wait = frames[currentStepIndex].fast ? FAST_MS : SLOW_MS;   // 곧 나올 프레임 기준
+      playTimerId = setTimeout(() => { nextStep(); scheduleNext(); }, wait);
     }
-
-    function prevStep() {
-      if (currentStepIndex > 1) {
-        goToStep(currentStepIndex - 1);
-      }
-    }
-
-    function toggleAutoPlay() {
-      if (isAutoPlaying) {
-        stopPlay();
-      } else {
-        startPlay();
-      }
-    }
-
-    function startPlay() {
+    function startPlay(fromStart) {
+      stopPlay();
       isViewAllMode = false;
+      if (fromStart) goToStep(1);
       isAutoPlaying = true;
-      playIcon.className = "ph-fill ph-pause-circle text-lg";
-      playText.textContent = "일시정지";
-      if (currentStepIndex >= presentationSteps.length) goToStep(1);
-
-      playIntervalId = setInterval(() => {
-        if (currentStepIndex < presentationSteps.length) {
-          nextStep();
-        } else {
-          stopPlay();
-        }
-      }, AUTO_PLAY_DELAY);
+      scheduleNext();
     }
-
     function stopPlay() {
       isAutoPlaying = false;
-      if (playIntervalId) clearInterval(playIntervalId);
-      playIcon.className = "ph-fill ph-play-circle text-lg";
-      playText.textContent = "자동 재생 (2초)";
+      if (playTimerId) clearTimeout(playTimerId);
+      playTimerId = null;
     }
 
+    const viewAllLabel = viewAllBtn.innerHTML;
     function toggleViewAll() {
       stopPlay();
       isViewAllMode = !isViewAllMode;
       if (isViewAllMode) {
-        currentStepIndex = presentationSteps.length;
+        currentStepIndex = frames.length;
+        viewAllBtn.innerHTML = '<i class="ph-bold ph-eye"></i> 처음부터 다시';
+        updateVisualStates();
       } else {
-        currentStepIndex = 1;
+        viewAllBtn.innerHTML = viewAllLabel;
+        startPlay(true);
       }
-      updateVisualStates();
     }
 
     // 모드 전환
@@ -593,31 +532,29 @@
       isSixMode = !isSixMode;
       presentationSteps = isSixMode ? scenario6 : scenario5;
       modeToggleText.textContent = isSixMode ? "6개 확장 모드 (병원선택)" : "5개 핵심 모드";
-      currentStepIndex = 1;
       isViewAllMode = false;
-      buildBottomTextDOM();
-      renderStepPills();
-      updateVisualStates();
+      viewAllBtn.innerHTML = viewAllLabel;
+      buildFrames(); buildBottomTextDOM(); renderStepPills();
+      startPlay(true);
     });
 
     // 버튼 이벤트
     nextBtn.addEventListener('click', () => { stopPlay(); nextStep(); });
     prevBtn.addEventListener('click', () => { stopPlay(); prevStep(); });
-    playBtn.addEventListener('click', toggleAutoPlay);
     viewAllBtn.addEventListener('click', toggleViewAll);
 
-    // 키보드 조작
+    // 키보드 조작 (← →)
     window.addEventListener('keydown', (e) => {
-      if (e.code === 'Space') { e.preventDefault(); toggleAutoPlay(); } 
-      else if (e.code === 'ArrowRight') { e.preventDefault(); stopPlay(); nextStep(); } 
+      if (e.code === 'ArrowRight') { e.preventDefault(); stopPlay(); nextStep(); }
       else if (e.code === 'ArrowLeft') { e.preventDefault(); stopPlay(); prevStep(); }
     });
 
-    // 초기화
+    // 초기화 — 열리면 바로 자동 시작
     window.onload = function() {
-      buildBottomTextDOM();
-      renderStepPills();
-      updateVisualStates();
+      buildFrames(); buildBottomTextDOM(); renderStepPills();
+      currentStepIndex = 1; updateVisualStates();
+      stopPlay(); isAutoPlaying = true;
+      playTimerId = setTimeout(scheduleNext, START_MS);
     };
   </script>
 </body>
