@@ -38,7 +38,9 @@
     if (!tried) openExternal();
   }
 
-  if (standalone || !(isIOS || isAndroid)) return;
+  /* 휴대폰·태블릿('데스크톱 사이트 보기'로 바꾼 경우 포함)에서만 버튼 표시 */
+  var touchDev = window.matchMedia && matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) <= 1100;
+  if (standalone || !(isIOS || isAndroid || touchDev)) return;
 
   var deferred = null;
   window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); deferred = e; });
