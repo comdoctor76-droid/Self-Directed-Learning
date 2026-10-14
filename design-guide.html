@@ -705,7 +705,7 @@ function renderSection(sec,si){
     });
     h+='</div>';
   }else if(sec.type==='embed'&&sec.embed&&sec.embed.src){
-    h+='<div class="embed-box"><iframe src="'+_t(sec.embed.src)+'" title="'+_t(sec.embed.title||sec.title)+'" loading="lazy" scrolling="no" onload="EMBEDFIT(this)"></iframe></div>';
+    h+='<div class="embed-box"><iframe src="'+_t(sec.embed.src)+(sec.embed.src.indexOf('?')<0?'?':'&')+'_='+new Date().getTime()+'" title="'+_t(sec.embed.title||sec.title)+'" loading="lazy" scrolling="no" onload="EMBEDFIT(this)"></iframe></div>';
     h+='<a class="embed-open" href="'+_t(sec.embed.src)+'" target="_blank" rel="noopener">⛶ 전체 화면으로 보기 →</a>';
   }else if(sec.type==='table'&&sec.table){
     h+='<div class="mt-box"><table class="mt"><tr>';
