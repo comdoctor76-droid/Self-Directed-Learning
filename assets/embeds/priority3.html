@@ -6,7 +6,6 @@
   <title>3대질병 가입의 우선순위</title>
   <!-- Tailwind·아이콘은 사이트 안에 포함 (외부 CDN 없이 동작) -->
   <link rel="stylesheet" href="priority3.css?v=67">
-  <link rel="stylesheet" href="ph/ph.css?v=1">
   <!-- Google Fonts: Noto Sans KR & 손글씨 폰트 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -73,10 +72,15 @@
        · 원이 타원으로 늘어나지 않게 폭 기준 정사각형으로 고정
        · 휴대폰(640px 이하)은 16:9 고정을 풀고 글자 크기를 줄여 겹치지 않게 */
     html, body { overflow-x: hidden; max-width: 100%; }
+    .nav-arrow { position: absolute; top: 46%; transform: translateY(-50%); z-index: 40; width: 44px; height: 44px; border-radius: 9999px; border: 2px solid #fed7aa; background: rgba(255,255,255,.92); color: #ea580c; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(249,115,22,.25); cursor: pointer; transition: transform .12s, opacity .2s; -webkit-tap-highlight-color: transparent; }
+    .nav-arrow:active { transform: translateY(-50%) scale(.92); }
+    .nav-arrow.nav-l { left: 6px; } .nav-arrow.nav-r { right: 6px; }
+    .nav-arrow[disabled] { opacity: .3; cursor: default; }
+    @media (max-width: 640px) { .nav-arrow { width: 36px; height: 36px; } .nav-arrow svg { width: 18px; height: 18px; } .nav-arrow.nav-l { left: 2px; } .nav-arrow.nav-r { right: 2px; } }
     .circle-wrap { width: min(42vw, 320px, calc(56.25vw - 250px)) !important; min-width: 120px; height: auto !important; max-height: none !important; flex: 0 0 auto; }
     @media (max-width: 900px) {
       .canvas-16-9 { aspect-ratio: auto; }
-      .circle-wrap { width: min(44vw, 320px) !important; }
+      .circle-wrap { width: min(40vw, 320px) !important; }
       .ttl-big { font-size: clamp(2.5rem, 9vw, 5rem) !important; }
       .lbl-big { font-size: clamp(1.45rem, 5.6vw, 3.2rem) !important; }
       .lbl-sub { font-size: clamp(1.2rem, 4.2vw, 2.5rem) !important; }
@@ -84,8 +88,6 @@
       main > div:nth-child(2) { margin-top: 2px !important; padding: 4px 0 6px; }
     }
     @media (max-width: 640px) {
-      footer > div:first-child { flex-wrap: wrap; justify-content: center !important; gap: 6px !important; }
-      footer > div:first-child button { padding: .5rem .75rem !important; }
       header h1 { font-size: 1.05rem !important; }
     }
   </style>
@@ -99,7 +101,7 @@
     <header class="w-full flex items-center justify-between mb-3 px-2">
       <div class="flex items-center gap-3">
         <span class="w-10 h-10 rounded-2xl bg-orange-500 text-white flex items-center justify-center text-2xl shadow-lg shadow-orange-500/30 font-bold">
-          <i class="ph-bold ph-lightbulb"></i>
+          <span style="font-size:1.35rem;line-height:1">💡</span>
         </span>
         <div>
           <h1 class="text-lg sm:text-2xl font-black tracking-tight text-stone-800 flex items-center gap-2">
@@ -114,7 +116,7 @@
       <!-- Mode & Step Indicator -->
       <div class="flex items-center gap-2">
         <button id="modeToggleBtn" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white text-stone-600 hover:text-orange-500 hover:bg-orange-50 border border-stone-200 text-xs font-bold transition shadow-sm">
-          <i class="ph-bold ph-sliders-horizontal text-orange-400"></i>
+          <span class="text-orange-400">⚙</span>
           <span id="modeToggleText">5개 핵심 모드</span>
         </button>
         <div class="flex items-center gap-2 bg-white px-4 py-1.5 rounded-xl border border-stone-200 shadow-sm">
@@ -129,6 +131,8 @@
 
     <!-- 16:9 Screen Main Sketchboard -->
     <main class="w-full canvas-16-9 bg-sketch-canvas rounded-[2rem] border-[6px] border-orange-100 shadow-[0_20px_50px_-15px_rgba(249,115,22,0.2)] relative overflow-hidden flex flex-col justify-between p-3 sm:p-5 md:p-6 text-stone-900">
+      <button id="prevBtn" type="button" aria-label="이전" class="nav-arrow nav-l"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <button id="nextBtn" type="button" aria-label="다음" class="nav-arrow nav-r"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
       
       <!-- Top Title Texts (Step 12: 암 / Step 11: 2대질병) - 붉은 원 제거 및 텍스트 부각 -->
       <div class="w-full grid grid-cols-2 gap-6 relative z-20 pt-2">
@@ -266,32 +270,6 @@
 
     </main>
 
-    <!-- Control Navigation Bar -->
-    <footer class="w-full mt-3 flex flex-col md:flex-row items-center justify-between gap-3 bg-white p-3 rounded-3xl border-2 border-orange-100 shadow-lg">
-      
-      <!-- Playback Buttons -->
-      <div class="flex items-center gap-2 w-full md:w-auto justify-between md:justify-start">
-        <button id="prevBtn" class="shrink-0 whitespace-nowrap flex items-center gap-1 px-4 py-2 rounded-xl bg-stone-100 hover:bg-orange-100 text-stone-600 hover:text-orange-600 text-xs sm:text-sm font-bold transition">
-          <i class="ph-bold ph-caret-left text-base"></i> 이전
-        </button>
-
-        <button id="nextBtn" class="shrink-0 whitespace-nowrap flex items-center gap-1 px-4 py-2 rounded-xl bg-stone-100 hover:bg-orange-100 text-stone-600 hover:text-orange-600 text-xs sm:text-sm font-bold transition">
-          다음 <i class="ph-bold ph-caret-right text-base"></i>
-        </button>
-
-        <button id="viewAllBtn" class="shrink-0 whitespace-nowrap flex items-center gap-1 px-4 py-2 rounded-xl bg-stone-100 hover:bg-teal-50 text-stone-600 hover:text-teal-600 text-xs sm:text-sm font-bold transition">
-          <i class="ph-bold ph-eye"></i> 완성 보기
-        </button>
-      </div>
-
-      <!-- Progressive Step Pills -->
-      <div class="flex items-center gap-1 overflow-x-auto max-w-full py-1 px-1">
-        <div id="stepPillContainer" class="flex items-center gap-1">
-          <!-- Populated by JavaScript -->
-        </div>
-      </div>
-
-    </footer>
 
   </div>
 
@@ -394,8 +372,6 @@
     const explanationDotEl = document.getElementById('explanationDot');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
-    const viewAllBtn = document.getElementById('viewAllBtn');
-    const stepPillContainer = document.getElementById('stepPillContainer');
     const cancerBottomContainer = document.getElementById('cancerBottomContainer');
     const twoDiseaseBottomContainer = document.getElementById('twoDiseaseBottomContainer');
     const modeToggleBtn = document.getElementById('modeToggleBtn');
@@ -424,19 +400,7 @@
       });
     }
 
-    function renderStepPills() {
-      stepPillContainer.innerHTML = '';
-      totalStepEl.textContent = `/ ${frames.length}`;
-      frames.forEach((f, k) => {
-        const btn = document.createElement('button');
-        btn.id = `pill-${k + 1}`;
-        btn.className = 'w-6 h-6 rounded-full text-[10px] font-bold transition-all flex items-center justify-center border border-stone-200';
-        btn.textContent = k + 1;
-        btn.title = f.title;
-        btn.onclick = () => { stopPlay(); isViewAllMode = false; goToStep(k + 1); };
-        stepPillContainer.appendChild(btn);
-      });
-    }
+    function renderStepPills() { totalStepEl.textContent = `/ ${frames.length}`; }
 
     function setShown(el, on) {
       if (!el) return;
@@ -474,22 +438,8 @@
         if (textEl) textEl.classList.toggle('word-active', curSteps.includes(s.step));
         setShown(document.getElementById(`bottom-comma-${s.step}`), on);
       });
-      // 네비게이션 칩
-      frames.forEach((f, k) => {
-        const pill = document.getElementById(`pill-${k + 1}`);
-        if (!pill) return;
-        const n = k + 1;
-        if (isViewAllMode) {
-          pill.className = 'w-6 h-6 rounded-full text-[10px] font-bold transition-all flex items-center justify-center bg-stone-200 text-stone-600 border-stone-300';
-        } else if (n === currentStepIndex) {
-          const bgClass = (f.type === 'bottom' && f.col === 'two') ? 'bg-teal-500 border-teal-500 shadow-teal-500/50' : 'bg-orange-500 border-orange-500 shadow-orange-500/50';
-          pill.className = `w-7 h-7 rounded-full text-[11px] font-bold transition-all flex items-center justify-center text-white shadow-md scale-110 ${bgClass}`;
-        } else if (n < currentStepIndex) {
-          pill.className = 'w-6 h-6 rounded-full text-[10px] font-bold transition-all flex items-center justify-center bg-orange-100 text-orange-600 border-orange-200';
-        } else {
-          pill.className = 'w-6 h-6 rounded-full text-[10px] font-medium transition-all flex items-center justify-center bg-stone-50 text-stone-400 border-stone-200 hover:bg-stone-100';
-        }
-      });
+      prevBtn.disabled = currentStepIndex <= 1;
+      nextBtn.disabled = currentStepIndex >= frames.length;
     }
 
     function goToStep(n) {
@@ -525,20 +475,6 @@
     /* 화면(그림판)을 눌러도 다음 단계로 */
     function advanceByClick() { if (isViewAllMode) return; stopPlay(); nextStep(); }
 
-    const viewAllLabel = viewAllBtn.innerHTML;
-    function toggleViewAll() {
-      stopPlay();
-      isViewAllMode = !isViewAllMode;
-      if (isViewAllMode) {
-        currentStepIndex = frames.length;
-        viewAllBtn.innerHTML = '<i class="ph-bold ph-eye"></i> 처음부터 다시';
-        updateVisualStates();
-      } else {
-        viewAllBtn.innerHTML = viewAllLabel;
-        startPlay(true);
-      }
-    }
-
     // 모드 전환
     modeToggleBtn.addEventListener('click', () => {
       stopPlay();
@@ -546,15 +482,13 @@
       presentationSteps = isSixMode ? scenario6 : scenario5;
       modeToggleText.textContent = isSixMode ? "6개 확장 모드 (병원선택)" : "5개 핵심 모드";
       isViewAllMode = false;
-      viewAllBtn.innerHTML = viewAllLabel;
       buildFrames(); buildBottomTextDOM(); renderStepPills();
       startPlay(true);
     });
 
     // 버튼 이벤트
-    nextBtn.addEventListener('click', () => { stopPlay(); isViewAllMode ? goToStep(frames.length) : nextStep(); });
-    prevBtn.addEventListener('click', () => { stopPlay(); prevStep(); });
-    viewAllBtn.addEventListener('click', toggleViewAll);
+    nextBtn.addEventListener('click', (e) => { e.stopPropagation(); stopPlay(); nextStep(); });
+    prevBtn.addEventListener('click', (e) => { e.stopPropagation(); stopPlay(); prevStep(); });
 
     // 키보드 조작 (← →)
     window.addEventListener('keydown', (e) => {
