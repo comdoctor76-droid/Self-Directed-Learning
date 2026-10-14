@@ -14,7 +14,7 @@
   <style>
     /* 16:9 비율 유지 */
     .canvas-16-9 {
-      aspect-ratio: 16 / 9;
+      min-height: clamp(380px, 52vw, 600px);   /* 글이 길면 이보다 더 늘어난다 */
     }
 
     /* 손글씨 폰트 강제 적용 */
@@ -79,7 +79,7 @@
     @media (max-width: 640px) { .nav-arrow { width: 36px; height: 36px; } .nav-arrow svg { width: 18px; height: 18px; } .nav-arrow.nav-l { left: 2px; } .nav-arrow.nav-r { right: 2px; } }
     .circle-wrap { width: min(42vw, 320px, calc(56.25vw - 250px)) !important; min-width: 120px; height: auto !important; max-height: none !important; flex: 0 0 auto; }
     @media (max-width: 900px) {
-      .canvas-16-9 { aspect-ratio: auto; }
+      .canvas-16-9 { min-height: 0; }
       .circle-wrap { width: min(40vw, 320px) !important; }
       .ttl-big { font-size: clamp(2.5rem, 9vw, 5rem) !important; }
       .lbl-big { font-size: clamp(1.45rem, 5.6vw, 3.2rem) !important; }
@@ -254,17 +254,11 @@
       </div>
 
       <!-- Bottom Commentary Banner (인포그래픽 스타일) -->
-      <div class="w-full bg-white/90 backdrop-blur border-2 border-orange-100 rounded-2xl px-4 py-2 sm:py-3 flex items-center justify-between shadow-sm z-20">
-        <div class="flex items-center gap-3">
-          <span id="explanationDot" class="w-3 h-3 rounded-full bg-orange-500 shadow-md animate-ping"></span>
-          <div>
-            <div id="explanationTitle" class="font-extrabold text-sm sm:text-base text-stone-800 leading-tight">
-              암(癌) 기본 보장의 큰 원 그리기
-            </div>
-            <div id="explanationDesc" class="text-xs sm:text-sm text-stone-500 font-medium hidden sm:block mt-0.5">
-              오렌지색 원형으로 암의 기본 보장 영역을 화면 가득 크게 형성합니다.
-            </div>
-          </div>
+      <div id="bannerBox" class="w-full bg-white/90 backdrop-blur border-2 border-orange-100 rounded-2xl px-4 py-3 flex items-center shadow-sm z-20">
+        <div class="flex items-start gap-3 w-full">
+          <span id="explanationDot" class="w-3 h-3 mt-1.5 shrink-0 rounded-full bg-orange-500 shadow-md animate-ping"></span>
+          <div id="explanationTitle" class="font-bold text-[15px] sm:text-lg text-stone-800 leading-snug break-keep"></div>
+          <div id="explanationDesc" style="display:none"></div>
         </div>
       </div>
 
@@ -335,6 +329,28 @@
       { steps: [11], then: [12], lag: 300, title: "[결론] '2대질병'과 '암' 상단 제목 강조",
         desc: "2대질병은 반복 치료비/수술비 중심, 암은 생활비와 소득을 지켜줄 진단비 최대 확보가 필수입니다." }
     ];
+    /* 배너에 나오는 설명 (핵심 모드 1~19단계). 확장 모드는 1~9단계만 같은 문구를 쓴다 */
+    const BANNER_TEXTS = [
+      "보험료를 낼 수 있는 여력이 넉넉 하다면 문제 없겠지만 선택과 집중을 해야 되겠지요.",
+      "3대 질병의 양상을 이해하고 국가제도나 보험의 영역에서 어떻게 보상이 되고 어떤 사각지대가 있는지 확인 하겠습니다",
+      "커다란 원 만큼의 치료비가 나왔는데...",
+      "진단금의 크기가 이정도라면~",
+      "나머지의 영역은 고스란히 가계의 '빚'이 됩니다.",
+      "다른쪽은 진단금을 이만큼 받았어요.",
+      "그런데 치료비가 요만큼만 나오게 된다면",
+      "나머지는 위로금이 됩니다.",
+      "왼쪽은 암 발병시 보험과 병원비의 양상이고, 오른쪽은 2대질병의 양상입니다. 이유를 살펴보면",
+      "암은 장기적인 투병과 관리가 이어지는 만성기 질환으로 병원 선택이 가능합니다.",
+      "하지만 2대질병은 급성기 골든타임이 결정적인 질환으로 병원 선택이 불가능 합니다.",
+      "2대질병은 치료기법이 표준화 되어있는 급여 적용 진료 중심입니다.",
+      "하지만 암은 표적/면역항암제, 로봇수술 등 비급여 선택진료 비중이 매우 높습니다.",
+      "게다가 암은 항암 방사선 및 약물 치료등 92%가 통원 진료로 진행됩니다.",
+      "2대질병 수술위주의 중환자실 및 집중치료실 입원 진료 비율이 97%에 달합니다.",
+      "2대질병은 대부분 입원 치료로 진행되어 입원 실손의료비 보장을 온전히 받습니다.",
+      "암은 통원중심이다 보니 2,30만원의 통원 실손의 한도 한계로 수천만원 고액 비급여 치료 시 도움받기 어렵습니다.",
+      "암의 최신 치료기법은 전액본인부담,비급여등으로 산정특례, 본인부담상한제 사각지대에 놓입니다.",
+      "2대질병은 표준치료기법으로 중증질환 산정특례 및 본인부담상한제 등 건보제도권 안에서 혜택이 매우 잘 적용됩니다."
+    ];
     let isSixMode = false;
     let presentationSteps = scenario5;
     let frames = [];
@@ -353,7 +369,24 @@
       };
       frames = TOP_FRAMES.map(f => mk(f, true));
       presentationSteps.filter(s => s.type === "bottom").forEach(s => frames.push(mk({ steps: [s.step] }, false)));
+      frames.forEach((f, i) => { f.text = (i < BANNER_TEXTS.length && (!isSixMode || i < 9)) ? BANNER_TEXTS[i] : f.desc; });
+      if (window.fitBanner) fitBanner();
     }
+
+    /* 가장 긴 문구에 맞춰 설명 상자 높이를 정해 두면, 글이 잘리지 않고 단계가 바뀌어도 그림이 흔들리지 않는다 */
+    function fitBanner() {
+      const box = document.getElementById('bannerBox');
+      if (!box || !frames.length) return;
+      box.style.minHeight = '';
+      const keep = explanationTitleEl.textContent;
+      let max = 0;
+      frames.forEach(f => { explanationTitleEl.textContent = f.text; max = Math.max(max, box.offsetHeight); });
+      explanationTitleEl.textContent = keep;
+      box.style.minHeight = max + 'px';
+    }
+    let fitTimer = null;
+    window.addEventListener('resize', () => { clearTimeout(fitTimer); fitTimer = setTimeout(fitBanner, 120); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => fitBanner());
     let stageOn = true, stageTimer = null;   // 한 프레임 안에서 뒤쪽 요소(then)를 lag 뒤에 보여주는 상태
     function shownSet(upTo) {
       const set = new Set();
@@ -414,14 +447,11 @@
       const shown = shownSet(currentStepIndex);
       const curSteps = (isViewAllMode ? [] : cur.steps.concat(stageOn ? cur.then : []));
 
-      explanationTitleEl.textContent = isViewAllMode ? "전체 인포그래픽 완성" : cur.title;
-      explanationDescEl.textContent = isViewAllMode
-        ? "암(진단비 필수) vs 2대질병(치료비 필수) 특성 교차 비교 완료"
-        : cur.desc;
-      explanationDotEl.className = isViewAllMode ? "w-3 h-3 rounded-full bg-teal-500 shadow-md"
+      explanationTitleEl.textContent = cur.text;
+      explanationDotEl.className = isViewAllMode ? "w-3 h-3 mt-1.5 shrink-0 rounded-full bg-teal-500 shadow-md"
         : (cur.type === "bottom" && cur.col === "two"
-            ? "w-3 h-3 rounded-full bg-teal-500 shadow-md animate-ping"
-            : "w-3 h-3 rounded-full bg-orange-500 shadow-md animate-ping");
+            ? "w-3 h-3 mt-1.5 shrink-0 rounded-full bg-teal-500 shadow-md animate-ping"
+            : "w-3 h-3 mt-1.5 shrink-0 rounded-full bg-orange-500 shadow-md animate-ping");
 
       // 상단 다이어그램 요소들 (Step 1 ~ 12)
       for (let s = 1; s <= 12; s++) {
