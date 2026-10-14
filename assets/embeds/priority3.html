@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3대질병 가입의 우선순위</title>
+  <!-- Tailwind·아이콘은 사이트 안에 포함 (외부 CDN 없이 동작) -->
+  <link rel="stylesheet" href="priority3.css">
+  <link rel="stylesheet" href="ph/ph.css">
+  <!-- Google Fonts: Noto Sans KR & 손글씨 폰트 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Pen+Script&family=Noto+Sans+KR:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    /* 16:9 비율 유지 */
+    .canvas-16-9 {
+      aspect-ratio: 16 / 9;
+    }
+
+    /* 손글씨 폰트 강제 적용 */
+    .font-pen {
+      font-family: 'Nanum Pen Script', cursive !important;
+    }
+
+    /* 귀여운 인포그래픽 텍스트 입체 효과 */
+    .text-pop {
+      text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.9), 3px 3px 5px rgba(249, 115, 22, 0.15);
+    }
+
+    /* 단계별 애니메이션 전환 */
+    .step-obj {
+      transition: all 0.5s cubic-bezier(0.34, 1.25, 0.64, 1);
+    }
+    .step-hidden {
+      opacity: 0;
+      transform: scale(0.8) translateY(10px);
+      pointer-events: none;
+      visibility: hidden;
+    }
+    .step-visible {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+      visibility: visible;
+    }
+
+    /* 방금 등장한 요소 하이라이트 (통통 튀는 효과) */
+    @keyframes bounceFocus {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.12); }
+    }
+    .active-highlight {
+      animation: bounceFocus 1.2s ease-in-out infinite;
+      z-index: 30;
+    }
+
+    /* 하단 가로 나열 텍스트 단어 효과 */
+    .word-active {
+      transform: scale(1.2) translateY(-2px);
+      font-weight: 900 !important;
+    }
+
+    /* 오렌지톤 스케치북 모눈 배경 질감 */
+    .bg-sketch-canvas {
+      background-color: #fffaf5;
+      background-image: 
+        linear-gradient(to right, rgba(249, 115, 22, 0.1) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(249, 115, 22, 0.1) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    /* ── 사이트 삽입용 보정 ──
+       · 원이 타원으로 늘어나지 않게 폭 기준 정사각형으로 고정
+       · 휴대폰(640px 이하)은 16:9 고정을 풀고 글자 크기를 줄여 겹치지 않게 */
+    html, body { overflow-x: hidden; max-width: 100%; }
+    .circle-wrap { width: min(42vw, 320px, calc(56.25vw - 250px)) !important; min-width: 120px; height: auto !important; max-height: none !important; flex: 0 0 auto; }
+    @media (max-width: 900px) {
+      .canvas-16-9 { aspect-ratio: auto; }
+      .circle-wrap { width: min(44vw, 320px) !important; }
+      .ttl-big { font-size: clamp(2.5rem, 9vw, 5rem) !important; }
+      .lbl-big { font-size: clamp(1.45rem, 5.6vw, 3.2rem) !important; }
+      .lbl-sub { font-size: clamp(1.2rem, 4.2vw, 2.5rem) !important; }
+      .lbl-col { gap: clamp(.5rem, 2vw, 1.5rem) !important; }
+      main > div:nth-child(2) { margin-top: 2px !important; padding: 4px 0 6px; }
+    }
+    @media (max-width: 640px) {
+      footer > div:first-child { flex-wrap: wrap; justify-content: center !important; gap: 6px !important; }
+      footer > div:first-child button { padding: .5rem .75rem !important; }
+      header h1 { font-size: 1.05rem !important; }
+    }
+  </style>
+</head>
+
+<body class="bg-transparent text-stone-800 flex flex-col items-center p-1 sm:p-2 font-sans select-none overflow-x-hidden" style="font-family:'Noto Sans KR',sans-serif">
+
+  <div class="w-full max-w-6xl mx-auto flex flex-col items-center">
+    
+    <!-- Top Header (현대해상 오렌지 톤) -->
+    <header class="w-full flex items-center justify-between mb-3 px-2">
+      <div class="flex items-center gap-3">
+        <span class="w-10 h-10 rounded-2xl bg-orange-500 text-white flex items-center justify-center text-2xl shadow-lg shadow-orange-500/30 font-bold">
+          <i class="ph-bold ph-lightbulb"></i>
+        </span>
+        <div>
+          <h1 class="text-lg sm:text-2xl font-black tracking-tight text-stone-800 flex items-center gap-2">
+            3대질병 가입의 우선순위
+            <span class="hidden sm:inline text-xs font-bold px-2.5 py-0.5 rounded-full bg-orange-100 text-orange-600 border border-orange-200">
+              인포그래픽 가이드
+            </span>
+          </h1>
+        </div>
+      </div>
+
+      <!-- Mode & Step Indicator -->
+      <div class="flex items-center gap-2">
+        <button id="modeToggleBtn" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white text-stone-600 hover:text-orange-500 hover:bg-orange-50 border border-stone-200 text-xs font-bold transition shadow-sm">
+          <i class="ph-bold ph-sliders-horizontal text-orange-400"></i>
+          <span id="modeToggleText">5개 핵심 모드</span>
+        </button>
+        <div class="flex items-center gap-2 bg-white px-4 py-1.5 rounded-xl border border-stone-200 shadow-sm">
+          <span class="text-xs text-stone-500 font-bold">진행도</span>
+          <div class="flex items-baseline font-black text-sm sm:text-base text-orange-500">
+            <span id="stepCounterNumber">1</span>
+            <span class="text-stone-400 text-xs ml-1 font-bold" id="totalStepNumber">/ 22</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 16:9 Screen Main Sketchboard -->
+    <main class="w-full canvas-16-9 bg-sketch-canvas rounded-[2rem] border-[6px] border-orange-100 shadow-[0_20px_50px_-15px_rgba(249,115,22,0.2)] relative overflow-hidden flex flex-col justify-between p-3 sm:p-5 md:p-6 text-stone-900">
+      
+      <!-- Top Title Texts (Step 12: 암 / Step 11: 2대질병) - 붉은 원 제거 및 텍스트 부각 -->
+      <div class="w-full grid grid-cols-2 gap-6 relative z-20 pt-2">
+        
+        <!-- TOP LEFT: [암] 텍스트 (Step 12) -->
+        <div class="flex items-center justify-center">
+          <div id="step-elem-12" class="step-obj step-hidden flex items-center justify-center">
+            <span class="ttl-big font-pen text-6xl sm:text-[5.5rem] font-bold text-orange-500 tracking-widest whitespace-nowrap text-pop drop-shadow-md">
+              암
+            </span>
+          </div>
+        </div>
+
+        <!-- TOP RIGHT: [2대질병] 텍스트 (Step 11) -->
+        <div class="flex items-center justify-center">
+          <div id="step-elem-11" class="step-obj step-hidden flex items-center justify-center">
+            <span class="ttl-big font-pen text-6xl sm:text-[5.5rem] font-bold text-teal-500 tracking-widest whitespace-nowrap text-pop drop-shadow-md">
+              2대질병
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Center Main Comparison Area: 2 Large Prominent Circles Filling Canvas -->
+      <div class="w-full flex-1 flex items-center justify-around gap-2 sm:gap-6 px-1 sm:px-4 relative z-10 min-h-0 -mt-4">
+
+        <!-- ================= LEFT CIRCLE: 암 영역 (오렌지톤) ================= -->
+        <div class="circle-wrap flex justify-center items-center h-full max-h-[280px] sm:max-h-[320px] aspect-square w-full">
+          <!-- Outer Orange Circle: 암 -->
+          <div id="step-elem-1" class="step-obj step-hidden w-full h-full rounded-full border-[5px] border-orange-400 bg-orange-100/40 relative flex items-center justify-center p-2 sm:p-4 shadow-inner">
+            
+            <div class="w-full flex items-center justify-between gap-1">
+              <!-- Left Sub-Circle: [진단금] 귀여운 점선 원 -->
+              <div class="relative w-[52%] aspect-square flex items-center justify-center">
+                <div id="step-elem-3" class="step-obj step-hidden w-full h-full rounded-full border-[4px] border-orange-400 border-dashed bg-white/60 flex items-center justify-center p-1 shadow-sm">
+                  <!-- 붉은 박스 제거, 글자 크기 극대화 -->
+                  <div id="step-elem-5" class="step-obj step-hidden flex items-center justify-center">
+                    <span class="lbl-big font-pen text-5xl sm:text-7xl font-bold text-orange-600 whitespace-nowrap text-pop -rotate-3">
+                      진단금
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Column: [치료비] & [= 빚] -->
+              <div class="w-[45%] lbl-col flex flex-col items-center justify-center gap-6 sm:gap-10">
+                <div id="step-elem-7" class="step-obj step-hidden flex items-center justify-center">
+                  <span class="lbl-sub font-pen text-4xl sm:text-[3.5rem] font-bold text-orange-400 whitespace-nowrap text-pop">
+                    치료비
+                  </span>
+                </div>
+                <div id="step-elem-10" class="step-obj step-hidden flex items-center justify-center">
+                  <span class="lbl-sub font-pen text-4xl sm:text-[3.5rem] font-bold text-stone-400 whitespace-nowrap text-pop">
+                    = 빚
+                  </span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ================= RIGHT CIRCLE: 2대질병 영역 (틸톤) ================= -->
+        <div class="circle-wrap flex justify-center items-center h-full max-h-[280px] sm:max-h-[320px] aspect-square w-full">
+          <!-- Outer Teal Circle: 2대질병 -->
+          <div id="step-elem-2" class="step-obj step-hidden w-full h-full rounded-full border-[5px] border-teal-400 bg-teal-100/40 relative flex items-center justify-center p-2 sm:p-4 shadow-inner">
+            
+            <div class="w-full flex items-center justify-between gap-1">
+              <!-- Left Column: [진단금] & [= 위로금] -->
+              <div class="w-[45%] lbl-col flex flex-col items-center justify-center gap-6 sm:gap-10">
+                <div id="step-elem-8" class="step-obj step-hidden flex items-center justify-center">
+                  <span class="lbl-sub font-pen text-4xl sm:text-[3.5rem] font-bold text-teal-400 whitespace-nowrap text-pop">
+                    진단금
+                  </span>
+                </div>
+                <div id="step-elem-9" class="step-obj step-hidden flex items-center justify-center">
+                  <span class="lbl-sub font-pen text-4xl sm:text-[3.5rem] font-bold text-stone-400 whitespace-nowrap text-pop">
+                    = 위로금
+                  </span>
+                </div>
+              </div>
+
+              <!-- Right Sub-Circle: [치료비] 귀여운 점선 원 -->
+              <div class="relative w-[52%] aspect-square flex items-center justify-center">
+                <div id="step-elem-4" class="step-obj step-hidden w-full h-full rounded-full border-[4px] border-teal-400 border-dashed bg-white/60 flex items-center justify-center p-1 shadow-sm">
+                  <!-- 붉은 박스 제거, 글자 크기 극대화 -->
+                  <div id="step-elem-6" class="step-obj step-hidden flex items-center justify-center">
+                    <span class="lbl-big font-pen text-5xl sm:text-7xl font-bold text-teal-600 whitespace-nowrap text-pop rotate-3">
+                      치료비
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Detailed Comparison Area (수평 나열) -->
+      <div class="w-full grid grid-cols-2 gap-2 sm:gap-6 px-1 sm:px-2 z-20 mt-1 mb-2">
+        
+        <!-- [암] 원 하단: 가로 나열 텍스트 -->
+        <div class="w-full flex items-center justify-center min-h-[38px] sm:min-h-[46px] text-center">
+          <div id="cancerBottomContainer" class="flex flex-wrap items-center justify-center gap-x-1 sm:gap-x-1.5 text-xs sm:text-sm md:text-[17px] font-bold text-stone-700 leading-relaxed font-sans">
+            <!-- JavaScript가 가로로 단어와 쉼표를 순서대로 배치 -->
+          </div>
+        </div>
+
+        <!-- [2대질병] 원 하단: 가로 나열 텍스트 -->
+        <div class="w-full flex items-center justify-center min-h-[38px] sm:min-h-[46px] text-center">
+          <div id="twoDiseaseBottomContainer" class="flex flex-wrap items-center justify-center gap-x-1 sm:gap-x-1.5 text-xs sm:text-sm md:text-[17px] font-bold text-stone-700 leading-relaxed font-sans">
+            <!-- JavaScript가 가로로 단어와 쉼표를 순서대로 배치 -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Commentary Banner (인포그래픽 스타일) -->
+      <div class="w-full bg-white/90 backdrop-blur border-2 border-orange-100 rounded-2xl px-4 py-2 sm:py-3 flex items-center justify-between shadow-sm z-20">
+        <div class="flex items-center gap-3">
+          <span id="explanationDot" class="w-3 h-3 rounded-full bg-orange-500 shadow-md animate-ping"></span>
+          <div>
+            <div id="explanationTitle" class="font-extrabold text-sm sm:text-base text-stone-800 leading-tight">
+              암(癌) 기본 보장의 큰 원 그리기
+            </div>
+            <div id="explanationDesc" class="text-xs sm:text-sm text-stone-500 font-medium hidden sm:block mt-0.5">
+              오렌지색 원형으로 암의 기본 보장 영역을 화면 가득 크게 형성합니다.
+            </div>
+          </div>
+        </div>
+        <div class="text-[11px] sm:text-xs font-bold text-orange-600 bg-orange-50 px-3 py-1 rounded-xl flex items-center gap-1.5 border border-orange-100">
+          <i class="ph-bold ph-timer text-orange-500 text-sm"></i> <span>2초 간격 애니메이션</span>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Control Navigation Bar -->
+    <footer class="w-full mt-3 flex flex-col md:flex-row items-center justify-between gap-3 bg-white p-3 rounded-3xl border-2 border-orange-100 shadow-lg">
+      
+      <!-- Playback Buttons -->
+      <div class="flex items-center gap-2 w-full md:w-auto justify-between md:justify-start">
+        <button id="prevBtn" class="shrink-0 whitespace-nowrap flex items-center gap-1 px-4 py-2 rounded-xl bg-stone-100 hover:bg-orange-100 text-stone-600 hover:text-orange-600 text-xs sm:text-sm font-bold transition">
+          <i class="ph-bold ph-caret-left text-base"></i> 이전
+        </button>
+
+        <button id="playBtn" class="shrink-0 whitespace-nowrap flex items-center gap-1.5 px-5 py-2 rounded-xl bg-orange-500 hover:bg-orange-400 text-white text-xs sm:text-sm font-bold transition shadow-md shadow-orange-500/30">
+          <i class="ph-fill ph-play-circle text-lg" id="playIcon"></i> <span id="playText">자동 재생 (2초)</span>
+        </button>
+
+        <button id="nextBtn" class="shrink-0 whitespace-nowrap flex items-center gap-1 px-4 py-2 rounded-xl bg-stone-100 hover:bg-orange-100 text-stone-600 hover:text-orange-600 text-xs sm:text-sm font-bold transition">
+          다음 <i class="ph-bold ph-caret-right text-base"></i>
+        </button>
+
+        <button id="viewAllBtn" class="shrink-0 whitespace-nowrap flex items-center gap-1 px-4 py-2 rounded-xl bg-stone-100 hover:bg-teal-50 text-stone-600 hover:text-teal-600 text-xs sm:text-sm font-bold transition">
+          <i class="ph-bold ph-eye"></i> 완성 보기
+        </button>
+      </div>
+
+      <!-- Progressive Step Pills -->
+      <div class="flex items-center gap-1 overflow-x-auto max-w-full py-1 px-1">
+        <div id="stepPillContainer" class="flex items-center gap-1">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+
+    </footer>
+
+  </div>
+
+  <script>
+    // 5대 핵심 항목 시나리오 (오렌지/틸 테마 적용)
+    const scenario5 = [
+      { step: 1, type: "top", title: "암(癌) 기본 보장의 큰 원 그리기", desc: "오렌지색 원형으로 암의 기본 보장 영역을 화면 가득 크게 형성합니다.", target: "step-elem-1" },
+      { step: 2, type: "top", title: "2대질병(뇌·심장) 기본 보장의 큰 원 그리기", desc: "청록색(Teal) 원형으로 2대질병 보장 영역을 화면 가득 크게 형성합니다.", target: "step-elem-2" },
+      { step: 3, type: "top", title: "암의 핵심: 내부 '진단금' 원형 배치", desc: "암의 중심 기둥인 진단금 전용 점선 원을 큼직하게 배치합니다.", target: "step-elem-3" },
+      { step: 4, type: "top", title: "2대질병의 핵심: 내부 '치료비' 원형 배치", desc: "2대질병의 핵심인 치료비 전용 점선 원을 큼직하게 배치합니다.", target: "step-elem-4" },
+      { step: 5, type: "top", title: "암 최우선 보장: [진단금] 표시", desc: "치료 중단 및 소득 공백을 메우는 1순위 핵심입니다.", target: "step-elem-5" },
+      { step: 6, type: "top", title: "2대질병 최우선 보장: [치료비] 표시", desc: "고액 수술비와 장기 치료비 보장이 1순위 핵심입니다.", target: "step-elem-6" },
+      { step: 7, type: "top", title: "암의 [치료비] 항목 표시", desc: "암의 치료비 보장 구조를 표시합니다.", target: "step-elem-7" },
+      { step: 8, type: "top", title: "2대질병의 [진단금] 항목 표시", desc: "2대질병의 1회성 진단비 구조를 표시합니다.", target: "step-elem-8" },
+      { step: 9, type: "top", title: "2대질병의 진단금 = '위로금'", desc: "진단금 1~2천만 원은 장기 재활/간병비 앞에 위로금에 불과합니다.", target: "step-elem-9" },
+      { step: 10, type: "top", title: "암의 치료비 = '빚'", desc: "진단금 없는 비급여 항암 치료비는 고스란히 가계의 '빚'이 됩니다.", target: "step-elem-10" },
+      { step: 11, type: "top", title: "[결론] '2대질병' 상단 제목 강조", desc: "2대질병은 반복 치료비/수술비 중심 설계가 필수입니다.", target: "step-elem-11" },
+      { step: 12, type: "top", title: "[결론] '암' 상단 제목 강조", desc: "암은 생활비와 소득을 지켜줄 진단비 최대 확보가 필수입니다.", target: "step-elem-12" },
+
+      // 하단 2초 간격 교차 등장 (5개 줄) - highlightColor를 오렌지/틸로 변경
+      { step: 13, type: "bottom", col: "cancer", text: "만성기", highlightColor: "text-orange-600", title: "[암 하단] 만성기", desc: "암은 장기적인 투병과 관리가 이어지는 만성기 질환입니다." },
+      { step: 14, type: "bottom", col: "two", text: "급성기", highlightColor: "text-teal-600", title: "[2대질병 하단] 급성기", desc: "뇌·심장은 골든타임이 결정적인 초급성기 질환입니다." },
+
+      { step: 15, type: "bottom", col: "two", text: "급여진료위주", highlightColor: "text-teal-600", title: "[2대질병 하단] 급여진료위주", desc: "응급 혈관 확장술, 스텐트 삽입 등 국민건강보험 급여 적용 진료가 중심입니다." },
+      { step: 16, type: "bottom", col: "cancer", text: "선택진료위주", highlightColor: "text-orange-600", title: "[암 하단] 선택진료위주", desc: "표적/면역항암제, 로봇수술 등 비급여 선택진료 비중이 매우 높습니다." },
+
+      { step: 17, type: "bottom", col: "cancer", text: "통원진료 92%", highlightColor: "text-orange-600", title: "[암 하단] 통원진료 92%", desc: "항암 방사선 및 약물 치료의 92%가 통원 진료로 진행됩니다." },
+      { step: 18, type: "bottom", col: "two", text: "입원진료 97%", highlightColor: "text-teal-600", title: "[2대질병 하단] 입원진료 97%", desc: "중환자실 및 집중치료실 입원 진료 비율이 97%에 달합니다." },
+
+      { step: 19, type: "bottom", col: "two", text: "실손OK", highlightColor: "text-teal-600", title: "[2대질병 하단] 실손OK", desc: "대부분 고액 입원 치료로 진행되어 실손의료비 보장을 온전히 받습니다." },
+      { step: 20, type: "bottom", col: "cancer", text: "실손도움X", highlightColor: "text-orange-600", title: "[암 하단] 실손도움X", desc: "통원 한도 한계로 수천만원 고액 비급여 치료 시 실손 효용이 제한적입니다." },
+
+      { step: 21, type: "bottom", col: "cancer", text: "건보제도 외", highlightColor: "text-orange-600", title: "[암 하단] 건보제도 외", desc: "신약 항암제나 최신 치료기법은 비급여로 건보제도 지원 범위를 벗어납니다." },
+      { step: 22, type: "bottom", col: "two", text: "건보제도OK", highlightColor: "text-teal-600", title: "[2대질병 하단] 건보제도OK", desc: "중증질환 산정특례 및 본인부담상한제 혜택이 매우 잘 적용됩니다." }
+    ];
+
+    // 6개 확장 모드 (병원선택가능/불가 포함)
+    const scenario6 = [
+      ...scenario5.slice(0, 14),
+      { step: 15, type: "bottom", col: "two", text: "병원선택불가", highlightColor: "text-teal-600", title: "[2대질병 하단] 병원선택불가", desc: "응급상황으로 119 후송되며, 환자가 병원을 직접 선택할 수 없습니다." },
+      { step: 16, type: "bottom", col: "cancer", text: "병원선택가능", highlightColor: "text-orange-600", title: "[암 하단] 병원선택가능", desc: "빅5 병원, 명의, 양성자 치료 등 원하는 상급 병원을 직접 선택 가능합니다." },
+      { step: 17, type: "bottom", col: "cancer", text: "선택진료위주", highlightColor: "text-orange-600", title: "[암 하단] 선택진료위주", desc: "표적/면역항암제, 로봇수술 등 비급여 선택진료 비중이 매우 높습니다." },
+      { step: 18, type: "bottom", col: "two", text: "급여진료위주", highlightColor: "text-teal-600", title: "[2대질병 하단] 급여진료위주", desc: "응급 혈관 확장술, 스텐트 삽입 등 국민건강보험 급여 적용 진료가 중심입니다." },
+      { step: 19, type: "bottom", col: "two", text: "입원진료 97%", highlightColor: "text-teal-600", title: "[2대질병 하단] 입원진료 97%", desc: "중환자실 및 집중치료실 입원 진료 비율이 97%에 달합니다." },
+      { step: 20, type: "bottom", col: "cancer", text: "통원진료 92%", highlightColor: "text-orange-600", title: "[암 하단] 통원진료 92%", desc: "항암 방사선 및 약물 치료의 92%가 통원 진료로 진행됩니다." },
+      { step: 21, type: "bottom", col: "cancer", text: "실손도움X", highlightColor: "text-orange-600", title: "[암 하단] 실손도움X", desc: "통원 일 한도 한계로 비급여 고액 치료 시 실손 효용이 제한적입니다." },
+      { step: 22, type: "bottom", col: "two", text: "실손OK", highlightColor: "text-teal-600", title: "[2대질병 하단] 실손OK", desc: "고액 입원 치료로 진행되어 실손의료비 보장을 온전히 받습니다." },
+      { step: 23, type: "bottom", col: "two", text: "건보제도OK", highlightColor: "text-teal-600", title: "[2대질병 하단] 건보제도OK", desc: "중증질환 산정특례 및 본인부담상한제 혜택이 매우 잘 적용됩니다." },
+      { step: 24, type: "bottom", col: "cancer", text: "건보제도 외", highlightColor: "text-orange-600", title: "[암 하단] 건보제도 외", desc: "비급여 항암제 등은 건보제도 지원 범위를 벗어납니다." }
+    ];
+
+    let isSixMode = false;
+    let presentationSteps = scenario5;
+    let currentStepIndex = 1;
+    let isAutoPlaying = false;
+    let playIntervalId = null;
+    let isViewAllMode = false;
+    const AUTO_PLAY_DELAY = 2000;
+
+    // DOM 참조
+    const stepCounterEl = document.getElementById('stepCounterNumber');
+    const totalStepEl = document.getElementById('totalStepNumber');
+    const explanationTitleEl = document.getElementById('explanationTitle');
+    const explanationDescEl = document.getElementById('explanationDesc');
+    const explanationDotEl = document.getElementById('explanationDot');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const playBtn = document.getElementById('playBtn');
+    const playIcon = document.getElementById('playIcon');
+    const playText = document.getElementById('playText');
+    const viewAllBtn = document.getElementById('viewAllBtn');
+    const stepPillContainer = document.getElementById('stepPillContainer');
+    const cancerBottomContainer = document.getElementById('cancerBottomContainer');
+    const twoDiseaseBottomContainer = document.getElementById('twoDiseaseBottomContainer');
+    const modeToggleBtn = document.getElementById('modeToggleBtn');
+    const modeToggleText = document.getElementById('modeToggleText');
+
+    // 하단 텍스트 요소들 DOM 생성
+    function buildBottomTextDOM() {
+      cancerBottomContainer.innerHTML = '';
+      twoDiseaseBottomContainer.innerHTML = '';
+
+      const cancerItems = presentationSteps.filter(s => s.type === "bottom" && s.col === "cancer");
+      cancerItems.forEach((item, idx) => {
+        const span = document.createElement('span');
+        span.id = `bottom-step-${item.step}`;
+        span.className = `step-obj step-hidden transition-all duration-300 font-extrabold ${item.highlightColor}`;
+        span.textContent = item.text;
+        cancerBottomContainer.appendChild(span);
+
+        if (idx < cancerItems.length - 1) {
+          const comma = document.createElement('span');
+          comma.id = `bottom-comma-${item.step}`;
+          comma.className = 'step-obj step-hidden text-stone-400 font-bold';
+          comma.textContent = ',';
+          cancerBottomContainer.appendChild(comma);
+        }
+      });
+
+      const twoItems = presentationSteps.filter(s => s.type === "bottom" && s.col === "two");
+      twoItems.forEach((item, idx) => {
+        const span = document.createElement('span');
+        span.id = `bottom-step-${item.step}`;
+        span.className = `step-obj step-hidden transition-all duration-300 font-extrabold ${item.highlightColor}`;
+        span.textContent = item.text;
+        twoDiseaseBottomContainer.appendChild(span);
+
+        if (idx < twoItems.length - 1) {
+          const comma = document.createElement('span');
+          comma.id = `bottom-comma-${item.step}`;
+          comma.className = 'step-obj step-hidden text-stone-400 font-bold';
+          comma.textContent = ',';
+          twoDiseaseBottomContainer.appendChild(comma);
+        }
+      });
+    }
+
+    function renderStepPills() {
+      stepPillContainer.innerHTML = '';
+      totalStepEl.textContent = `/ ${presentationSteps.length}`;
+      presentationSteps.forEach(stepInfo => {
+        const btn = document.createElement('button');
+        btn.id = `pill-${stepInfo.step}`;
+        btn.className = 'w-6 h-6 rounded-full text-[10px] font-bold transition-all flex items-center justify-center border border-stone-200';
+        btn.textContent = stepInfo.step;
+        btn.title = stepInfo.title;
+        btn.onclick = () => {
+          stopPlay();
+          isViewAllMode = false;
+          goToStep(stepInfo.step);
+        };
+        stepPillContainer.appendChild(btn);
+      });
+    }
+
+    function updateVisualStates() {
+      stepCounterEl.textContent = currentStepIndex;
+      const currentData = presentationSteps[currentStepIndex - 1];
+
+      explanationTitleEl.textContent = isViewAllMode ? "전체 인포그래픽 완성" : currentData.title;
+      explanationDescEl.textContent = isViewAllMode 
+        ? "암(진단비 필수) vs 2대질병(치료비 필수) 특성 교차 비교 완료" 
+        : currentData.desc;
+
+      if (isViewAllMode) {
+        explanationDotEl.className = "w-3 h-3 rounded-full bg-teal-500 shadow-md";
+      } else {
+        explanationDotEl.className = currentData.type === "bottom" && currentData.col === "two"
+          ? "w-3 h-3 rounded-full bg-teal-500 shadow-md animate-ping"
+          : "w-3 h-3 rounded-full bg-orange-500 shadow-md animate-ping";
+      }
+
+      // 상단 다이어그램 요소들 (Step 1 ~ 12) 제어
+      for (let s = 1; s <= 12; s++) {
+        const el = document.getElementById(`step-elem-${s}`);
+        if (!el) continue;
+        const isShown = isViewAllMode || s <= currentStepIndex;
+        const isCurrent = !isViewAllMode && s === currentStepIndex;
+
+        if (isShown) {
+          el.classList.remove('step-hidden');
+          el.classList.add('step-visible');
+        } else {
+          el.classList.remove('step-visible');
+          el.classList.add('step-hidden');
+        }
+
+        if (isCurrent) {
+          el.classList.add('active-highlight');
+        } else {
+          el.classList.remove('active-highlight');
+        }
+      }
+
+      // 하단 텍스트 항목들 제어
+      presentationSteps.filter(s => s.type === "bottom").forEach(s => {
+        const textEl = document.getElementById(`bottom-step-${s.step}`);
+        const commaEl = document.getElementById(`bottom-comma-${s.step}`);
+        const isShown = isViewAllMode || s.step <= currentStepIndex;
+        const isCurrent = !isViewAllMode && s.step === currentStepIndex;
+
+        if (textEl) {
+          if (isShown) {
+            textEl.classList.remove('step-hidden');
+            textEl.classList.add('step-visible');
+          } else {
+            textEl.classList.remove('step-visible');
+            textEl.classList.add('step-hidden');
+          }
+
+          if (isCurrent) {
+            textEl.classList.add('word-active');
+          } else {
+            textEl.classList.remove('word-active');
+          }
+        }
+
+        if (commaEl) {
+          if (isShown) {
+            commaEl.classList.remove('step-hidden');
+            commaEl.classList.add('step-visible');
+          } else {
+            commaEl.classList.remove('step-visible');
+            commaEl.classList.add('step-hidden');
+          }
+        }
+      });
+
+      // 네비게이션 칩 갱신
+      presentationSteps.forEach(s => {
+        const pill = document.getElementById(`pill-${s.step}`);
+        if (pill) {
+          if (isViewAllMode) {
+            pill.className = 'w-6 h-6 rounded-full text-[10px] font-bold transition-all flex items-center justify-center bg-stone-200 text-stone-600 border-stone-300';
+          } else if (s.step === currentStepIndex) {
+            const bgClass = (s.type === 'bottom' && s.col === 'two') ? 'bg-teal-500 border-teal-500 shadow-teal-500/50' : 'bg-orange-500 border-orange-500 shadow-orange-500/50';
+            pill.className = `w-7 h-7 rounded-full text-[11px] font-bold transition-all flex items-center justify-center text-white shadow-md scale-110 ${bgClass}`;
+          } else if (s.step < currentStepIndex) {
+            pill.className = 'w-6 h-6 rounded-full text-[10px] font-bold transition-all flex items-center justify-center bg-orange-100 text-orange-600 border-orange-200';
+          } else {
+            pill.className = 'w-6 h-6 rounded-full text-[10px] font-medium transition-all flex items-center justify-center bg-stone-50 text-stone-400 border-stone-200 hover:bg-stone-100';
+          }
+        }
+      });
+    }
+
+    function goToStep(step) {
+      currentStepIndex = Math.max(1, Math.min(presentationSteps.length, step));
+      isViewAllMode = false;
+      updateVisualStates();
+    }
+
+    function nextStep() {
+      if (currentStepIndex < presentationSteps.length) {
+        goToStep(currentStepIndex + 1);
+      } else {
+        if (isAutoPlaying) stopPlay();
+      }
+    }
+
+    function prevStep() {
+      if (currentStepIndex > 1) {
+        goToStep(currentStepIndex - 1);
+      }
+    }
+
+    function toggleAutoPlay() {
+      if (isAutoPlaying) {
+        stopPlay();
+      } else {
+        startPlay();
+      }
+    }
+
+    function startPlay() {
+      isViewAllMode = false;
+      isAutoPlaying = true;
+      playIcon.className = "ph-fill ph-pause-circle text-lg";
+      playText.textContent = "일시정지";
+      if (currentStepIndex >= presentationSteps.length) goToStep(1);
+
+      playIntervalId = setInterval(() => {
+        if (currentStepIndex < presentationSteps.length) {
+          nextStep();
+        } else {
+          stopPlay();
+        }
+      }, AUTO_PLAY_DELAY);
+    }
+
+    function stopPlay() {
+      isAutoPlaying = false;
+      if (playIntervalId) clearInterval(playIntervalId);
+      playIcon.className = "ph-fill ph-play-circle text-lg";
+      playText.textContent = "자동 재생 (2초)";
+    }
+
+    function toggleViewAll() {
+      stopPlay();
+      isViewAllMode = !isViewAllMode;
+      if (isViewAllMode) {
+        currentStepIndex = presentationSteps.length;
+      } else {
+        currentStepIndex = 1;
+      }
+      updateVisualStates();
+    }
+
+    // 모드 전환
+    modeToggleBtn.addEventListener('click', () => {
+      stopPlay();
+      isSixMode = !isSixMode;
+      presentationSteps = isSixMode ? scenario6 : scenario5;
+      modeToggleText.textContent = isSixMode ? "6개 확장 모드 (병원선택)" : "5개 핵심 모드";
+      currentStepIndex = 1;
+      isViewAllMode = false;
+      buildBottomTextDOM();
+      renderStepPills();
+      updateVisualStates();
+    });
+
+    // 버튼 이벤트
+    nextBtn.addEventListener('click', () => { stopPlay(); nextStep(); });
+    prevBtn.addEventListener('click', () => { stopPlay(); prevStep(); });
+    playBtn.addEventListener('click', toggleAutoPlay);
+    viewAllBtn.addEventListener('click', toggleViewAll);
+
+    // 키보드 조작
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') { e.preventDefault(); toggleAutoPlay(); } 
+      else if (e.code === 'ArrowRight') { e.preventDefault(); stopPlay(); nextStep(); } 
+      else if (e.code === 'ArrowLeft') { e.preventDefault(); stopPlay(); prevStep(); }
+    });
+
+    // 초기화
+    window.onload = function() {
+      buildBottomTextDOM();
+      renderStepPills();
+      updateVisualStates();
+    };
+  </script>
+</body>
+</html>

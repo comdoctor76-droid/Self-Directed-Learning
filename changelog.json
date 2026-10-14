@@ -103,5 +103,21 @@
   "page": "index.html",
   "sel": ".lcard.soon",
   "note": "상담 4일차 카드 — 제목 '기술은 치료를 완성하고, 설계는 삶을 지탱한다', 내용 수정"
+ },
+ {
+  "id": "c064-1",
+  "v": "v1.64",
+  "at": "2026-10-14 20:08",
+  "page": "index.html",
+  "sel": "a.lcard[href=\"design-guide.html\"]",
+  "note": "상담 4일차 카드에 학습 페이지 연결 (자료 보기)"
+ },
+ {
+  "id": "c064-2",
+  "v": "v1.64",
+  "at": "2026-10-14 20:08",
+  "page": "design-guide.html",
+  "sel": "#s1",
+  "note": "새 페이지 — SECTION 01 '3대질병 가입우선순위' 단계별 인포그래픽"
  }
 ]
