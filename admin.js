@@ -9,7 +9,7 @@ var GH={owner:"comdoctor76-droid",repo:"Self-Directed-Learning",branch:"main"};
 var TOKEN_KEY="gh_admin_token";
 var PW_KEY="ad_pw_ok";
 /* 관리자 암호(편의용 게이트). 실제 보안 경계는 각 브라우저에만 저장되는 GitHub 토큰입니다. */
-var ADMIN_PW="1234";
+var ADMIN_PW="0000";
 
 function getToken(){try{return localStorage.getItem(TOKEN_KEY)||"";}catch(e){return "";}}
 function pwOk(){try{return sessionStorage.getItem(PW_KEY)==="1";}catch(e){return false;}}
@@ -145,7 +145,7 @@ function loginDone(){
 }
 function openTokenStep(){
   var body=
-    '<div class="ad-help" style="margin-bottom:12px">처음 한 번만 GitHub 토큰을 등록하면 이 브라우저에 기억되어, 다음부터는 <b>암호(1234)만</b>으로 로그인됩니다.</div>'+
+    '<div class="ad-help" style="margin-bottom:12px">처음 한 번만 GitHub 토큰을 등록하면 이 브라우저에 기억되어, 다음부터는 <b>암호(0000)만</b>으로 로그인됩니다.</div>'+
     '<div class="ad-field"><label>GitHub 토큰 (최초 1회)</label>'+
     '<input type="text" id="ad_token" placeholder="github_pat_..." autocomplete="off"></div>'+
     '<div class="ad-help">토큰은 <b>이 브라우저에만</b> 저장되며 서버로 전송되지 않습니다.<br>'+
