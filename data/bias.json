@@ -89,6 +89,10 @@
               "image": {
                 "src": "assets/mechanism/bias-s1-keytruda.webp",
                 "alt": "키트루다 후항암 & 5세대 실손의료비 가이드"
+              },
+              "bottomImage": {
+                "src": "assets/infographics/bias-s1-keytruda-summary.webp",
+                "alt": "키트루다 후항암 & 5세대 실손의료비 보상 가이드 (한눈에 보기)"
               }
             }
           ],
