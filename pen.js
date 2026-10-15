@@ -15,17 +15,25 @@
   window.__PEN_READY__ = true;
 
   /* 위에 뜨는 창일수록 앞에 둔다 (먼저 발견된 것이 현재 레이어) */
-  var OVERLAYS = ['PDFB', 'IMB', 'MB'];
+  var OVERLAYS = ['PDFB', 'IMB', 'MB', 'PVS'];   /* PVS: 영업전략 프레젠테이션 뷰어(슬라이드별 필기) */
   var COLORS = [
     { c: '#000000', n: '검은색' },
     { c: '#E8201A', n: '붉은색' },
     { c: '#1A5FE8', n: '파란색' },
     { c: '#FFFFFF', n: '하얀색' }
   ];
+  var HL_COLORS = [
+    { c: '#FFE600', n: '노란 형광펜' },
+    { c: '#6BFF3D', n: '연두 형광펜' },
+    { c: '#FF5CCB', n: '분홍 형광펜' },
+    { c: '#3DD6FF', n: '하늘 형광펜' }
+  ];
   var LINE = 3.2;      /* 선 굵기 */
+  var HL_LINE = 18;    /* 형광펜 굵기 */
+  var HL_ALPHA = 0.4;  /* 형광펜 투명도 — 글자가 비쳐 보이게 */
   var ERASE_R = 16;    /* 지우개 반경(px) */
 
-  var penOn = false, erasing = false, color = COLORS[1].c;
+  var penOn = false, erasing = false, color = COLORS[1].c, hlColor = HL_COLORS[0].c, tool = 'pen';  /* tool: 'pen' | 'hl' */
   /* 입력 방식 — 'pen': 스타일러스·마우스만 그리고 손가락은 스크롤(기본)
                  'touch': 손가락·정전식 펜도 그린다(브라우저 스크롤 제스처 차단) */
   var MODE_KEY = 'pen_input_mode';
@@ -64,28 +72,39 @@
     /* 손가락 모드: 한 손가락 스크롤 차단(→ 그리기). 팝업·확대창·PDF 뷰어는 각자 스크롤되는 요소라
        html 의 touch-action 이 닿지 않으므로 그 요소들에도 같은 규칙을 건다. (OM 이 cssText 를 통째로 다시 쓰므로
        인라인 스타일이 아니라 클래스 규칙으로) */
-    'html.pen-touch,html.pen-touch #MB,html.pen-touch #IMB,html.pen-touch #PDFB,' +
-    'html.pen-touch #MB *,html.pen-touch #IMB *,html.pen-touch #PDFB *{touch-action:pinch-zoom !important}' +
-    'html.pen-touch-none,html.pen-touch-none #MB,html.pen-touch-none #IMB,html.pen-touch-none #PDFB,' +
-    'html.pen-touch-none #MB *,html.pen-touch-none #IMB *,html.pen-touch-none #PDFB *{touch-action:none !important}';
+    'html.pen-touch,html.pen-touch #MB,html.pen-touch #IMB,html.pen-touch #PDFB,html.pen-touch #PVS,' +
+    'html.pen-touch #MB *,html.pen-touch #IMB *,html.pen-touch #PDFB *,html.pen-touch #PVS *{touch-action:pinch-zoom !important}' +
+    'html.pen-touch-none,html.pen-touch-none #MB,html.pen-touch-none #IMB,html.pen-touch-none #PDFB,html.pen-touch-none #PVS,' +
+    'html.pen-touch-none #MB *,html.pen-touch-none #IMB *,html.pen-touch-none #PDFB *,html.pen-touch-none #PVS *{touch-action:none !important}' +
+    '.pen-b.tool{font-size:16px}' +
+    '.pen-b.hl.on{background:#FFE600;border-color:#FFE600;color:#1A2744}';
 
   /* ── 레이어 판별 ──────────────────────────────────────────── */
   function shown(el) {
     if (!el) return false;
     var s = window.getComputedStyle(el);
-    return s.display !== 'none' && s.visibility !== 'hidden';
+    if (s.display === 'none' || s.visibility === 'hidden') return false;
+    return !el.getClientRects || el.getClientRects().length > 0;   /* 부모가 display:none 이어도 숨김으로 본다 */
   }
   function surface() {
     for (var i = 0; i < OVERLAYS.length; i++) {
       var el = document.getElementById(OVERLAYS[i]);
-      if (shown(el)) return { id: el.id, el: el };
+      if (shown(el)) {
+        /* 프레젠테이션 뷰어: 슬라이드마다 따로 필기를 보관하고 그림(#pvImg)에 붙인다 */
+        if (el.id === 'PVS') {
+          var pi = document.getElementById('pvImg');
+          return { id: 'PVS' + (pi && pi.getAttribute('data-i') || 0), el: el, anchorEl: pi };
+        }
+        return { id: el.id, el: el };
+      }
     }
     return { id: 'doc', el: null };
   }
   /* 레이어별 기준 요소 — 필기를 이 요소에 붙여 둔다 */
   function anchor(s) {
     var a = null;
-    if (s.id === 'IMB') a = document.getElementById('IMG_IMG');
+    if (s.anchorEl) a = s.anchorEl;
+    else if (s.id === 'IMB') a = document.getElementById('IMG_IMG');
     else if (s.id === 'MB') a = document.getElementById('MC');
     else if (s.id === 'PDFB') a = s.el.firstElementChild;
     else a = document.body;
@@ -134,12 +153,14 @@
       var st = arr[i], p = st.p;
       if (!p.length) continue;
       ctx.strokeStyle = st.c; ctx.lineWidth = st.w;
+      ctx.globalAlpha = st.t === 'hl' ? HL_ALPHA : 1;   /* 한 획은 하나의 경로라 겹쳐도 진해지지 않는다 */
       ctx.beginPath();
       ctx.moveTo(p[0][0], p[0][1]);
       if (p.length === 1) ctx.lineTo(p[0][0] + st.w * 0.03, p[0][1]);
       else for (var j = 1; j < p.length; j++) ctx.lineTo(p[j][0], p[j][1]);
       ctx.stroke();
     }
+    ctx.globalAlpha = 1;
     ctx.restore();
   }
   function schedule() {
@@ -189,6 +210,7 @@
   function inBar(t) {
     while (t && t !== document) {
       if (t.id === 'PENBAR') return true;
+      if (t.getAttribute && t.getAttribute('data-pen-skip') != null) return true;   /* 뷰어의 이전/다음·닫기 버튼 등 */
       t = t.parentNode;
     }
     return false;
@@ -208,6 +230,7 @@
     curSurf = surface();
     var p = toContent(curSurf, e.clientX, e.clientY);
     if (erasing) { cur = 'E'; eraseAt(curSurf, p); }
+    else if (tool === 'hl') { cur = { c: hlColor, t: 'hl', w: HL_LINE / anchor(curSurf).width, p: [p] }; store(curSurf.id).push(cur); }
     else { cur = { c: color, w: LINE / anchor(curSurf).width, p: [p] }; store(curSurf.id).push(cur); }
     schedule();
   }
@@ -321,16 +344,14 @@
 
     var bar = document.createElement('div');
     bar.id = 'PENBAR';
-    var sw = '';
-    for (var i = 0; i < COLORS.length; i++) {
-      sw += '<button type="button" class="pen-sw" data-c="' + COLORS[i].c + '" ' +
-            'style="background:' + COLORS[i].c + '" title="' + COLORS[i].n + '" ' +
-            'aria-label="' + COLORS[i].n + '"></button>';
-    }
     bar.innerHTML =
       '<div id="PEN_X" role="group" aria-label="판서 도구">' +
         '<button type="button" class="pen-b" id="PEN_M" title="입력 방식 전환" aria-label="입력 방식 전환"></button>' +
-        '<span class="pen-hr"></span>' + sw +
+        '<span class="pen-hr"></span>' +
+        '<button type="button" class="pen-b tool" id="PEN_P" title="펜" aria-label="펜">🖊️</button>' +
+        '<button type="button" class="pen-b tool hl" id="PEN_H" title="형광펜" aria-label="형광펜">🖍️</button>' +
+        '<span class="pen-hr"></span>' +
+        '<div id="PEN_SW" style="display:flex;flex-direction:column;gap:8px;align-items:center"></div>' +
         '<span class="pen-hr"></span>' +
         '<button type="button" class="pen-b" id="PEN_E" title="지우개" aria-label="지우개">🧽</button>' +
         '<button type="button" class="pen-b" id="PEN_C" title="전체 지우기" aria-label="전체 지우기">🗑</button>' +
@@ -358,7 +379,12 @@
     bar.addEventListener('click', function (e) {
       var t = e.target;
       if (t.classList && t.classList.contains('pen-sw')) {
-        color = t.getAttribute('data-c'); erasing = false; sync();
+        if (tool === 'hl') hlColor = t.getAttribute('data-c'); else color = t.getAttribute('data-c');
+        erasing = false; sync();
+      } else if (t.id === 'PEN_P') {
+        tool = 'pen'; erasing = false; sync();
+      } else if (t.id === 'PEN_H') {
+        tool = 'hl'; erasing = false; sync();
       } else if (t.id === 'PEN_M') {
         setMode(inputMode === 'touch' ? 'pen' : 'touch');
       } else if (t.id === 'PEN_E') {
@@ -368,10 +394,20 @@
       }
     });
     function sync() {
+      /* 색상 줄은 선택한 도구(펜/형광펜)의 팔레트로 바꿔 보여준다. 도구마다 마지막 색을 기억한다 */
+      var list = tool === 'hl' ? HL_COLORS : COLORS, sel = tool === 'hl' ? hlColor : color, h = '';
+      for (var k = 0; k < list.length; k++) {
+        h += '<button type="button" class="pen-sw" data-c="' + list[k].c + '" ' +
+             'style="background:' + list[k].c + (tool === 'hl' ? ';opacity:.8' : '') + '" title="' + list[k].n + '" ' +
+             'aria-label="' + list[k].n + '"></button>';
+      }
+      bar.querySelector('#PEN_SW').innerHTML = h;
       var sws = bar.querySelectorAll('.pen-sw');
       for (var i = 0; i < sws.length; i++) {
-        sws[i].classList.toggle('on', !erasing && sws[i].getAttribute('data-c') === color);
+        sws[i].classList.toggle('on', !erasing && sws[i].getAttribute('data-c') === sel);
       }
+      bar.querySelector('#PEN_P').classList.toggle('on', !erasing && tool === 'pen');
+      bar.querySelector('#PEN_H').classList.toggle('on', !erasing && tool === 'hl');
       bar.querySelector('#PEN_E').classList.toggle('on', erasing);
       var mb = bar.querySelector('#PEN_M'), touch = inputMode === 'touch';
       mb.textContent = touch ? '👆' : '✍️';
@@ -391,18 +427,25 @@
       var el = document.getElementById(id);
       if (!el || !window.MutationObserver) return;
       var was = shown(el);
+      var host = id === 'PVS' ? (document.getElementById('pv') || el) : el;   /* 뷰어는 바깥 창(#pv)의 열림/닫힘을 본다 */
       new MutationObserver(function () {
         var now = shown(el);
-        if (was && !now) { ink[id] = []; }
+        if (was && !now) {
+          if (id === 'PVS') { Object.keys(ink).forEach(function (k) { if (k.indexOf('PVS') === 0) delete ink[k]; }); }
+          else ink[id] = [];
+        }
         was = now;
         schedule();
-      }).observe(el, { attributes: true, attributeFilter: ['style', 'class'] });
+      }).observe(host, { attributes: true, attributeFilter: ['style', 'class'] });
     });
     /* 팝업 안에서 다른 카드로 넘어가도 '다른 창'이므로 비운다 */
     if (window.MutationObserver) {
       var mc = document.getElementById('MC');
       if (mc) new MutationObserver(function () { ink['MB'] = []; schedule(); })
         .observe(mc, { childList: true });
+      var pv = document.getElementById('pvImg');   /* 프레젠테이션 슬라이드가 바뀌면 그 슬라이드의 필기로 다시 그린다 */
+      if (pv) new MutationObserver(function () { schedule(); })
+        .observe(pv, { attributes: true, attributeFilter: ['data-i', 'src'] });
       var im = document.getElementById('IMG_IMG');
       if (im) new MutationObserver(function () { ink['IMB'] = []; schedule(); })
         .observe(im, { attributes: true, attributeFilter: ['src'] });
@@ -449,6 +492,9 @@
       vv.addEventListener('scroll', onVV);
     }
   }
+
+  /* 다른 스크립트가 알아야 하는 상태 — 손가락 모드로 그리는 중이면 좌우 스와이프로 슬라이드를 넘기지 않는다 */
+  window.PenState = { drawingWithTouch: function () { return penOn && inputMode === 'touch'; } };
 
   if (!window.PointerEvent) return;   /* 포인터 이벤트 미지원 환경은 조용히 비활성화 */
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
