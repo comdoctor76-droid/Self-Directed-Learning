@@ -183,5 +183,13 @@
   "page": "design-guide.html",
   "sel": "#s1 .embed-box",
   "note": "3대질병 인포그래픽 그림 속 글자 변경 — 치료비 → 병원비, 진단금 → 치료비"
+ },
+ {
+  "id": "c073-1",
+  "v": "v1.73",
+  "at": "2026-10-15 16:42",
+  "page": "design-guide.html",
+  "sel": "#s1 > .diagram",
+  "note": "SECTION 01 인터랙티브 자료 아래에 '고객님을 위한 질병 대비 가이드' 인포그래픽 추가"
  }
 ]
