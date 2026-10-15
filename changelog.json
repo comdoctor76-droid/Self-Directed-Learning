@@ -207,5 +207,13 @@
   "page": "bias-guide.html",
   "sel": "#s1",
   "note": "실손의료비 변천사 섹션을 SECTION 01로 이동, 나머지 섹션 번호·상단 메뉴를 02~06으로 조정"
+ },
+ {
+  "id": "c076-1",
+  "v": "v1.76",
+  "at": "2026-10-15 17:29",
+  "page": "bias-guide.html",
+  "sel": "#s1 > .diagram:nth-of-type(1)",
+  "note": "SECTION 01 — '실손 면부책 변천사' 앞에 '5세대 실손 급여 외래(통원) 자기부담금' 자료 추가"
  }
 ]
