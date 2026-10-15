@@ -49,9 +49,21 @@
           "alt": "5세대 실손의료보험 급여 외래(통원) 자기부담금 인포그래픽 가이드"
         },
         {
-          "heading": "실손 면부책 변천사 — 세대별 보상·면책 항목 비교",
-          "src": "assets/mechanism/priority-s2-2.webp",
-          "alt": "실손 면부책 변천사 (1~5세대 비교)"
+          "cards": [
+            {
+              "tag": "참고자료",
+              "tagClass": "tn",
+              "ico": "📋",
+              "title": "실손의료비 세대별 면부책 사항",
+              "desc": "실손의료비의 면부책사항요약",
+              "modalTitle": "실손 면부책 변천사 — 세대별 보상·면책 항목 비교",
+              "modalBody": "",
+              "image": {
+                "src": "assets/mechanism/priority-s2-2.webp",
+                "alt": "실손 면부책 변천사 (1~5세대 비교)"
+              }
+            }
+          ]
         }
       ]
     },

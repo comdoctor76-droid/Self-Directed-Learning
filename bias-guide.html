@@ -377,6 +377,7 @@ section{padding:52px 0 20px}
 .g{display:grid;gap:14px}
 .g2{grid-template-columns:1fr 1fr}
 .g3{grid-template-columns:1fr 1fr 1fr}
+.g1{grid-template-columns:1fr}
 
 /* CARD */
 .card{background:#fff;border:2px solid #EEE7DF;border-radius:16px;padding:22px 20px;cursor:pointer;position:relative;display:block;width:100%;text-align:left}
@@ -713,6 +714,25 @@ function renderSection(sec,si){
   if(sec.bottomImage){
     var secBotImgs=(Object.prototype.toString.call(sec.bottomImage)==='[object Array]')?sec.bottomImage:[sec.bottomImage];
     secBotImgs.forEach(function(sbi,sbn){
+      /* 이미지 대신 카드(버튼) 묶음 — 누르면 기존 카드처럼 팝업으로 열린다 */
+      if(sbi&&sbi.cards&&sbi.cards.length){
+        h+='<div class="g '+_t(sbi.grid||'g1')+'" style="margin:6px 0 18px">';
+        sbi.cards.forEach(function(c,ci){
+          var ck='sec'+si+'bc'+sbn+'_'+ci, ib='';
+          if(c.image&&c.image.src){
+            window.IMGDATA[ck]={src:c.image.src,name:(c.image.alt||c.modalTitle||'infographic')+'.'+_extOf(c.image.src)};
+            ib='<div class="diagram"><img src="'+_t(c.image.src)+'" alt="'+_t(c.image.alt||c.modalTitle)+'" onclick="event.stopPropagation();OI(\''+ck+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
+          }
+          window.MD[ck]={t:_t(c.modalTitle||c.title),b:ib+_t(c.modalBody)};
+          h+='<div class="card" onclick="OM(\''+ck+'\')">'+
+             '<span class="plus">+</span>'+
+             '<span class="tag '+_t(c.tagClass||'tn')+'">'+_t(c.tag)+'</span>'+
+             '<span class="ico">'+_t(c.ico)+'</span>'+
+             '<h3>'+_t(c.title)+'</h3><p>'+_t(c.desc)+'</p></div>';
+        });
+        h+='</div>';
+        return;
+      }
       if(!sbi||!sbi.src)return;
       var sbKey='sec'+si+'bot'+(sbn?sbn:'');
       window.IMGDATA[sbKey]={src:sbi.src,name:(sbi.alt||sec.title||'infographic')+'.'+_extOf(sbi.src)};
