@@ -139,6 +139,7 @@ function opt(v,label,cur){return '<option value="'+v+'"'+(v===cur?" selected":""
 /* ---------- 로그인 (1단계: 암호 → 2단계: 최초 1회 토큰 등록) ---------- */
 function loginDone(){
   closeOverlay();ensureBar();updateIndexButton();
+  try{document.dispatchEvent(new Event("admin-login"));}catch(e){}
   if(window.GUIDE&&window.renderGuide)renderGuide(window.GUIDE);
   toast("관리자 모드 ✅ ✏️ 편집 버튼이 나타납니다");
 }
@@ -184,6 +185,7 @@ function openLogin(){
 }
 function logout(){
   clearPwOk();
+  try{document.dispatchEvent(new Event("admin-logout"));}catch(e){}
   removeBar();updateIndexButton();
   if(window.GUIDE&&window.renderGuide)renderGuide(window.GUIDE);
   toast("로그아웃되었습니다");
@@ -563,7 +565,9 @@ function getBody(){
 }
 
 /* ---------- 노출 & 초기화 ---------- */
-window.AdminEditor={isLoggedIn:isLoggedIn,openLogin:openLogin,logout:logout,decorateGuide:decorate};
+window.AdminEditor={isLoggedIn:isLoggedIn,openLogin:openLogin,logout:logout,decorateGuide:decorate,
+  /* 다른 페이지(영업전략 업로드 등)에서 쓰는 GitHub 도우미 */
+  gh:{repo:GH,hdr:hdr,get:ghGet,put:ghPut,err:ghErr,b64enc:b64enc},toast:toast};
 document.addEventListener("DOMContentLoaded",function(){
   ensureOverlay();
   if(isLoggedIn())ensureBar();

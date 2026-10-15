@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>영업전략 살펴보기 | 스스로 학습하기</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#FBF8F5;color:#26282C;font-size:17px;line-height:1.65}
+.hero{background:linear-gradient(135deg,#1A2744 0%,#2C3F6E 60%,#3d5390 100%);color:#fff;padding:56px 20px 60px;position:relative}
+.hero-in{max-width:1060px;margin:0 auto}
+.badge{display:inline-block;background:#E8651A;color:#fff;font-weight:700;font-size:14px;padding:7px 16px;border-radius:999px;margin-bottom:16px}
+.hero h1{font-size:34px;font-weight:900;line-height:1.35;margin-bottom:12px}
+.hero p{font-size:17px;opacity:.92;max-width:620px}
+.nav{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.1);display:flex;align-items:center;gap:6px;padding:0 8px;min-height:54px}
+.nav-back{flex:0 0 auto;display:flex;align-items:center;gap:5px;font-size:14px;font-weight:800;color:#1A2744;text-decoration:none;padding:9px 12px;border-radius:999px;white-space:nowrap}
+.nav-back:hover{background:#EBEFF8}
+.nav-sep{flex:0 0 auto;width:1px;height:22px;background:#EEE7DF}
+.nav-t{flex:1 1 auto;min-width:0;font-size:14.5px;font-weight:700;color:#6B7078;padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-refresh{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:#F7F2EB;border:1px solid #EEE7DF;color:#1A2744;font-size:16px;cursor:pointer}
+.wrap{max-width:1060px;margin:0 auto;padding:40px 16px 60px}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.bar h2{font-size:22px;font-weight:900;color:#1A2744}
+.bar .no{display:block;color:#E8651A;font-weight:900;font-size:14px;letter-spacing:1.5px}
+.btn{font-family:inherit;font-size:15px;font-weight:800;border:0;border-radius:12px;padding:11px 18px;cursor:pointer;background:#E8651A;color:#fff;box-shadow:0 4px 14px rgba(232,101,26,.3)}
+.btn.sec{background:#fff;color:#1A2744;border:1.5px solid #EEE7DF;box-shadow:none}
+.btn:disabled{opacity:.5;cursor:default}
+.g{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.mcard{position:relative;text-align:left;font-family:inherit;color:inherit;background:#fff;border:2px solid #EEE7DF;border-radius:18px;overflow:hidden;box-shadow:0 4px 18px rgba(26,39,68,.06);cursor:pointer;padding:0;display:block;width:100%}
+.mcard:active{border-color:#E8651A}
+.mcard .thumb{height:160px;background:linear-gradient(135deg,#1A2744 0%,#2C3F6E 60%,#3d5390 100%) center/cover no-repeat;display:flex;align-items:center;justify-content:center;position:relative}
+.mcard .thumb .ico{font-size:44px}
+.mcard .thumb .menu{position:absolute;left:16px;bottom:12px;background:rgba(26,39,68,.72);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:13px;font-weight:800;padding:5px 12px;border-radius:999px}
+.mcard .info{padding:18px 22px 20px}
+.mcard h3{font-size:19px;font-weight:900;color:#1A2744;margin-bottom:4px;line-height:1.4}
+.mcard p{font-size:14.5px;color:#6B7078}
+.mcard .go{margin-top:12px;font-size:14px;font-weight:800;color:#E8651A}
+.mcard.empty .go{color:#9AA0A8}
+.mcard .adm{position:absolute;top:10px;right:10px;display:flex;gap:6px;z-index:2}
+.mcard .adm span{background:rgba(255,255,255,.95);border:1px solid #EEE7DF;border-radius:999px;font-size:12.5px;font-weight:800;padding:5px 10px;color:#1A2744}
+.mcard .adm span.del{color:#C0392B}
+.note{background:#fff;border:2px dashed #EEE7DF;border-radius:16px;padding:26px;text-align:center;color:#6B7078;font-size:15px}
+footer{background:#1A2744;color:rgba(255,255,255,.75);text-align:center;padding:34px 16px;font-size:14.5px;line-height:1.9}
+
+/* ── 프레젠테이션 뷰어 ── */
+.pv{position:fixed;inset:0;z-index:3000;background:#0f1524;display:none;flex-direction:column;color:#fff;touch-action:pan-y}
+.pv.on{display:flex}
+.pv-top{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(0,0,0,.25)}
+.pv-title{flex:1 1 auto;min-width:0;font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pv-count{flex:0 0 auto;font-weight:800;font-size:14px;color:#FFB37E}
+.pv-ic{flex:0 0 auto;width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.pv-stage{flex:1 1 auto;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;padding:8px 64px}
+.pv-stage img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,.45);background:#fff;user-select:none;-webkit-user-drag:none}
+.pv-nav{position:absolute;top:50%;transform:translateY(-50%);width:50px;height:50px;border-radius:50%;border:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+.pv-nav:disabled{opacity:.2;cursor:default}
+.pv-nav.l{left:8px}.pv-nav.r{right:8px}
+.pv-prog{height:4px;background:rgba(255,255,255,.12)}
+.pv-prog i{display:block;height:100%;background:#E8651A;width:0;transition:width .2s}
+@media(max-width:640px){.pv-stage{padding:6px 6px 60px}.pv-nav{top:auto;bottom:8px;transform:none;width:46px;height:46px}.pv-nav.l{left:calc(50% - 60px)}.pv-nav.r{right:calc(50% - 60px)}}
+
+/* ── 업로드 팝업 ── */
+.up{position:fixed;inset:0;z-index:3100;background:rgba(10,16,30,.6);display:none;align-items:center;justify-content:center;padding:16px}
+.up.on{display:flex}
+.up-box{background:#fff;width:100%;max-width:460px;border-radius:20px;padding:22px 20px;box-shadow:0 12px 40px rgba(0,0,0,.35);max-height:92vh;overflow:auto}
+.up-box h3{font-size:19px;font-weight:900;color:#1A2744;margin-bottom:14px}
+.up-row{display:flex;gap:10px;margin-bottom:12px}
+.up-f{display:block;margin-bottom:12px;flex:1}
+.up-f>span{display:block;font-size:13.5px;font-weight:800;color:#1A2744;margin-bottom:5px}
+.up-f select,.up-f input[type=text]{width:100%;font-family:inherit;font-size:16px;padding:10px 12px;border:1.5px solid #EEE7DF;border-radius:10px;background:#fff}
+.up-file{display:block;border:2px dashed #F6C9A8;background:#FFF8F2;border-radius:12px;padding:16px;text-align:center;cursor:pointer;font-size:14.5px;color:#C94F0A;font-weight:700}
+.up-file input{display:none}
+.up-list{font-size:13.5px;color:#6B7078;margin:8px 2px 0;max-height:110px;overflow:auto}
+.up-mode{font-size:14px;margin:12px 0 4px;display:none}
+.up-mode label{margin-right:14px;cursor:pointer}
+.up-msg{font-size:14px;font-weight:700;color:#1A2744;min-height:22px;margin:10px 0}
+.up-msg.err{color:#C0392B}
+.up-btns{display:flex;gap:8px;justify-content:flex-end}
+.up-help{font-size:12.5px;color:#9AA0A8;margin-top:10px;line-height:1.6}
+@media(max-width:760px){.hero{padding:44px 18px 46px}.hero h1{font-size:27px}}
+</style>
+</head>
+<body>
+
+<div class="hero"><div class="hero-in">
+  <span class="badge">이달의 이슈</span>
+  <h1>영업전략 살펴보기</h1>
+  <p>이달의 영업전략들을 살펴 봅니다.</p>
+</div></div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-back">← <span>메인으로</span></a>
+  <div class="nav-sep"></div>
+  <div class="nav-t">📊 월별 영업전략 프레젠테이션</div>
+  <button class="nav-refresh" onclick="location.href=location.pathname+'?_='+Date.now()" aria-label="새로고침" type="button">🔄</button>
+</nav>
+
+<div class="wrap">
+  <div class="bar">
+    <div><span class="no">MONTHLY</span><h2>월별 영업전략</h2></div>
+    <button class="btn" id="upOpen" type="button" style="display:none">📤 자료 올리기</button>
+  </div>
+  <div class="g" id="months"></div>
+</div>
+
+<footer>
+  본 자료는 이해를 돕기 위한 <b>교육용 자료</b>입니다.<br>© 스스로 학습하기
+  <div style="margin-top:16px">
+    <button id="adminBtn" type="button" onclick="AdminEditor.openLogin()"
+      style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.28);color:rgba(255,255,255,.8);font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 14px;border-radius:999px;cursor:pointer">🔧 관리자</button>
+  </div>
+</footer>
+
+<!-- 프레젠테이션 뷰어 -->
+<div class="pv" id="pv" role="dialog" aria-modal="true" aria-label="프레젠테이션">
+  <div class="pv-top">
+    <div class="pv-title" id="pvTitle"></div>
+    <div class="pv-count" id="pvCount"></div>
+    <button class="pv-ic" id="pvFs" type="button" aria-label="전체 화면">⛶</button>
+    <button class="pv-ic" id="pvClose" type="button" aria-label="닫기">✕</button>
+  </div>
+  <div class="pv-prog"><i id="pvProg"></i></div>
+  <div class="pv-stage" id="pvStage">
+    <img id="pvImg" alt="">
+    <button class="pv-nav l" id="pvPrev" type="button" aria-label="이전"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button class="pv-nav r" id="pvNext" type="button" aria-label="다음"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+  </div>
+</div>
+
+<!-- 자료 올리기 팝업 (관리자) -->
+<div class="up" id="up">
+  <div class="up-box">
+    <h3>📤 프레젠테이션 자료 올리기</h3>
+    <div class="up-row">
+      <label class="up-f"><span>연도</span><select id="upYear"></select></label>
+      <label class="up-f"><span>월</span><select id="upMonth"></select></label>
+    </div>
+    <label class="up-f"><span>카드 제목</span><input type="text" id="upTitle"></label>
+    <label class="up-file">📎 사진 또는 PDF 파일 선택 (여러 개 가능)
+      <input type="file" id="upFiles" multiple accept="image/*,application/pdf,.pdf">
+    </label>
+    <div class="up-list" id="upList"></div>
+    <div class="up-mode" id="upMode">이 달에 이미 자료가 <b id="upHave"></b>장 있습니다:
+      <label><input type="radio" name="upm" value="replace" checked> 새 자료로 교체</label>
+      <label><input type="radio" name="upm" value="append"> 뒤에 이어 붙이기</label>
+    </div>
+    <div class="up-msg" id="upMsg"></div>
+    <div class="up-btns">
+      <button class="btn sec" id="upCancel" type="button">취소</button>
+      <button class="btn" id="upGo" type="button">올리기</button>
+    </div>
+    <p class="up-help">PDF는 쪽마다 한 장의 슬라이드로 바뀝니다. 사진은 고른 순서(파일 이름 순)대로 넘어갑니다.<br>올린 뒤 1~2분이면 모든 사람에게 보입니다.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var DATA_PATH='data/strategy.json', SLIDE_DIR='assets/strategy/';
+var MAX_W=1920, JPG_Q=0.86;
+var state={months:[]}, cur=null, idx=0;
+var $=function(id){return document.getElementById(id);};
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function isAdmin(){return !!(window.AdminEditor&&AdminEditor.isLoggedIn&&AdminEditor.isLoggedIn());}
+function sortMonths(){state.months.sort(function(a,b){return a.id<b.id?1:-1;});}
+function toast(m,err){if(window.AdminEditor&&AdminEditor.toast)AdminEditor.toast(m,err);else alert(m);}
+
+/* ── 목록 ── */
+function render(){
+  $('upOpen').style.display=isAdmin()?'':'none';
+  var box=$('months'); sortMonths();
+  if(!state.months.length){box.innerHTML='<div class="note">아직 올라온 영업전략 자료가 없습니다.</div>';return;}
+  box.innerHTML=state.months.map(function(m,i){
+    var n=(m.slides||[]).length, first=n?m.slides[0]:null;
+    return '<button type="button" class="mcard'+(n?'':' empty')+'" data-i="'+i+'">'+
+      (isAdmin()?'<span class="adm"><span class="add" data-a="add">＋ 올리기</span>'+(n?'<span class="del" data-a="del">삭제</span>':'')+'</span>':'')+
+      '<div class="thumb"'+(first?' style="background-image:url(\''+esc(first)+'\')"':'')+'>'+(first?'':'<span class="ico">📊</span>')+
+      '<span class="menu">'+m.year+'년 '+m.month+'월</span></div>'+
+      '<div class="info"><h3>'+esc(m.title||(m.month+'월 영업전략'))+'</h3>'+
+      '<p>'+(n?'슬라이드 '+n+'장':'자료 준비 중')+'</p>'+
+      '<div class="go">'+(n?'프레젠테이션 보기 →':(isAdmin()?'눌러서 자료 올리기':'곧 올라옵니다'))+'</div></div></button>';
+  }).join('');
+}
+$('months').addEventListener('click',function(e){
+  var c=e.target.closest('.mcard'); if(!c)return;
+  var m=state.months[+c.getAttribute('data-i')], a=e.target.closest('[data-a]');
+  if(a&&a.getAttribute('data-a')==='del'){delMonth(m);return;}
+  if((a&&a.getAttribute('data-a')==='add')||!(m.slides||[]).length){ if(isAdmin())openUp(m); return; }
+  openViewer(m,0);
+});
+function load(){
+  return fetch(DATA_PATH+'?_='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();})
+    .then(function(d){state=d&&d.months?d:{months:[]};render();})
+    .catch(function(){$('months').innerHTML='<div class="note">자료 목록을 불러오지 못했습니다. 새로고침 해 주세요.</div>';});
+}
+
+/* ── 프레젠테이션 뷰어 ── */
+function openViewer(m,i){cur=m;idx=i||0;$('pv').classList.add('on');document.body.style.overflow='hidden';show();}
+function closeViewer(){$('pv').classList.remove('on');document.body.style.overflow='';if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(function(){});}
+function show(){
+  var s=cur.slides, n=s.length; idx=Math.max(0,Math.min(n-1,idx));
+  $('pvImg').src=s[idx]; $('pvImg').alt=(cur.title||'')+' '+(idx+1)+'쪽';
+  $('pvTitle').textContent=cur.title||''; $('pvCount').textContent=(idx+1)+' / '+n;
+  $('pvProg').style.width=((idx+1)/n*100)+'%';
+  $('pvPrev').disabled=idx<=0; $('pvNext').disabled=idx>=n-1;
+  [idx+1,idx-1].forEach(function(k){if(k>=0&&k<n){var im=new Image();im.src=s[k];}});
+}
+function go(d){if(!cur)return;var n=cur.slides.length,k=idx+d;if(k<0||k>=n)return;idx=k;show();}
+$('pvPrev').onclick=function(){go(-1);}; $('pvNext').onclick=function(){go(1);};
+$('pvClose').onclick=closeViewer;
+var fsOk=!!(document.documentElement.requestFullscreen);
+$('pvFs').style.display=fsOk?'':'none';
+$('pvFs').onclick=function(){if(document.fullscreenElement)document.exitFullscreen();else $('pv').requestFullscreen().catch(function(){});};
+document.addEventListener('keydown',function(e){
+  if(!$('pv').classList.contains('on'))return;
+  if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();go(1);}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(-1);}
+  else if(e.key==='Escape'&&!document.fullscreenElement)closeViewer();
+});
+(function(){var x0=null,y0=0;var st=$('pvStage');
+  st.addEventListener('touchstart',function(e){if(e.touches.length!==1){x0=null;return;}x0=e.touches[0].clientX;y0=e.touches[0].clientY;},{passive:true});
+  st.addEventListener('touchend',function(e){if(x0==null)return;var t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;
+    if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.3)go(dx<0?1:-1);},{passive:true});
+})();
+
+/* ── 자료 올리기 (관리자 · GitHub 저장소에 한 번에 커밋) ── */
+var picked=[], target=null;
+function kstNow(){var d=new Date(Date.now()+9*3600e3);return {y:d.getUTCFullYear(),m:d.getUTCMonth()+1};}
+function fillSelects(y,m){
+  var now=kstNow(), ys=[];for(var k=now.y-1;k<=now.y+1;k++)ys.push(k);
+  $('upYear').innerHTML=ys.map(function(v){return '<option value="'+v+'"'+(v===y?' selected':'')+'>'+v+'년</option>';}).join('');
+  var ms='';for(var k2=1;k2<=12;k2++)ms+='<option value="'+k2+'"'+(k2===m?' selected':'')+'>'+k2+'월</option>';
+  $('upMonth').innerHTML=ms;
+}
+function findMonth(y,m){var id=y+'-'+(m<10?'0':'')+m;return state.months.filter(function(x){return x.id===id;})[0]||null;}
+function syncUp(titleTouched){
+  var y=+$('upYear').value,m=+$('upMonth').value,ex=findMonth(y,m);
+  if(!titleTouched)$('upTitle').value=ex&&ex.title?ex.title:(m+'월 영업전략');
+  var have=ex?(ex.slides||[]).length:0;
+  $('upMode').style.display=have?'block':'none'; $('upHave').textContent=have;
+}
+function openUp(m){
+  if(!isAdmin()){AdminEditor.openLogin();return;}
+  var now=kstNow(); fillSelects(m?m.year:now.y,m?m.month:now.m);
+  picked=[]; $('upFiles').value=''; $('upList').textContent=''; msg('');
+  syncUp(false); $('upGo').disabled=false; $('up').classList.add('on');
+}
+function closeUp(){$('up').classList.remove('on');}
+function msg(t,err){var e=$('upMsg');e.textContent=t;e.className='up-msg'+(err?' err':'');}
+$('upOpen').onclick=function(){openUp(null);};
+$('upCancel').onclick=closeUp;
+$('upYear').onchange=$('upMonth').onchange=function(){syncUp(false);};
+$('upFiles').onchange=function(){
+  picked=Array.prototype.slice.call(this.files).sort(function(a,b){return a.name.localeCompare(b.name,'ko',{numeric:true});});
+  $('upList').innerHTML=picked.map(function(f,i){return (i+1)+'. '+esc(f.name)+(/pdf$/i.test(f.name)||f.type==='application/pdf'?' (PDF)':'');}).join('<br>');
+};
+
+function loadScript(src){return new Promise(function(res,rej){var s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
+function pdfLib(){
+  if(window.pdfjsLib)return Promise.resolve(window.pdfjsLib);
+  return loadScript('assets/vendor/pdf.min.js').then(function(){pdfjsLib.GlobalWorkerOptions.workerSrc='assets/vendor/pdf.worker.min.js';return pdfjsLib;});
+}
+function canvasToB64(cv){return new Promise(function(res){cv.toBlob(function(b){var fr=new FileReader();fr.onload=function(){var s=String(fr.result);res(s.slice(s.indexOf(',')+1));};fr.readAsDataURL(b);},'image/jpeg',JPG_Q);});}
+function whiteCanvas(w,h){var cv=document.createElement('canvas');cv.width=w;cv.height=h;var c=cv.getContext('2d');c.fillStyle='#fff';c.fillRect(0,0,w,h);return cv;}
+function imageToB64(file){
+  return new Promise(function(res,rej){
+    var url=URL.createObjectURL(file),im=new Image();
+    im.onload=function(){var sc=Math.min(1,MAX_W/Math.max(im.naturalWidth,im.naturalHeight*16/9));
+      var cv=whiteCanvas(Math.round(im.naturalWidth*sc),Math.round(im.naturalHeight*sc));cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);
+      URL.revokeObjectURL(url);canvasToB64(cv).then(res);};
+    im.onerror=function(){URL.revokeObjectURL(url);rej(new Error('이미지를 읽지 못했습니다: '+file.name));};
+    im.src=url;
+  });
+}
+function pdfToB64s(file,out,label){
+  return pdfLib().then(function(lib){return file.arrayBuffer().then(function(buf){return lib.getDocument({data:buf}).promise;});})
+  .then(function(doc){
+    var chain=Promise.resolve();
+    for(var p=1;p<=doc.numPages;p++)(function(p){chain=chain.then(function(){
+      msg(label+' — '+p+' / '+doc.numPages+'쪽 변환 중…');
+      return doc.getPage(p).then(function(pg){
+        var v1=pg.getViewport({scale:1}),sc=Math.min(3,MAX_W/v1.width),vp=pg.getViewport({scale:sc});
+        var cv=whiteCanvas(Math.round(vp.width),Math.round(vp.height));
+        return pg.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise.then(function(){return canvasToB64(cv);}).then(function(b){out.push(b);cv.width=cv.height=0;});
+      });
+    });})(p);
+    return chain;
+  });
+}
+
+/* GitHub Git Data API: 파일 여러 개 + 목록(json)을 커밋 한 번으로 저장 */
+function gh(){return AdminEditor.gh;}
+function gapi(path,opt){
+  var R=gh().repo; opt=opt||{};
+  return fetch('https://api.github.com/repos/'+R.owner+'/'+R.repo+'/git/'+path,{method:opt.method||'GET',
+    headers:Object.assign({'Content-Type':'application/json'},gh().hdr()),body:opt.body?JSON.stringify(opt.body):undefined,cache:'no-store'})
+  .then(function(r){if(!r.ok){var e=new Error('GitHub '+r.status);e.status=r.status;throw e;}return r.json();});
+}
+function commitFiles(files,deletes,message){
+  var R=gh().repo, base;
+  return gapi('ref/heads/'+R.branch).then(function(ref){base=ref.object.sha;return gapi('commits/'+base);})
+  .then(function(c){
+    var tree=[], chain=Promise.resolve();
+    files.forEach(function(f,i){chain=chain.then(function(){
+      if(f.label)msg(f.label);
+      return gapi('blobs',{method:'POST',body:{content:f.b64,encoding:'base64'}}).then(function(b){tree.push({path:f.path,mode:'100644',type:'blob',sha:b.sha});});
+    });});
+    return chain.then(function(){
+      (deletes||[]).forEach(function(p){tree.push({path:p,mode:'100644',type:'blob',sha:null});});
+      return gapi('trees',{method:'POST',body:{base_tree:c.tree.sha,tree:tree}});
+    });
+  })
+  .then(function(t){return gapi('commits',{method:'POST',body:{message:message,tree:t.sha,parents:[base]}});})
+  .then(function(nc){return gapi('refs/heads/'+R.branch,{method:'PATCH',body:{sha:nc.sha}});});
+}
+function freshData(){
+  return gh().get(DATA_PATH).then(function(r){try{var d=JSON.parse(r.text);return d&&d.months?d:{months:[]};}catch(e){return {months:[]};}});
+}
+
+$('upGo').onclick=function(){
+  if(!isAdmin()){AdminEditor.openLogin();return;}
+  if(!picked.length){msg('사진이나 PDF 파일을 골라 주세요.',true);return;}
+  var y=+$('upYear').value,m=+$('upMonth').value,id=y+'-'+(m<10?'0':'')+m;
+  var title=$('upTitle').value.trim()||(m+'월 영업전략');
+  var mode=(document.querySelector('input[name=upm]:checked')||{}).value||'replace';
+  var b64s=[], btn=$('upGo'); btn.disabled=true;
+  var chain=Promise.resolve();
+  picked.forEach(function(f,i){chain=chain.then(function(){
+    var lab='파일 '+(i+1)+'/'+picked.length+' '+f.name;
+    if(f.type==='application/pdf'||/\.pdf$/i.test(f.name))return pdfToB64s(f,b64s,lab);
+    msg(lab+' 변환 중…'); return imageToB64(f).then(function(b){b64s.push(b);});
+  });});
+  var stamp=Date.now().toString(36), paths=[], deletes=[];
+  chain.then(function(){
+    if(!b64s.length)throw new Error('변환된 슬라이드가 없습니다.');
+    msg('저장소 목록 확인 중…');
+    return freshData();
+  }).then(function(d){
+    var ex=d.months.filter(function(x){return x.id===id;})[0];
+    if(!ex){ex={id:id,year:y,month:m,title:title,slides:[]};d.months.push(ex);}
+    ex.title=title;
+    if(mode==='replace'){deletes=(ex.slides||[]).filter(function(p){return p.indexOf(SLIDE_DIR)===0;});ex.slides=[];}
+    var files=b64s.map(function(b,i){var p=SLIDE_DIR+id+'/'+stamp+'-'+(i<9?'0':'')+(i+1)+'.jpg';paths.push(p);
+      return {path:p,b64:b,label:'업로드 '+(i+1)+' / '+b64s.length+'장…'};});
+    ex.slides=(ex.slides||[]).concat(paths);
+    d.months.sort(function(a,b){return a.id<b.id?1:-1;});
+    files.push({path:DATA_PATH,b64:gh().b64enc(JSON.stringify(d,null,2)+'\n'),label:'목록 저장 중…'});
+    return commitFiles(files,deletes,'영업전략 자료 업로드: '+id+' ('+b64s.length+'장)').then(function(){return d;});
+  }).then(function(d){
+    /* 사이트 재배포 전에도 관리자 화면에서 바로 보이도록 이번에 만든 이미지를 임시로 연결 */
+    var mine=d.months.filter(function(x){return x.id===id;})[0];
+    var local={}; paths.forEach(function(p,i){local[p]='data:image/jpeg;base64,'+b64s[i];});
+    mine.slides=mine.slides.map(function(p){return local[p]||p;});
+    state=d; render(); closeUp(); btn.disabled=false;
+    toast('올렸습니다! '+b64s.length+'장 · 1~2분 뒤 모두에게 보입니다 ✅');
+  }).catch(function(e){
+    btn.disabled=false;
+    msg('올리지 못했습니다: '+(e&&e.status?gh().err(e.status):(e&&e.message)||e),true);
+  });
+};
+
+function delMonth(m){
+  if(!isAdmin())return;
+  if(!confirm(m.year+'년 '+m.month+'월 「'+(m.title||'')+'」 자료를 삭제할까요? 카드도 함께 사라집니다.'))return;
+  toast('삭제 중…');
+  freshData().then(function(d){
+    var ex=d.months.filter(function(x){return x.id===m.id;})[0];
+    var dels=ex?(ex.slides||[]).filter(function(p){return p.indexOf(SLIDE_DIR)===0;}):[];
+    d.months=d.months.filter(function(x){return x.id!==m.id;});
+    return commitFiles([{path:DATA_PATH,b64:gh().b64enc(JSON.stringify(d,null,2)+'\n')}],dels,'영업전략 자료 삭제: '+m.id).then(function(){return d;});
+  }).then(function(d){state=d;render();toast('삭제했습니다. 1~2분 뒤 모두에게 반영됩니다');})
+  .catch(function(e){toast('삭제 실패: '+(e&&e.status?gh().err(e.status):(e&&e.message)),true);});
+}
+
+document.addEventListener('admin-login',render);
+document.addEventListener('admin-logout',render);
+load();
+})();
+</script>
+<script src="admin.js"></script>
+<script src="pen.js"></script>
+<script src="version.js"></script>
+<script src="changes.js"></script>
+</body>
+</html>
