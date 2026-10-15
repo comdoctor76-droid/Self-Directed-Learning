@@ -23,7 +23,7 @@
         "src": "assets/embeds/priority3.html",
         "title": "3대질병 가입의 우선순위 인포그래픽"
       },
-      "bottomImage": {
+      "image": {
         "src": "assets/infographics/design-s1-disease-guide.webp",
         "alt": "고객님을 위한 질병 대비 가이드"
       }

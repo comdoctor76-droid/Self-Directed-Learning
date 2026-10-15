@@ -191,5 +191,13 @@
   "page": "design-guide.html",
   "sel": "#s1 > .diagram",
   "note": "SECTION 01 인터랙티브 자료 아래에 '고객님을 위한 질병 대비 가이드' 인포그래픽 추가"
+ },
+ {
+  "id": "c074-1",
+  "v": "v1.74",
+  "at": "2026-10-15 16:43",
+  "page": "design-guide.html",
+  "sel": "#s1 .embed-box",
+  "note": "SECTION 01 순서 변경 — 질병 대비 가이드 인포그래픽이 위, 3대질병 인터랙티브 자료가 아래"
  }
 ]
