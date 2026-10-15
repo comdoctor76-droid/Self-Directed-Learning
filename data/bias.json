@@ -77,8 +77,22 @@
                 "src": "assets/mechanism/priority-s2-2.webp",
                 "alt": "실손 면부책 변천사 (1~5세대 비교)"
               }
+            },
+            {
+              "tag": "암 통원실손의 함정",
+              "tagClass": "tr",
+              "ico": "💊",
+              "title": "키트루다 사용시 5세대 통원실손의 한계",
+              "desc": "후항암치료 항암제 사용시 문제점",
+              "modalTitle": "키트루다 후항암 & 5세대 실손의료비 가이드",
+              "modalBody": "",
+              "image": {
+                "src": "assets/mechanism/bias-s1-keytruda.webp",
+                "alt": "키트루다 후항암 & 5세대 실손의료비 가이드"
+              }
             }
-          ]
+          ],
+          "grid": "g2"
         }
       ]
     },

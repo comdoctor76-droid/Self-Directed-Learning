@@ -255,5 +255,13 @@
   "page": "bias-guide.html",
   "sel": "#s1 > .diagram:nth-of-type(5)",
   "note": "SECTION 01 — 면부책 카드 위에 '5세대 실손 중증 vs 비중증' 한눈에 보기 인포그래픽 추가"
+ },
+ {
+  "id": "c082-1",
+  "v": "v1.82",
+  "at": "2026-10-15 17:57",
+  "page": "bias-guide.html",
+  "sel": "#s1 .g2 .card:nth-child(2)",
+  "note": "SECTION 01 — 면부책 카드 오른쪽에 '키트루다 사용시 5세대 통원실손의 한계' 카드 추가 (누르면 키트루다 가이드 PDF 내용)"
  }
 ]
