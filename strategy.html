@@ -256,6 +256,28 @@ function setZoom(z){
 }
 $('pvZi').onclick=function(){setZoom(zoom+ZSTEP);};
 $('pvZo').onclick=function(){setZoom(zoom-ZSTEP);};
+/* 두 손가락 확대·축소(태블릿·휴대폰): 손가락 사이 거리 변화만큼 배율을 바꾸고, 두 손가락 가운데 지점이 그대로 그 자리에 있게 한다 */
+(function(){
+  var sc=$('PVS'), g=null;
+  function dist(t){var dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY;return Math.sqrt(dx*dx+dy*dy);}
+  function mid(t){return {x:(t[0].clientX+t[1].clientX)/2,y:(t[0].clientY+t[1].clientY)/2};}
+  sc.addEventListener('touchstart',function(e){
+    if(e.touches.length!==2){g=null;return;}
+    if(!isW()){modePref='width';zoom=1;try{localStorage.setItem('strategy_view_mode2','width');}catch(x){}applyMode(false);}   /* '한 화면에' 보기에서 모으면 가로 채우기로 */
+    var ir=$('pvImg').getBoundingClientRect(), m=mid(e.touches);
+    g={d:Math.max(dist(e.touches),1),z:zoom,fx:(m.x-ir.left)/ir.width,fy:(m.y-ir.top)/ir.height};
+  },{passive:true});
+  sc.addEventListener('touchmove',function(e){
+    if(!g||e.touches.length!==2)return;
+    e.preventDefault();
+    var z=Math.max(ZMIN,Math.min(ZMAX,g.z*dist(e.touches)/g.d)); zoom=Math.round(z*1000)/1000;
+    applyZoom(false);
+    var m=mid(e.touches), ir=$('pvImg').getBoundingClientRect();   /* 처음 집은 그림 위 지점이 두 손가락 가운데에 오도록 스크롤 보정 */
+    sc.scrollLeft+=(ir.left+g.fx*ir.width)-m.x; sc.scrollTop+=(ir.top+g.fy*ir.height)-m.y;
+  },{passive:false});
+  function end(e){if(!e.touches||e.touches.length<2)g=null;}
+  sc.addEventListener('touchend',end,{passive:true}); sc.addEventListener('touchcancel',end,{passive:true});
+})();
 $('PVS').addEventListener('wheel',function(e){if(e.ctrlKey){e.preventDefault();setZoom(zoom+(e.deltaY<0?ZSTEP:-ZSTEP));}},{passive:false});
 function show(){
   var s=cur.slides, n=s.length; idx=Math.max(0,Math.min(n-1,idx));
