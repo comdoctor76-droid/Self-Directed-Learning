@@ -35,32 +35,43 @@
       "title": "내가 낸 병원비를 돌려받으려 실손보험 가입했는데 또 가입해야 한다고? 왜?",
       "bottomImage": [
         {
-          "heading": "실손의료비 변천사 — 1세대~5세대 담보·보장비율·공제 비교",
+          "heading": "1. 실손의료비 변천사 — 1세대~5세대 담보·보장비율·공제 비교",
           "src": "assets/mechanism/priority-s2-1.webp",
           "alt": "실손의료비 변천사 (1~5세대 비교)"
         },
         {
-          "heading": "쉽게 이해하는 5세대 실손의료보험 보장 & 지급방식",
-          "src": "assets/infographics/bias-s1-gen5-easy.webp",
-          "alt": "쉽게 이해하는 5세대 실손의료보험 보장 & 지급방식"
-        },
-        {
-          "heading": "국민건강보험 본인부담률",
-          "src": "assets/mechanism/priority-s1-sec2.webp",
-          "alt": "국민건강보험 본인부담률 — 의원·병원·종합병원·상급종합병원별 외래/입원/약제 부담률"
-        },
-        {
-          "heading": "본인부담상한제와 산정특례의 적용범위",
-          "src": "assets/mechanism/priority-s1-sec.webp",
-          "alt": "본인부담상한제와 산정특례의 적용범위 — 급여/비급여/기타 항목별 보장 여부"
-        },
-        {
-          "heading": "5세대 실손의료비 완벽 가이드 — 보장 비율·상한선·통원 공제·면책·핵심 용어",
-          "src": "assets/mechanism/bias-s1-gen5-guide.webp",
-          "alt": "5세대 실손의료비 완벽 가이드"
-        },
-        {
           "cards": [
+            {
+              "tag": "기본 개념",
+              "tagClass": "tn",
+              "ico": "📘",
+              "title": "5세대 실손 보장 & 지급방식 한눈에",
+              "desc": "보장 비율·본인부담률·상한선·통원 공제·핵심 용어 총정리",
+              "modalTitle": "5세대 실손의료보험 보장 & 지급방식 — 핵심 정리",
+              "modalBody": "",
+              "bottomImage": [
+                {
+                  "heading": "2. 쉽게 이해하는 5세대 실손의료보험 보장 & 지급방식",
+                  "src": "assets/infographics/bias-s1-gen5-easy.webp",
+                  "alt": "쉽게 이해하는 5세대 실손의료보험 보장 & 지급방식"
+                },
+                {
+                  "heading": "3. 국민건강보험 본인부담률",
+                  "src": "assets/mechanism/priority-s1-sec2.webp",
+                  "alt": "국민건강보험 본인부담률 — 의원·병원·종합병원·상급종합병원별 외래/입원/약제 부담률"
+                },
+                {
+                  "heading": "4. 본인부담상한제와 산정특례의 적용범위",
+                  "src": "assets/mechanism/priority-s1-sec.webp",
+                  "alt": "본인부담상한제와 산정특례의 적용범위 — 급여/비급여/기타 항목별 보장 여부"
+                },
+                {
+                  "heading": "5. 5세대 실손의료비 완벽 가이드 — 보장 비율·상한선·통원 공제·면책·핵심 용어",
+                  "src": "assets/mechanism/bias-s1-gen5-guide.webp",
+                  "alt": "5세대 실손의료비 완벽 가이드"
+                }
+              ]
+            },
             {
               "tag": "통원 공제 공식",
               "tagClass": "to",
