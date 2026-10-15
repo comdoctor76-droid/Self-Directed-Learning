@@ -40,27 +40,43 @@
           "alt": "실손의료비 변천사 (1~5세대 비교)"
         },
         {
-          "heading": "5세대 실손 급여 외래(통원) 자기부담금 — 공제 공식과 4대 시나리오",
-          "src": "assets/mechanism/bias-s1-gen5-copay.webp",
-          "alt": "5세대 실손의료보험 급여 외래(통원) 자기부담금 인포그래픽 가이드"
-        },
-        {
-          "heading": "5세대 실손의료보험 급여 외래(통원) 자기부담금 완전정복",
-          "src": "assets/infographics/bias-s1-gen5-copay-complete.webp",
-          "alt": "5세대 실손의료보험 급여 외래(통원) 자기부담금 완전정복"
-        },
-        {
-          "heading": "5세대 실손 중증 비급여 vs 비중증 비급여 — 산정특례 기준과 3가지 시뮬레이션",
-          "src": "assets/mechanism/bias-s1-gen5-nonpay.webp",
-          "alt": "5세대 실손 중증 비급여 vs 비중증 비급여 인포그래픽 가이드"
-        },
-        {
-          "heading": "5세대 실손 중증 vs 비중증 — 한눈에 보기",
-          "src": "assets/infographics/bias-s1-gen5-severe-vs-nonsevere.webp",
-          "alt": "5세대 실손 중증 vs 비중증 비급여 한눈에 보기"
-        },
-        {
           "cards": [
+            {
+              "tag": "통원 공제 공식",
+              "tagClass": "to",
+              "ico": "🧮",
+              "title": "5세대 실손 통원 자기부담금 계산법",
+              "desc": "급여 외래 공제 공식(Max)과 4대 시나리오로 보는 실제 환급액",
+              "modalTitle": "5세대 실손 급여 외래(통원) 자기부담금 — 공제 공식과 4대 시나리오",
+              "modalBody": "",
+              "image": {
+                "src": "assets/mechanism/bias-s1-gen5-copay.webp",
+                "alt": "5세대 실손의료보험 급여 외래(통원) 자기부담금 인포그래픽 가이드"
+              },
+              "bottomImage": {
+                "heading": "5세대 실손의료보험 급여 외래(통원) 자기부담금 완전정복",
+                "src": "assets/infographics/bias-s1-gen5-copay-complete.webp",
+                "alt": "5세대 실손의료보험 급여 외래(통원) 자기부담금 완전정복"
+              }
+            },
+            {
+              "tag": "중증 vs 비중증",
+              "tagClass": "tg",
+              "ico": "⚖️",
+              "title": "5세대 실손 중증 vs 비중증 비급여",
+              "desc": "산정특례 기준에 따른 한도·자기부담률 차이와 3가지 시뮬레이션",
+              "modalTitle": "5세대 실손 중증 비급여 vs 비중증 비급여 — 산정특례 기준과 3가지 시뮬레이션",
+              "modalBody": "",
+              "image": {
+                "src": "assets/mechanism/bias-s1-gen5-nonpay.webp",
+                "alt": "5세대 실손 중증 비급여 vs 비중증 비급여 인포그래픽 가이드"
+              },
+              "bottomImage": {
+                "heading": "5세대 실손 중증 vs 비중증 — 한눈에 보기",
+                "src": "assets/infographics/bias-s1-gen5-severe-vs-nonsevere.webp",
+                "alt": "5세대 실손 중증 vs 비중증 비급여 한눈에 보기"
+              }
+            },
             {
               "tag": "참고자료",
               "tagClass": "tn",
