@@ -327,5 +327,13 @@
   "page": "bias-guide.html",
   "sel": "#s1 .g2 .card:nth-child(-n+2)",
   "note": "SECTION 01 — 5세대 자기부담금·중증 vs 비중증 자료(각 인포그래픽 포함)를 카드 2장으로 변경, 면부책 카드 앞에 배치"
+ },
+ {
+  "id": "c089-1",
+  "v": "v1.89",
+  "at": "2026-10-16 07:41",
+  "page": "bias-guide.html",
+  "sel": "#s1 > .diagram:nth-of-type(2)",
+  "note": "SECTION 01 — 카드 위에 '쉽게 이해하는 5세대 실손의료보험 보장 & 지급방식' 인포그래픽과 '5세대 실손의료비 완벽 가이드' 추가"
  }
 ]
