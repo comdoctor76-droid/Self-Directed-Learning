@@ -239,5 +239,13 @@
   "page": "bias-guide.html",
   "sel": "#s1 > .diagram:nth-of-type(3)",
   "note": "SECTION 01 — 면부책 카드 위에 '5세대 급여 외래(통원) 자기부담금 완전정복' 인포그래픽 추가"
+ },
+ {
+  "id": "c080-1",
+  "v": "v1.80",
+  "at": "2026-10-15 17:41",
+  "page": "bias-guide.html",
+  "sel": "#s1 > .diagram:nth-of-type(4)",
+  "note": "SECTION 01 — 면부책 카드 위에 '5세대 실손 중증 비급여 vs 비중증 비급여' 자료 추가"
  }
 ]
