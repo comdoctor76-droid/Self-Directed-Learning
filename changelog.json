@@ -335,5 +335,13 @@
   "page": "bias-guide.html",
   "sel": "#s1 > .diagram:nth-of-type(2)",
   "note": "SECTION 01 — 카드 위에 '쉽게 이해하는 5세대 실손의료보험 보장 & 지급방식' 인포그래픽과 '5세대 실손의료비 완벽 가이드' 추가"
+ },
+ {
+  "id": "c090-1",
+  "v": "v1.90",
+  "at": "2026-10-16 07:43",
+  "page": "bias-guide.html",
+  "sel": "#s1 > .diagram:nth-of-type(3)",
+  "note": "SECTION 01 — '국민건강보험 본인부담률', '본인부담상한제와 산정특례의 적용범위' 인포그래픽 추가(상담 2일차와 동일 자료)"
  }
 ]
