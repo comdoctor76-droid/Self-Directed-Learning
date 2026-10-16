@@ -52,11 +52,6 @@ footer{background:#1A2744;color:rgba(255,255,255,.75);text-align:center;padding:
 
 <main>
   <div class="box">
-    <h2>🔗 이 오디오북 링크</h2>
-    <p>이 주소를 보내면 누구나 이 화면에서 바로 들을 수 있습니다.</p>
-    <div class="lnk"><input id="lk" type="text" readonly><button class="btn" id="lkc" type="button">복사</button></div>
-  </div>
-  <div class="box">
     <h2>📱 듣는 방법</h2>
     <div class="tips">
       · 재생 버튼을 누르면 필요한 만큼만 받으며 바로 재생됩니다(스트리밍). 기기에 파일이 저장되지 않습니다.<br>
@@ -92,8 +87,6 @@ var DATA='data/audiobook.json', DIR='assets/audio/', MAXB=95*1024*1024;
 var $=function(i){return document.getElementById(i);};
 function isAdmin(){return !!(window.AdminEditor&&AdminEditor.isLoggedIn&&AdminEditor.isLoggedIn());}
 function gh(){return AdminEditor.gh;}
-$('lk').value=new URL('audiobook.html',location.href).href;
-$('lkc').onclick=function(){var u=$('lk').value;if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(u).then(function(){$('lkc').textContent='복사됨 ✓';setTimeout(function(){$('lkc').textContent='복사';},1800);},function(){prompt('링크를 복사하세요',u);});else{$('lk').select();prompt('링크를 복사하세요',u);}};
 
 function mount(){return AudioBook.mount($('abMount'),{page:true,admin:isAdmin(),onDelete:del});}
 function refreshAdmin(){$('adm').classList.toggle('on',isAdmin());AudioBook.setAdmin(isAdmin());}
