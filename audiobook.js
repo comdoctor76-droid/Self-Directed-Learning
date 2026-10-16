@@ -9,37 +9,40 @@
   'use strict';
   var DATA = 'data/audiobook.json';
   var CSS =
-    '.ab{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);border-radius:18px;padding:14px 16px 12px;color:#fff;max-width:620px;font-family:inherit;-webkit-user-select:none;user-select:none}' +
+    '.ab{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);border-radius:16px;padding:10px 12px 8px;color:#fff;max-width:620px;font-family:inherit;-webkit-user-select:none;user-select:none}' +
     '.ab *{box-sizing:border-box}' +
-    '.ab-top{display:flex;align-items:center;gap:12px}' +
-    '.ab-pl{flex:0 0 auto;width:54px;height:54px;border-radius:50%;border:0;background:linear-gradient(135deg,#E8651A,#C94F0A);color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(0,0,0,.3);-webkit-tap-highlight-color:transparent}' +
+    '.ab-top{display:flex;align-items:center;gap:10px}' +
+    '.ab-pl{flex:0 0 auto;width:46px;height:46px;border-radius:50%;border:0;background:linear-gradient(135deg,#E8651A,#C94F0A);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 14px rgba(0,0,0,.3);-webkit-tap-highlight-color:transparent;padding:0}' +
     '.ab-pl:active{transform:scale(.94)}' +
-    '.ab-pl svg{width:26px;height:26px;fill:#fff}' +
-    '.ab-tt{min-width:0;flex:1 1 auto;line-height:1.35}' +
-    '.ab-tt small{display:block;font-size:12.5px;font-weight:800;color:#FFB37E;letter-spacing:.3px}' +
-    '.ab-tt b{display:block;font-size:17px;font-weight:900;word-break:keep-all}' +
-    '.ab-tt span{display:block;font-size:13.5px;opacity:.85}' +
-    '.ab-row{display:flex;align-items:center;gap:8px;margin-top:10px}' +
-    '.ab-time{flex:0 0 auto;font-size:12.5px;font-weight:700;min-width:40px;text-align:center;opacity:.9;font-variant-numeric:tabular-nums}' +
-    '.ab-seek{flex:1 1 auto;min-width:0;height:28px;margin:0;-webkit-appearance:none;appearance:none;background:transparent;touch-action:none}' +
-    '.ab-seek::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:linear-gradient(to right,#FFB37E var(--p,0%),rgba(255,255,255,.28) var(--p,0%))}' +
-    '.ab-seek::-moz-range-track{height:6px;border-radius:3px;background:rgba(255,255,255,.28)}' +
-    '.ab-seek::-moz-range-progress{height:6px;border-radius:3px;background:#FFB37E}' +
-    '.ab-seek::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;margin-top:-6px;box-shadow:0 1px 4px rgba(0,0,0,.4)}' +
-    '.ab-seek::-moz-range-thumb{width:18px;height:18px;border:0;border-radius:50%;background:#fff}' +
-    '.ab-ctl{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap}' +
-    '.ab-b{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-family:inherit;font-size:13px;font-weight:800;border-radius:999px;padding:0 12px;height:34px;cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent}' +
-    '.ab-b:active{transform:scale(.95)}' +
-    '.ab-b[disabled]{opacity:.35;cursor:default}' +
-    '.ab-sp{flex:1}' +
-    '.ab-msg{font-size:13px;font-weight:700;color:#FFD9BF;margin-top:6px;min-height:18px}' +
-    '.ab-list{margin-top:8px;border-top:1px solid rgba(255,255,255,.2);padding-top:6px;max-height:210px;overflow:auto}' +
-    '.ab-li{display:flex;align-items:center;gap:8px;padding:8px 4px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700}' +
+    '.ab-pl svg{width:22px;height:22px;fill:#fff}' +
+    '.ab-tt{min-width:0;flex:1 1 auto;line-height:1.3}' +
+    '.ab-tt small{display:block;font-size:12px;font-weight:800;color:#FFB37E;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+    '.ab-tt b{display:block;font-size:16px;font-weight:900;word-break:keep-all}' +
+    /* 제목 줄 오른쪽 빈칸의 작은 버튼 묶음: 넓은 화면은 한 줄, 좁은 화면은 2×2 */
+    '.ab-cl{flex:0 0 auto;display:flex;align-items:center;gap:4px}' +
+    '.ab-s{flex:0 0 auto;min-width:36px;height:28px;padding:0 8px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-family:inherit;font-size:12px;font-weight:800;border-radius:999px;cursor:pointer;white-space:nowrap;line-height:1;display:inline-flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}' +
+    '.ab-s:active{transform:scale(.93)}' +
+    '.ab-s[disabled]{opacity:.35;cursor:default}' +
+    '.ab-s.ic{width:28px;min-width:28px;padding:0;font-size:14px}' +
+    '@media(max-width:520px){.ab-cl{display:grid;grid-template-columns:repeat(2,40px);gap:4px}.ab-s{min-width:0;width:40px;padding:0}.ab-s.ic{width:40px}}' +
+    '.ab-row{display:flex;align-items:center;gap:8px;margin-top:6px}' +
+    '.ab-time{flex:0 0 auto;font-size:12px;font-weight:700;min-width:38px;text-align:center;opacity:.9;font-variant-numeric:tabular-nums}' +
+    '.ab-seek{flex:1 1 auto;min-width:0;height:24px;margin:0;-webkit-appearance:none;appearance:none;background:transparent;touch-action:none}' +
+    '.ab-seek::-webkit-slider-runnable-track{height:5px;border-radius:3px;background:linear-gradient(to right,#FFB37E var(--p,0%),rgba(255,255,255,.28) var(--p,0%))}' +
+    '.ab-seek::-moz-range-track{height:5px;border-radius:3px;background:rgba(255,255,255,.28)}' +
+    '.ab-seek::-moz-range-progress{height:5px;border-radius:3px;background:#FFB37E}' +
+    '.ab-seek::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;margin-top:-5.5px;box-shadow:0 1px 4px rgba(0,0,0,.4)}' +
+    '.ab-seek::-moz-range-thumb{width:16px;height:16px;border:0;border-radius:50%;background:#fff}' +
+    '.ab-pn{display:flex;gap:6px;margin-top:4px}' +
+    '.ab-msg{font-size:12.5px;font-weight:700;color:#FFD9BF;margin-top:4px}' +
+    '.ab-msg:empty{display:none}' +
+    '.ab-list{margin-top:6px;border-top:1px solid rgba(255,255,255,.2);padding-top:4px;max-height:210px;overflow:auto}' +
+    '.ab-li{display:flex;align-items:center;gap:8px;padding:7px 4px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700}' +
     '.ab-li i{flex:0 0 22px;font-style:normal;text-align:center;opacity:.8;font-size:12.5px}' +
     '.ab-li.on{background:rgba(255,255,255,.16);color:#FFD9BF}' +
     '.ab-li span{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
     '.ab-li button{flex:0 0 auto;border:0;background:rgba(255,255,255,.14);color:#FFD9BF;border-radius:8px;font-size:12px;font-weight:800;padding:4px 8px;cursor:pointer;font-family:inherit}' +
-    '.ab-empty{font-size:14px;opacity:.9;margin-top:10px}';
+    '.ab-empty{font-size:13.5px;opacity:.9;margin-top:6px}';
 
   var A = null, root = null, data = null, tracks = [], cur = -1, saveAt = 0, opts = {};
   function $(sel) { return root.querySelector(sel); }
@@ -57,21 +60,22 @@
   function render() {
     var n = tracks.length, title = (data && data.title) || '농부의 마음으로 고객을 짓다', author = (data && data.author) || '이승학';
     root.className = 'ab';
+    var cl = n ?
+      '<div class="ab-cl"><button class="ab-s ab-b15" type="button" aria-label="15초 뒤로" title="15초 뒤로">−15</button>' +
+      '<button class="ab-s ab-f15" type="button" aria-label="15초 앞으로" title="15초 앞으로">+15</button>' +
+      '<button class="ab-s ab-sp-b" type="button" aria-label="재생 속도" title="재생 속도">1.0×</button>' +
+      '<button class="ab-s ic ab-cp" type="button" aria-label="링크 복사" title="링크 복사">🔗</button></div>' :
+      '<div class="ab-cl"><button class="ab-s ic ab-cp" type="button" aria-label="링크 복사" title="링크 복사">🔗</button></div>';
     root.innerHTML =
       '<div class="ab-top"><button class="ab-pl" type="button" aria-label="재생"' + (n ? '' : ' disabled') + '>' + ICON_PLAY + '</button>' +
-        '<div class="ab-tt"><small>🎧 오디오북</small><b>' + esc(title) + '</b><span>' + esc(author) + ' 저' + (n > 1 ? ' · 총 ' + n + '개' : '') + '</span></div></div>' +
+        '<div class="ab-tt"><small>🎧 오디오북 · ' + esc(author) + ' 저' + (n > 1 ? ' · 총 ' + n + '개' : '') + '</small><b>' + esc(title) + '</b></div>' + cl + '</div>' +
       (n ?
         '<div class="ab-row"><span class="ab-time ab-cur">0:00</span><input class="ab-seek" type="range" min="0" max="1000" value="0" aria-label="재생 위치"><span class="ab-time ab-dur">--:--</span></div>' +
-        '<div class="ab-ctl"><button class="ab-b ab-b15" type="button">⟲ 15초</button><button class="ab-b ab-f15" type="button">15초 ⟳</button>' +
-          (n > 1 ? '<button class="ab-b ab-pv" type="button">⏮ 이전</button><button class="ab-b ab-nx" type="button">다음 ⏭</button>' : '') +
-          '<button class="ab-b ab-sp-b" type="button">1.0×</button><span class="ab-sp"></span>' +
-          (opts.page ? '' : '<a class="ab-b" href="audiobook.html" style="text-decoration:none;display:inline-flex;align-items:center">전용 페이지 ↗</a>') +
-          '<button class="ab-b ab-cp" type="button">🔗 링크 복사</button></div>' +
-          '<div class="ab-msg"></div>' +
-          (n > 1 ? '<div class="ab-list">' + tracks.map(function (t, i) { return '<div class="ab-li" data-i="' + i + '"><i>' + (i + 1) + '</i><span>' + esc(t.title || ('파트 ' + (i + 1))) + '</span>' + (opts.admin ? '<button type="button" data-del="' + i + '">삭제</button>' : '') + '</div>'; }).join('') + '</div>' : '') +
+        (n > 1 ? '<div class="ab-pn"><button class="ab-s ab-pv" type="button">⏮ 이전</button><button class="ab-s ab-nx" type="button">다음 ⏭</button></div>' : '') +
+        '<div class="ab-msg"></div>' +
+        (n > 1 ? '<div class="ab-list">' + tracks.map(function (t, i) { return '<div class="ab-li" data-i="' + i + '"><i>' + (i + 1) + '</i><span>' + esc(t.title || ('파트 ' + (i + 1))) + '</span>' + (opts.admin ? '<button type="button" data-del="' + i + '">삭제</button>' : '') + '</div>'; }).join('') + '</div>' : '') +
           (n === 1 && opts.admin ? '<div class="ab-list"><div class="ab-li"><span>' + esc(tracks[0].title || '파트 1') + '</span><button type="button" data-del="0">삭제</button></div></div>' : '')
-        : '<div class="ab-empty">오디오북을 준비하고 있습니다. 곧 들으실 수 있어요.</div>' +
-          '<div class="ab-ctl"><button class="ab-b ab-cp" type="button">🔗 링크 복사</button></div><div class="ab-msg"></div>');
+        : '<div class="ab-empty">오디오북을 준비하고 있습니다. 곧 들으실 수 있어요.</div><div class="ab-msg"></div>');
     wire();
     if (A) syncUI();
   }
@@ -158,8 +162,8 @@
       var rates = [1, 1.25, 1.5, 1.75, 2, 0.8], r = A ? A.playbackRate : 1, k = rates.indexOf(r); r = rates[(k + 1) % rates.length];
       ensureAudio(); A.playbackRate = r; spb.textContent = (r === 1 ? '1.0' : r === 2 ? '2.0' : String(r)) + '×'; try { localStorage.setItem('ab_rate', String(r)); } catch (e) {}
     };
-    b = $('.ab-cp'); if (b) b.onclick = function () {
-      var u = pageUrl(), done = function () { msg('링크를 복사했습니다 — ' + u); };
+    var cp = $('.ab-cp'); if (cp) cp.onclick = function () {
+      var u = pageUrl(), done = function () { cp.textContent = '✓'; setTimeout(function () { cp.textContent = '🔗'; }, 1500); };
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(done, function () { prompt('아래 링크를 복사하세요', u); });
       else prompt('아래 링크를 복사하세요', u);
     };
