@@ -407,5 +407,21 @@
   "page": "design-guide.html",
   "sel": "#s2",
   "note": "새 SECTION 02 — '나중에 가입해도 되는 이유' 카드(2대질병은 제도안에 완벽히 들어온다) 추가"
+ },
+ {
+  "id": "c098-1",
+  "v": "v1.98",
+  "at": "2026-10-16 15:36",
+  "page": "index.html",
+  "sel": "a.lcard[href=\"practical-guide.html\"]",
+  "note": "'왜(Way)를 알았으니 결론(What)은?' 카드에 학습 페이지 연결 (자료 보기)"
+ },
+ {
+  "id": "c098-2",
+  "v": "v1.98",
+  "at": "2026-10-16 15:36",
+  "page": "practical-guide.html",
+  "sel": "#s1",
+  "note": "새 페이지 — 폐암 가이드 SECTION 05(제안의 기술 - 설계사의 능력) 전체를 연결해 동일하게 표시"
  }
 ]
