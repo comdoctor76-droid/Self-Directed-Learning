@@ -587,8 +587,42 @@ window.GUIDE=null;
 function _t(s){return s==null?'':String(s);}
 function _extOf(src){return (/\.(\w+)(\?|$)/.exec(src||'')||[,'png'])[1];}
 
-function renderGuide(data){
-  window.GUIDE=data;
+/* 다른 학습 페이지의 데이터를 그대로 가져와 쓰는 '연결(ref)' — {"ref":"data/lung.json#/sections/4/image"}
+   원본 파일 하나만 고치면 이 페이지에도 똑같이 반영된다. 저장용 원본(window.GUIDE)은 ref 형태 그대로 둔다 */
+var REFS={};
+function refGet(spec){
+  var i=spec.indexOf('#'), o=REFS[spec.slice(0,i)];
+  spec.slice(i+2).split('/').forEach(function(k){o=(o==null)?o:o[k];});
+  return o;
+}
+function refResolve(o){
+  if(Object.prototype.toString.call(o)==='[object Array]')return o.map(refResolve);
+  if(o&&typeof o==='object'){
+    if(typeof o.ref==='string'&&o.ref.indexOf('#/')>0){
+      var t=refGet(o.ref);
+      if(t&&typeof t==='object'){var m=JSON.parse(JSON.stringify(t));Object.keys(o).forEach(function(k){if(k!=='ref')m[k]=o[k];});return m;}
+    }
+    var r={};Object.keys(o).forEach(function(k){r[k]=refResolve(o[k]);});return r;
+  }
+  return o;
+}
+function refFiles(o,set){
+  if(Object.prototype.toString.call(o)==='[object Array]'){o.forEach(function(x){refFiles(x,set);});}
+  else if(o&&typeof o==='object'){
+    if(typeof o.ref==='string'&&o.ref.indexOf('#/')>0)set[o.ref.slice(0,o.ref.indexOf('#'))]=1;
+    Object.keys(o).forEach(function(k){refFiles(o[k],set);});
+  }
+}
+function refLoad(data){
+  var set={};refFiles(data,set);
+  return Promise.all(Object.keys(set).map(function(f){
+    return fetch(f+'?_='+(new Date().getTime())).then(function(r){return r.json();}).then(function(j){REFS[f]=j;}).catch(function(){});
+  }));
+}
+
+function renderGuide(orig){
+  var data=refResolve(orig);
+  window.GUIDE=orig;
   window.MD={};
   window.IMGDATA={};
   var h=data.hero||{}, ig=data.infographic||{};
@@ -761,7 +795,7 @@ function renderSection(sec,si){
 (function(){
   fetch(window.GUIDE_DATA_PATH+'?_='+(new Date().getTime()))
     .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
-    .then(function(data){renderGuide(data);})
+    .then(function(data){return refLoad(data).then(function(){renderGuide(data);});})
     .catch(function(err){
       document.getElementById('wrap').innerHTML='<div class="bad" style="margin:40px 0">자료를 불러오지 못했습니다. 새로고침 해주세요.<br><small>'+_t(err&&err.message)+'</small></div>';
     });
