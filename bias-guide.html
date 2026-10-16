@@ -638,11 +638,13 @@ function renderGuide(orig){
   document.getElementById('heroIn').innerHTML=heroHtml;
 
   var navHtml='';
-  (data.nav||[]).forEach(function(n){navHtml+='<a class="navlink" href="'+_t(n.href)+'">'+_t(n.label)+'</a>';});
+  /* hidden:true 인 섹션은 화면과 상단 메뉴에서 모두 숨긴다(내용은 데이터에 보관) */
+  var hid={};(data.sections||[]).forEach(function(s){if(s.hidden&&s.id)hid['#'+s.id]=1;});
+  (data.nav||[]).forEach(function(n){if(hid[n.href])return;navHtml+='<a class="navlink" href="'+_t(n.href)+'">'+_t(n.label)+'</a>';});
   document.getElementById('navIn').innerHTML=navHtml;
 
   var html='';
-  (data.sections||[]).forEach(function(sec,si){html+=renderSection(sec,si);});
+  (data.sections||[]).forEach(function(sec,si){if(sec.hidden)return;html+=renderSection(sec,si);});
   document.getElementById('wrap').innerHTML=html;
 
   document.getElementById('foot').innerHTML=_t(data.footer);

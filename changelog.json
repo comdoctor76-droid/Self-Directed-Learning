@@ -391,5 +391,13 @@
   "page": "bias-guide.html",
   "sel": "#s5 .card:nth-child(1)",
   "note": "STRATEGY 01 카드 — 제목 '고액&회당 치료비 투트랙 전략', 내용 수정, 팝업에 폐암 페이지와 같은 인포그래픽(연결) 추가"
+ },
+ {
+  "id": "c096-1",
+  "v": "v1.96",
+  "at": "2026-10-16 13:33",
+  "page": "bias-guide.html",
+  "sel": null,
+  "note": "SECTION 05(대안 — 암 주요치료비 중심의 포트폴리오 전환)를 화면에서 숨김"
  }
 ]
