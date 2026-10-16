@@ -57,6 +57,23 @@
 
   function msg(t) { var e = $('.ab-msg'); if (e) e.textContent = t || ''; }
 
+  /* 카카오톡·네이버·인스타 등 '앱 안 브라우저'는 화면을 끄면 소리가 멈춘다 → 크롬/사파리로 열도록 안내 */
+  var UA = navigator.userAgent || '', IOS = /iPhone|iPad|iPod/i.test(UA), AND = /Android/i.test(UA);
+  var KAKAO = /KAKAOTALK/i.test(UA), LINE = /\bLine\//i.test(UA);
+  var INAPP = KAKAO || LINE || /NAVER\(inapp|NAVER\/|Instagram|FBAN|FBAV|DaumApps|everytimeApp|; wv\)/i.test(UA);
+  function openExternal() {
+    var url = abs(location.pathname.split('/').pop() || 'audiobook.html');
+    if (KAKAO) { location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(url); return true; }
+    if (LINE) { var u = new URL(url); u.searchParams.set('openExternalBrowser', '1'); location.href = u.toString(); return true; }
+    if (AND) { location.href = 'intent://' + url.replace(/^https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' + encodeURIComponent(url) + ';end'; return true; }
+    return false;
+  }
+  function inAppNotice() {
+    var e = $('.ab-msg'); if (!e || !INAPP) return;
+    e.innerHTML = '⚠ 앱 안 브라우저에서는 <b>화면을 끄면 소리가 멈춥니다.</b> ' + (IOS && !KAKAO && !LINE ? '우측 메뉴(···)에서 <b>Safari로 열기</b>를 눌러 주세요.' : '<button type="button" class="ab-s" style="width:auto;padding:0 10px;margin-left:4px" id="abExt">외부 브라우저로 열기</button>');
+    var b = $('#abExt'); if (b) b.onclick = function () { if (!openExternal()) msg('우측 메뉴(···)에서 Safari로 열어 주세요.'); };
+  }
+
   function render() {
     var n = tracks.length, title = (data && data.title) || '농부의 마음으로 고객을 짓다', author = (data && data.author) || '이승학';
     root.className = 'ab';
@@ -77,12 +94,13 @@
           (n === 1 && opts.admin ? '<div class="ab-list"><div class="ab-li"><span>' + esc(tracks[0].title || '파트 1') + '</span><button type="button" data-del="0">삭제</button></div></div>' : '')
         : '<div class="ab-empty">오디오북을 준비하고 있습니다. 곧 들으실 수 있어요.</div><div class="ab-msg"></div>');
     wire();
+    inAppNotice();
     if (A) syncUI();
   }
 
   function ensureAudio() {
     if (A) return A;
-    A = new Audio(); try { var r0 = parseFloat(localStorage.getItem('ab_rate')); if (r0) A.defaultPlaybackRate = r0; } catch (e) {} A.preload = 'none'; A.setAttribute('playsinline', ''); A.setAttribute('webkit-playsinline', ''); A.controlsList = 'nodownload'; A.style.display = 'none'; try { document.body.appendChild(A); } catch (e) {}   /* 화면에 안 보이는 요소로 두면 화면이 꺼져도 재생이 안정적으로 유지된다 */
+    A = new Audio(); try { var r0 = parseFloat(localStorage.getItem('ab_rate')); if (r0) A.defaultPlaybackRate = r0; } catch (e) {} A.preload = 'none'; A.setAttribute('playsinline', ''); A.setAttribute('webkit-playsinline', ''); A.controlsList = 'nodownload'; A.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none'; try { document.body.appendChild(A); } catch (e) {}   /* display:none 이 아닌 '화면 밖' 요소로 둔다 — 일부 모바일 브라우저는 display:none 오디오를 화면 꺼질 때 멈춘다 */
     A.addEventListener('timeupdate', onTime); A.addEventListener('durationchange', syncUI); A.addEventListener('loadedmetadata', onMeta);
     A.addEventListener('play', syncUI); A.addEventListener('pause', function () { if (cur >= 0) setPos(tracks[cur].src, A.currentTime); syncUI(); });
     A.addEventListener('ended', function () { if (cur >= 0) setPos(tracks[cur].src, 0); if (cur + 1 < tracks.length) load(cur + 1, true); else syncUI(); });
@@ -179,9 +197,15 @@
     try { var r = parseFloat(localStorage.getItem('ab_rate')); if (r && A) A.playbackRate = r; var sb = $('.ab-sp-b'); if (sb && r) sb.textContent = (r === 1 ? '1.0' : r === 2 ? '2.0' : String(r)) + '×'; } catch (e) {}
   }
 
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && A) syncUI(); });
+
   window.AudioBook = {
     mount: function (el, o) {
       opts = o || {}; root = el;
+      try {
+        if (KAKAO) { var k = 'ab_ext_tried', t = false; try { t = sessionStorage.getItem(k) === '1'; sessionStorage.setItem(k, '1'); } catch (e) {} if (!t) openExternal(); }
+        if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.update(); }); });
+      } catch (e) {}
       if (!document.getElementById('abCss')) { var st = document.createElement('style'); st.id = 'abCss'; st.textContent = CSS; document.head.appendChild(st); }
       return fetch(DATA + '?_=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).catch(function () { return { tracks: [] }; })
         .then(function (d) { data = d || {}; tracks = (data.tracks || []).filter(function (t) { return t && t.src; }); render(); return data; });
