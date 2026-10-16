@@ -87,12 +87,13 @@ footer b{color:#FFB37E}
     <h1>플래너를 위한 니즈환기 자료<br><span>인터랙티브 가이드</span></h1>
     <p>가입설계서로 담보설명에 집중하는 프리젠테이션은 이제그만! 니즈환기로 승부하자!!</p>
     <div class="hero-actions">
-      <div class="version-tag" id="verTag"><span class="dot"></span>v1.99</div>
+      <div class="version-tag" id="verTag"><span class="dot"></span>v1.100</div>
       <a class="hiscan-cta" href="hiscan.html" aria-label="하이스캔 사용해보기 — 제작 이경석 전임강사">
         <span class="hc-main">🔎 하이스캔 사용해보기</span>
         <span class="hc-sub">* 제작 이경석 전임강사</span>
       </a>
     </div>
+    <div id="abMount" style="margin-top:18px;max-width:620px"></div>
   </div>
   <div class="hero-qr" aria-label="사이트 QR 코드">
     <img src="assets/qr.svg" alt="학습 사이트 QR 코드" />
@@ -247,5 +248,7 @@ footer b{color:#FFB37E}
 <script src="version.js"></script>
 <script src="changes.js"></script>
 <script src="install.js"></script>
+<script src="audiobook.js"></script>
+<script>AudioBook.mount(document.getElementById('abMount'),{});</script>
 </body>
 </html>

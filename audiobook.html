@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오디오북 - 농부의 마음으로 고객을 짓다 | 스스로 학습하기</title>
+<meta name="theme-color" content="#1A2744">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#FBF8F5;color:#26282C;font-size:17px;line-height:1.65;min-height:100vh;display:flex;flex-direction:column}
+.hero{background:linear-gradient(135deg,#1A2744 0%,#2C3F6E 60%,#3d5390 100%);color:#fff;padding:44px 20px 46px;flex:0 0 auto}
+.hero-in{max-width:760px;margin:0 auto}
+.back{display:inline-block;color:#fff;text-decoration:none;font-weight:800;font-size:14px;opacity:.9;margin-bottom:18px;padding:6px 12px;border:1px solid rgba(255,255,255,.3);border-radius:999px}
+.badge{display:inline-block;background:#E8651A;color:#fff;font-weight:700;font-size:14px;padding:7px 16px;border-radius:999px;margin-bottom:14px}
+.hero h1{font-size:30px;font-weight:900;line-height:1.35;margin-bottom:6px}
+.hero p{opacity:.9;margin-bottom:22px}
+.hero .ab{max-width:none}
+main{flex:1 1 auto;max-width:760px;width:100%;margin:0 auto;padding:26px 16px 40px}
+.box{background:#fff;border:2px solid #EEE7DF;border-radius:16px;padding:16px 18px;margin-bottom:16px;box-shadow:0 4px 18px rgba(26,39,68,.05)}
+.box h2{font-size:16px;font-weight:900;color:#1A2744;margin-bottom:8px}
+.box p{font-size:14.5px;color:#6B7078}
+.lnk{display:flex;gap:8px;align-items:center;margin-top:8px}
+.lnk input{flex:1;min-width:0;font-family:inherit;font-size:14px;padding:10px 12px;border:1.5px solid #EEE7DF;border-radius:10px;background:#FBF8F5;color:#1A2744}
+.btn{font-family:inherit;font-size:14.5px;font-weight:800;border:0;border-radius:10px;padding:10px 16px;cursor:pointer;background:#E8651A;color:#fff;white-space:nowrap}
+.btn.sec{background:#fff;color:#1A2744;border:1.5px solid #EEE7DF}
+.btn:disabled{opacity:.5;cursor:default}
+.tips{font-size:13.5px;color:#6B7078;line-height:1.7;margin-top:6px}
+#adm{display:none}
+#adm.on{display:block}
+.fld{display:block;margin:10px 0}
+.fld>span{display:block;font-size:13.5px;font-weight:800;color:#1A2744;margin-bottom:4px}
+.fld input[type=text]{width:100%;font-family:inherit;font-size:15px;padding:9px 12px;border:1.5px solid #EEE7DF;border-radius:10px}
+.file{display:block;border:2px dashed #F6C9A8;background:#FFF8F2;border-radius:12px;padding:16px;text-align:center;cursor:pointer;color:#C94F0A;font-weight:700;font-size:14.5px}
+.file input{display:none}
+.fl{font-size:13px;color:#6B7078;margin-top:8px}
+.st{font-size:14px;font-weight:800;color:#1A2744;min-height:22px;margin:10px 0}
+.st.err{color:#C0392B}
+footer{background:#1A2744;color:rgba(255,255,255,.75);text-align:center;padding:26px 16px;font-size:14px;line-height:1.9}
+</style>
+</head>
+<body>
+<div class="hero"><div class="hero-in">
+  <a class="back" href="index.html">← 메인으로</a><br>
+  <span class="badge">오디오북</span>
+  <h1>농부의 마음으로 고객을 짓다</h1>
+  <p>이승학 저 · 화면을 꺼도 계속 들을 수 있어요</p>
+  <div id="abMount"></div>
+</div></div>
+
+<main>
+  <div class="box">
+    <h2>🔗 이 오디오북 링크</h2>
+    <p>이 주소를 보내면 누구나 이 화면에서 바로 들을 수 있습니다.</p>
+    <div class="lnk"><input id="lk" type="text" readonly><button class="btn" id="lkc" type="button">복사</button></div>
+  </div>
+  <div class="box">
+    <h2>📱 듣는 방법</h2>
+    <div class="tips">
+      · 재생 버튼을 누르면 필요한 만큼만 받으며 바로 재생됩니다(스트리밍). 기기에 파일이 저장되지 않습니다.<br>
+      · 휴대폰에서 재생한 뒤 <b>화면을 꺼도 계속 재생</b>되고, 잠금화면·알림창에서 재생/일시정지/15초 이동을 할 수 있습니다.<br>
+      · 듣던 곳은 이 기기에 기억되어 다음에 이어서 재생됩니다. 우측 배속 버튼으로 속도를 바꿀 수 있습니다.<br>
+      · 데이터가 걱정되면 와이파이에서 들으세요.
+    </div>
+  </div>
+  <div class="box" id="adm">
+    <h2>🔧 관리자 · mp3 올리기</h2>
+    <label class="fld"><span>제목 (여러 개면 파일마다 '제목 1, 제목 2…'로 붙습니다)</span><input type="text" id="upT" placeholder="예: 농부의 마음으로 고객을 짓다"></label>
+    <label class="file">🎵 mp3 파일 선택 (여러 개 가능)<input type="file" id="upF" accept="audio/mpeg,audio/mp3,.mp3" multiple></label>
+    <div class="fl" id="upL"></div>
+    <label class="fld" style="margin-top:12px"><span>올리는 방식</span>
+      <label style="font-size:14.5px;font-weight:600;margin-right:14px"><input type="radio" name="um" value="append" checked> 기존 목록 뒤에 추가</label>
+      <label style="font-size:14.5px;font-weight:600"><input type="radio" name="um" value="replace"> 전체 교체</label></label>
+    <div class="st" id="upS"></div>
+    <button class="btn" id="upG" type="button">올리기</button>
+    <div class="tips">· 파일 하나는 <b>95MB 이하</b>여야 합니다(GitHub 제한). 더 크면 여러 파트로 나누어 올려 주세요.<br>· 올린 뒤 1~2분 지나면 모두에게 들립니다. 목록의 '삭제'로 파트를 뺄 수 있습니다.</div>
+  </div>
+</main>
+
+<footer>
+  본 자료는 교육용입니다.<br>© 스스로 학습하기
+  <div style="margin-top:14px"><button id="adminBtn" type="button" onclick="AdminEditor.openLogin()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.28);color:rgba(255,255,255,.8);font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 14px;border-radius:999px;cursor:pointer">🔧 관리자</button></div>
+</footer>
+
+<script src="audiobook.js"></script>
+<script>
+(function(){
+"use strict";
+var DATA='data/audiobook.json', DIR='assets/audio/', MAXB=95*1024*1024;
+var $=function(i){return document.getElementById(i);};
+function isAdmin(){return !!(window.AdminEditor&&AdminEditor.isLoggedIn&&AdminEditor.isLoggedIn());}
+function gh(){return AdminEditor.gh;}
+$('lk').value=new URL('audiobook.html',location.href).href;
+$('lkc').onclick=function(){var u=$('lk').value;if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(u).then(function(){$('lkc').textContent='복사됨 ✓';setTimeout(function(){$('lkc').textContent='복사';},1800);},function(){prompt('링크를 복사하세요',u);});else{$('lk').select();prompt('링크를 복사하세요',u);}};
+
+function mount(){return AudioBook.mount($('abMount'),{page:true,admin:isAdmin(),onDelete:del});}
+function refreshAdmin(){$('adm').classList.toggle('on',isAdmin());AudioBook.setAdmin(isAdmin());}
+mount().then(refreshAdmin);
+document.addEventListener('admin-login',refreshAdmin);document.addEventListener('admin-logout',refreshAdmin);
+
+var picked=[];
+$('upF').onchange=function(){picked=Array.prototype.slice.call(this.files).sort(function(a,b){return a.name.localeCompare(b.name,'ko',{numeric:true});});
+  $('upL').innerHTML=picked.map(function(f,i){return (i+1)+'. '+f.name+' ('+(f.size/1048576).toFixed(1)+'MB)'+(f.size>MAXB?' <b style="color:#C0392B">— 95MB 초과</b>':'');}).join('<br>');};
+function st(t,e){$('upS').textContent=t;$('upS').className='st'+(e?' err':'');}
+
+function gapi(path,opt){var R=gh().repo;opt=opt||{};
+  return fetch('https://api.github.com/repos/'+R.owner+'/'+R.repo+'/git/'+path,{method:opt.method||'GET',headers:Object.assign({'Content-Type':'application/json'},gh().hdr()),body:opt.body?JSON.stringify(opt.body):undefined,cache:'no-store'})
+  .then(function(r){if(!r.ok){var e=new Error('GitHub '+r.status);e.status=r.status;throw e;}return r.json();});}
+function commitFiles(files,deletes,message){var R=gh().repo,base,chain;
+  return gapi('ref/heads/'+R.branch).then(function(ref){base=ref.object.sha;return gapi('commits/'+base);}).then(function(c){
+    var tree=[];chain=Promise.resolve();
+    files.forEach(function(f){chain=chain.then(function(){if(f.label)st(f.label);return gapi('blobs',{method:'POST',body:{content:f.b64,encoding:'base64'}}).then(function(b){tree.push({path:f.path,mode:'100644',type:'blob',sha:b.sha});});});});
+    return chain.then(function(){(deletes||[]).forEach(function(p){tree.push({path:p,mode:'100644',type:'blob',sha:null});});return gapi('trees',{method:'POST',body:{base_tree:c.tree.sha,tree:tree}});});})
+  .then(function(t){return gapi('commits',{method:'POST',body:{message:message,tree:t.sha,parents:[base]}});})
+  .then(function(nc){return gapi('refs/heads/'+R.branch,{method:'PATCH',body:{sha:nc.sha}});});}
+function fresh(){return gh().get(DATA).then(function(r){try{var d=JSON.parse(r.text);d.tracks=d.tracks||[];return d;}catch(e){return {title:'농부의 마음으로 고객을 짓다',author:'이승학',tracks:[]};}});}
+function b64(file){return new Promise(function(res,rej){var fr=new FileReader();fr.onload=function(){var s=String(fr.result);res(s.slice(s.indexOf(',')+1));};fr.onerror=rej;fr.readAsDataURL(file);});}
+
+$('upG').onclick=function(){
+  if(!isAdmin()){AdminEditor.openLogin();return;}
+  if(!picked.length){st('mp3 파일을 골라 주세요.',true);return;}
+  if(picked.some(function(f){return f.size>MAXB;})){st('95MB를 넘는 파일이 있습니다. 나누어 올려 주세요.',true);return;}
+  var base=$('upT').value.trim()||'농부의 마음으로 고객을 짓다', mode=(document.querySelector('input[name=um]:checked')||{}).value, btn=$('upG');btn.disabled=true;
+  var stamp=Date.now().toString(36),newT=[],files=[],chain=Promise.resolve();
+  picked.forEach(function(f,i){chain=chain.then(function(){st('파일 읽는 중 '+(i+1)+'/'+picked.length+' · '+f.name);return b64(f).then(function(b){
+    var p=DIR+stamp+'-'+(i<9?'0':'')+(i+1)+'.mp3';files.push({path:p,b64:b,label:'GitHub에 올리는 중 '+(i+1)+'/'+picked.length+' (파일이 크면 몇 분 걸립니다)…'});
+    newT.push({title:picked.length>1?base+' '+(i+1):base,src:p});});});});
+  var dels=[];
+  chain.then(function(){st('목록 확인 중…');return fresh();}).then(function(d){
+    if(mode==='replace'){dels=(d.tracks||[]).map(function(t){return t.src;}).filter(function(s){return s.indexOf(DIR)===0;});d.tracks=[];}
+    d.tracks=d.tracks.concat(newT);d.title=d.title||'농부의 마음으로 고객을 짓다';d.author=d.author||'이승학';
+    files.push({path:DATA,b64:gh().b64enc(JSON.stringify(d,null,2)+'\n'),label:'목록 저장 중…'});
+    return commitFiles(files,dels,'오디오북 업로드 ('+newT.length+'개)');
+  }).then(function(){btn.disabled=false;st('올렸습니다! 1~2분 뒤 모두에게 들립니다 ✅');picked=[];$('upF').value='';$('upL').textContent='';return mount().then(refreshAdmin);})
+  .catch(function(e){btn.disabled=false;st('올리지 못했습니다: '+(e&&e.status?gh().err(e.status):(e&&e.message)||e),true);});
+};
+function del(i){
+  if(!isAdmin())return; var d=AudioBook.data(),t=d&&d.tracks&&d.tracks[i]; if(!t)return;
+  if(!confirm('「'+(t.title||'파트 '+(i+1))+'」을(를) 삭제할까요?'))return;
+  st('삭제 중…');
+  fresh().then(function(dd){var k=dd.tracks.findIndex(function(x){return x.src===t.src;});if(k>=0)dd.tracks.splice(k,1);
+    return commitFiles([{path:DATA,b64:gh().b64enc(JSON.stringify(dd,null,2)+'\n')}],t.src.indexOf(DIR)===0?[t.src]:[],'오디오북 삭제: '+(t.title||t.src));})
+  .then(function(){st('삭제했습니다. 1~2분 뒤 반영됩니다.');return mount().then(refreshAdmin);}).catch(function(e){st('삭제 실패: '+(e&&e.status?gh().err(e.status):e.message),true);});
+}
+})();
+</script>
+<script src="admin.js"></script>
+<script src="version.js"></script>
+</body>
+</html>
