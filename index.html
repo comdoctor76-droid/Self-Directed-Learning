@@ -26,7 +26,9 @@ body{font-family:'Noto Sans KR',sans-serif;background:#FBF8F5;color:#26282C;font
 .refresh-btn:hover{background:rgba(255,255,255,.22)}
 .refresh-btn:active{transform:scale(.95)}
 .refresh-btn .ic{font-size:15px;line-height:1}
-.badge{display:inline-block;background:#E8651A;color:#fff;font-weight:700;font-size:14px;padding:7px 16px;border-radius:999px;margin-bottom:16px}
+.badge{display:inline-block;background:#E8651A;color:#fff;font-weight:700;font-size:14px;padding:7px 16px;border-radius:999px}
+.badge-row{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;margin-bottom:16px}
+.credit{font-size:13.5px;font-weight:600;color:rgba(255,255,255,.85);line-height:1.4}
 .hero h1{font-size:34px;font-weight:900;line-height:1.35;margin-bottom:14px}
 .hero h1 span{color:#FFB37E}
 .hero p{font-size:17px;opacity:.92;max-width:620px}
@@ -66,6 +68,13 @@ body{font-family:'Noto Sans KR',sans-serif;background:#FBF8F5;color:#26282C;font
 /* FOOTER */
 footer{background:#1A2744;color:rgba(255,255,255,.75);text-align:center;padding:34px 16px;font-size:14.5px;line-height:1.9}
 footer b{color:#FFB37E}
+footer a{color:#FFB37E;font-weight:800;text-decoration:underline;text-underline-offset:3px}
+.ft-note{max-width:620px;margin:0 auto}
+.ft-brand{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:20px;flex-wrap:wrap;text-align:left}
+.ft-logo{flex:0 0 auto;background:#fff;border-radius:12px;padding:8px 12px;display:flex;align-items:center}
+.ft-logo img{display:block;height:46px;width:auto}
+.ft-co{line-height:1.5;font-size:14px}
+.ft-co b{display:block;color:#fff;font-size:15.5px}
 
 @media(max-width:760px){
   .hero h1{font-size:26px}
@@ -83,11 +92,11 @@ footer b{color:#FFB37E}
     <span class="ic">🔄</span><span class="label">새로고침</span>
   </button>
   <div class="hero-in">
-    <span class="badge">스스로 학습하기</span>
+    <div class="badge-row"><span class="badge">스스로 학습하기</span><span class="credit">제작 - 현대해상 호남지역단 이승학 전임강사</span></div>
     <h1>플래너를 위한 니즈환기 자료<br><span>인터랙티브 가이드</span></h1>
     <p>가입설계서로 담보설명에 집중하는 프리젠테이션은 이제그만! 니즈환기로 승부하자!!</p>
     <div class="hero-actions">
-      <div class="version-tag" id="verTag"><span class="dot"></span>v1.101</div>
+      <div class="version-tag" id="verTag"><span class="dot"></span>v1.102</div>
       <a class="hiscan-cta" href="hiscan.html" aria-label="하이스캔 사용해보기 — 제작 이경석 전임강사">
         <span class="hc-main">🔎 하이스캔 사용해보기</span>
         <span class="hc-sub">* 제작 이경석 전임강사</span>
@@ -234,8 +243,15 @@ footer b{color:#FFB37E}
 </div>
 
 <footer>
-  본 자료는 이해를 돕기 위한 <b>교육용 요약 자료</b>입니다.<br>
-  © 스스로 학습하기
+  <div class="ft-note">
+    본 자료는 이해를 돕기 위한 교육용 자료로 <b>&lsquo;대고객 상담용&rsquo;</b>으로 사용이 불가합니다.<br>
+    내용의 문의 사항이 있으면 아래 연락처로 연락 바랍니다.<br>
+    이승학 전임강사 <a href="tel:01053380654">010-5338-0654</a>
+  </div>
+  <div class="ft-brand">
+    <a class="ft-logo" href="https://ProPlanHub.com" target="_blank" rel="noopener" aria-label="ProPlanHub 홈페이지로 이동" style="text-decoration:none"><img src="assets/proplanhub-logo.png" alt="Proplanhub — Plan today, bigger tomorrow"></a>
+    <div class="ft-co"><b>ProPlanHub. Inc.</b><a href="https://ProPlanHub.com" target="_blank" rel="noopener">https://ProPlanHub.com</a></div>
+  </div>
   <div style="margin-top:16px">
     <button id="adminBtn" type="button" onclick="AdminEditor.openLogin()"
       style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.28);color:rgba(255,255,255,.8);font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 14px;border-radius:999px;cursor:pointer">🔧 관리자</button>
