@@ -718,5 +718,48 @@ function renderSection(sec,si){
 <script src="pen.js"></script>
 <script src="version.js"></script>
 <script src="changes.js"></script>
+<script>
+/* ===== 영문 읽어주기 : class="en" 블록마다 🔊 버튼을 붙이고, 브라우저 내장 음성(영어)으로 읽는다 ===== */
+(function(){
+  var syn=window.speechSynthesis, cur=null, voices=[];
+  function load(){voices=syn?syn.getVoices():[];}
+  if(syn){load();if(syn.addEventListener)syn.addEventListener('voiceschanged',load);else syn.onvoiceschanged=load;}
+  function pick(){
+    var en=voices.filter(function(v){return /^en[-_]US/i.test(v.lang);});
+    if(!en.length)en=voices.filter(function(v){return /^en/i.test(v.lang);});
+    var pref=[/Samantha/i,/Ava|Allison|Susan|Nicky|Evan/i,/Google US English/i,/Aaron|Daniel|Alex/i,/Natural|Premium|Enhanced/i];
+    for(var i=0;i<pref.length;i++){var m=en.filter(function(v){return pref[i].test(v.name);})[0];if(m)return m;}
+    return en[0]||null;
+  }
+  function stop(){if(syn)syn.cancel();if(cur){cur.classList.remove('on');cur.textContent='🔊 영어로 듣기';cur=null;}}
+  window.TTS=function(btn){
+    if(!syn||!window.SpeechSynthesisUtterance){alert('이 브라우저는 음성 읽기를 지원하지 않습니다.');return;}
+    if(cur===btn){stop();return;}
+    stop();
+    var box=btn.parentNode, txt=(box.getAttribute('data-say')||box.textContent.replace(btn.textContent,'')).replace(/\s+/g,' ').replace(/[“”"]/g,'').trim();
+    var u=new SpeechSynthesisUtterance(txt), v=pick();
+    u.lang='en-US'; if(v)u.voice=v; u.rate=.88; u.pitch=1;
+    u.onend=u.onerror=function(){if(cur===btn)stop();};
+    cur=btn; btn.classList.add('on'); btn.textContent='⏹ 멈추기';
+    syn.speak(u);
+  };
+  function decorate(){
+    var mc=document.getElementById('MC'); if(!mc)return;
+    mc.querySelectorAll('.en').forEach(function(b){
+      if(b.querySelector('.tts'))return;
+      var x=document.createElement('button'); x.type='button'; x.className='tts'; x.textContent='🔊 영어로 듣기';
+      x.setAttribute('onclick','TTS(this)'); b.insertBefore(x,b.firstChild);
+    });
+  }
+  var om=window.OM, cm=window.CM;
+  window.OM=function(k){stop();om(k);decorate();};
+  window.CM=function(){stop();cm();};
+  window.addEventListener('pagehide',stop);
+})();
+</script>
+<style>
+.tts{display:block;margin:0 0 8px;background:#1A2744;color:#fff;border:0;border-radius:999px;font-family:inherit;font-size:14px;font-weight:800;padding:7px 14px;cursor:pointer;font-style:normal}
+.tts.on{background:#E8651A}
+</style>
 </body>
 </html>
