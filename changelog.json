@@ -551,5 +551,13 @@
   "page": "preface-guide.html",
   "sel": null,
   "note": "SECTION 02 결론 팝업 맨 아래에 존 러스킨 명언 책 이미지 추가"
+ },
+ {
+  "id": "c114-1",
+  "v": "v1.114",
+  "at": "2026-10-17 13:40",
+  "page": "preface-guide.html",
+  "sel": null,
+  "note": "서문·결론 사진을 팝업 안에서 꺼내 각 카드 바로 위로 이동"
  }
 ]
