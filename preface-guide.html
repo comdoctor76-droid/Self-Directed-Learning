@@ -731,7 +731,7 @@ function renderSection(sec,si){
     for(var i=0;i<pref.length;i++){var m=en.filter(function(v){return pref[i].test(v.name);})[0];if(m)return m;}
     return en[0]||null;
   }
-  function stop(){if(syn)syn.cancel();if(cur){cur.classList.remove('on');cur.textContent='🔊 영어로 듣기';cur=null;}}
+  function stop(){if(syn)syn.cancel();if(cur){cur.classList.remove('on');cur.textContent='🔊';cur=null;}}
   window.TTS=function(btn){
     if(!syn||!window.SpeechSynthesisUtterance){alert('이 브라우저는 음성 읽기를 지원하지 않습니다.');return;}
     if(cur===btn){stop();return;}
@@ -740,14 +740,14 @@ function renderSection(sec,si){
     var u=new SpeechSynthesisUtterance(txt), v=pick();
     u.lang='en-US'; if(v)u.voice=v; u.rate=.88; u.pitch=1;
     u.onend=u.onerror=function(){if(cur===btn)stop();};
-    cur=btn; btn.classList.add('on'); btn.textContent='⏹ 멈추기';
+    cur=btn; btn.classList.add('on'); btn.textContent='🔇';
     syn.speak(u);
   };
   function decorate(){
     var mc=document.getElementById('MC'); if(!mc)return;
     mc.querySelectorAll('.en').forEach(function(b){
       if(b.querySelector('.tts'))return;
-      var x=document.createElement('button'); x.type='button'; x.className='tts'; x.textContent='🔊 영어로 듣기';
+      var x=document.createElement('button'); x.type='button'; x.className='tts'; x.textContent='🔊'; x.setAttribute('aria-label','영어로 듣기');
       x.setAttribute('onclick','TTS(this)'); b.insertBefore(x,b.firstChild);
     });
   }
@@ -758,7 +758,8 @@ function renderSection(sec,si){
 })();
 </script>
 <style>
-.tts{display:block;margin:0 0 8px;background:#1A2744;color:#fff;border:0;border-radius:999px;font-family:inherit;font-size:14px;font-weight:800;padding:7px 14px;cursor:pointer;font-style:normal}
+.tts{display:flex;align-items:center;justify-content:center;width:40px;height:40px;margin:0 0 8px;background:#1A2744;color:#fff;border:0;border-radius:50%;font-size:20px;line-height:1;padding:0;cursor:pointer;font-style:normal;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.tts:active{transform:scale(.92)}
 .tts.on{background:#E8651A}
 </style>
 </body>
