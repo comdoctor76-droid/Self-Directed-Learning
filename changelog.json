@@ -535,5 +535,13 @@
   "page": "preface-guide.html",
   "sel": null,
   "note": "'영어로 듣기' 버튼을 둥근 스피커 아이콘으로 변경"
+ },
+ {
+  "id": "c112-1",
+  "v": "v1.112",
+  "at": "2026-10-17 12:50",
+  "page": "preface-guide.html",
+  "sel": null,
+  "note": "'결론'을 SECTION 02로 분리, SECTION 01 서문 팝업 맨 위에 냅킨 명언 이미지 추가"
  }
 ]
