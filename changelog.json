@@ -575,5 +575,13 @@
   "page": "strategy.html",
   "sel": null,
   "note": "방금 추가한 5장을 10월 영업전략 맨 앞(1~5번째)으로 이동"
+ },
+ {
+  "id": "c117-1",
+  "v": "v1.117",
+  "at": "2026-10-19 09:10",
+  "page": "preface-guide.html",
+  "sel": null,
+  "note": "SECTION 02 '오늘부터 행동하세요' 카드 아래에 QR 코드 추가"
  }
 ]

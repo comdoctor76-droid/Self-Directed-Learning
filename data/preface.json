@@ -63,7 +63,13 @@
       "image": {
         "src": "assets/mechanism/preface-book.webp",
         "alt": "책 속에 적힌 명언 - 존 러스킨"
-      }
+      },
+      "extraBoxes": [
+        {
+          "kind": "qrbox",
+          "html": "<div style=\"text-align:center;padding:8px 0\"><img src=\"assets/mechanism/preface-qr.png\" alt=\"QR 코드\" width=\"220\" height=\"220\" style=\"width:220px;max-width:70%;height:auto;image-rendering:pixelated;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.12)\"></div>"
+        }
+      ]
     }
   ],
   "footer": "© 스스로 학습하기"
