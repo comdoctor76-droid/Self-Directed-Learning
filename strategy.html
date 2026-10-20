@@ -38,6 +38,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:#FBF8F5;color:#26282C;font
 .mcard p{font-size:14.5px;color:#6B7078}
 .mcard .go{margin-top:12px;font-size:14px;font-weight:800;color:#E8651A}
 .mcard.empty .go{color:#9AA0A8}
+.mgroup{margin-bottom:34px}
+.mg-h{font-size:18px;font-weight:900;color:#1A2744;margin:0 0 12px;padding-left:10px;border-left:4px solid #E8651A}
 .mcard.tool{border-color:#FFD2B5}
 .mcard.tool .thumb{background-position:center top}
 .mcard.tool .thumb .menu{background:#E8651A;border-color:rgba(255,255,255,.5)}
@@ -124,7 +126,7 @@ body:has(#PENBAR.open) .pv-scroll:not(.w){padding-right:132px}
     <div><span class="no">MONTHLY</span><h2>월별 영업전략</h2></div>
     <button class="btn" id="upOpen" type="button" style="display:none">📤 자료 올리기</button>
   </div>
-  <div class="g" id="months"></div>
+  <div id="months"></div>
 </div>
 
 <footer>
@@ -214,13 +216,14 @@ function render(){
         '<span class="menu">'+esc(t.tag||'시뮬레이터')+'</span></div>'+
         '<div class="info"><h3>'+esc(t.title)+'</h3><p>'+esc(t.desc||'')+'</p><div class="go">시뮬레이터 열기 →</div></div></button>';
     }).join('');
-    return tools+'<button type="button" class="mcard'+(n?'':' empty')+'" data-i="'+i+'">'+
+    /* 월별 묶음: '10월 영업전략' 머리글 아래에 시뮬레이터 카드(상단) → 이달의 매거진 카드(슬라이드 프레젠테이션) */
+    return '<section class="mgroup"><h3 class="mg-h">'+esc(m.title||(m.month+'월 영업전략'))+'</h3><div class="g">'+tools+'<button type="button" class="mcard'+(n?'':' empty')+'" data-i="'+i+'">'+
       (isAdmin()?'<span class="adm"><span class="add" data-a="add">＋ 올리기</span>'+(n?'<span class="del" data-a="del">삭제</span>':'')+'</span>':'')+
       '<div class="thumb"'+(first?' style="background-image:url(\''+esc(first)+'\')"':'')+'>'+(first?'':'<span class="ico">📊</span>')+
       '<span class="menu">'+m.year+'년 '+m.month+'월</span></div>'+
-      '<div class="info"><h3>'+esc(m.title||(m.month+'월 영업전략'))+'</h3>'+
+      '<div class="info"><h3>이달의 매거진</h3>'+
       '<p>'+(n?'슬라이드 '+n+'장':'자료 준비 중')+'</p>'+
-      '<div class="go">'+(n?'프레젠테이션 보기 →':(isAdmin()?'눌러서 자료 올리기':'곧 올라옵니다'))+'</div></div></button>';
+      '<div class="go">'+(n?'프레젠테이션 보기 →':(isAdmin()?'눌러서 자료 올리기':'곧 올라옵니다'))+'</div></div></button></div></section>';
   }).join('');
 }
 $('months').addEventListener('click',function(e){
