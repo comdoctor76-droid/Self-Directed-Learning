@@ -46,6 +46,95 @@
         }
 
         .btn-item { transition: all 0.2s ease; cursor: pointer; }
+        /* ═══════ 휴대폰 전용 앱 화면 ═══════ */
+        #mApp, #mSheet, #mSheetBg { display: none; }
+        html.mapp body { padding-bottom: 0 !important; overflow: hidden; }
+        html.mapp body > header, html.mapp body > main { display: none !important; }
+        html.mapp #mApp { display: flex; flex-direction: column; position: fixed; inset: 0; height: 100dvh; background: #f8fafc; z-index: 60; font-family: 'Noto Sans KR', sans-serif; color: #1e293b; }
+        .m-top { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; padding-top: max(10px, env(safe-area-inset-top)); background: #fff; border-bottom: 1px solid #e2e8f0; }
+        .m-title { font-size: 16px; font-weight: 900; letter-spacing: -.3px; }
+        .m-plantag { margin-left: 6px; font-size: 11px; font-weight: 800; color: #fff; background: #ff6600; border-radius: 999px; padding: 2px 8px; vertical-align: 2px; }
+        .m-icon { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #e2e8f0; background: #f8fafc; font-size: 17px; font-weight: 900; color: #334155; }
+        .m-bal { background: #fff; padding: 8px 14px 10px; border-bottom: 1px solid #e2e8f0; }
+        .m-bal-row { display: flex; align-items: baseline; gap: 4px; flex-wrap: wrap; }
+        .m-bal-amt { font-size: 28px; font-weight: 900; color: #e65c00; letter-spacing: -.5px; line-height: 1.1; }
+        .m-bal-unit { font-size: 15px; font-weight: 800; color: #e65c00; }
+        .m-bal-ratio { font-size: 12px; font-weight: 700; color: #64748b; margin-left: 4px; }
+        .m-bar { height: 10px; border-radius: 999px; background: #334155; overflow: hidden; margin-top: 6px; }
+        .m-bar i { display: block; height: 100%; background: linear-gradient(90deg, #ff6600, #fb923c); border-radius: 999px; transition: width .3s; }
+        .m-lv { font-size: 11.5px; font-weight: 800; color: #2563eb; margin-top: 5px; display: none; }
+        .m-lv.on { display: block; }
+        .m-years { display: flex; gap: 6px; overflow-x: auto; padding: 8px 14px; background: #fff; border-bottom: 1px solid #e2e8f0; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        .m-years::-webkit-scrollbar { display: none; }
+        .m-years button { flex: 0 0 auto; border: 1.5px solid #cbd5e1; background: #fff; color: #475569; font-family: inherit; font-size: 13px; font-weight: 700; padding: 5px 11px; border-radius: 999px; white-space: nowrap; }
+        .m-years button.on { border-color: #ff6600; background: #ff6600; color: #fff; }
+        .m-years button.has { border-color: #fdba74; }
+        .m-years button.has:not(.on)::after { content: '•'; color: #ff6600; margin-left: 3px; }
+        .m-years button .s { font-size: 10px; margin-left: 2px; }
+        .m-tabs { display: flex; background: #fff; border-bottom: 1px solid #e2e8f0; }
+        .m-tabs button { flex: 1; border: 0; background: none; font-family: inherit; font-size: 14px; font-weight: 800; color: #64748b; padding: 10px 2px 9px; border-bottom: 3px solid transparent; white-space: nowrap; }
+        .m-tabs button.on { color: #e65c00; border-bottom-color: #ff6600; }
+        .m-tabs button b { display: none; margin-left: 3px; min-width: 17px; height: 17px; line-height: 17px; border-radius: 999px; background: #ff6600; color: #fff; font-size: 10.5px; padding: 0 4px; vertical-align: 1px; }
+        .m-tabs button b.n { display: inline-block; }
+        .m-body { flex: 1; overflow-y: auto; padding: 10px 12px 16px; -webkit-overflow-scrolling: touch; }
+        .m-sec { font-size: 12.5px; font-weight: 900; color: #475569; margin: 12px 2px 6px; }
+        .m-sec:first-child { margin-top: 2px; }
+        .m-sec small { font-weight: 700; color: #94a3b8; margin-left: 4px; }
+        .m-row { display: flex; align-items: center; gap: 10px; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 11px 10px 11px 12px; margin-bottom: 8px; }
+        .m-row.on { border-color: #ff6600; background: #fff7ed; }
+        .m-row.dim { opacity: .5; }
+        .m-chk { width: 22px; height: 22px; border-radius: 6px; border: 2px solid #cbd5e1; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; font-weight: 900; background: #fff; }
+        .m-row.on .m-chk { background: #ff6600; border-color: #ff6600; }
+        .m-chk.rd { border-radius: 50%; }
+        .m-row.pt .m-chk { border-color: #e9a8f5; }
+        .m-row.pt.on { border-color: #c026d3; background: #fdf4ff; }
+        .m-row.pt.on .m-chk { background: #c026d3; border-color: #c026d3; }
+        .m-name { flex: 1; min-width: 0; line-height: 1.3; }
+        .m-name b { display: block; font-size: 14.5px; font-weight: 800; color: #1e293b; }
+        .m-name span { font-size: 11px; font-weight: 700; color: #94a3b8; }
+        .m-name span.red { color: #ef4444; }
+        .m-price { text-align: right; flex: 0 0 auto; line-height: 1.15; }
+        .m-price b { font-size: 17px; font-weight: 900; color: #e65c00; }
+        .m-row.pt .m-price b { color: #a21caf; }
+        .m-price small { font-size: 11px; font-weight: 800; color: #334155; margin-left: 1px; }
+        .m-price i { display: block; font-style: normal; font-size: 10.5px; font-weight: 800; }
+        .m-price i.dn { color: #ef4444; } .m-price i.up { color: #2563eb; }
+        .m-info { width: 26px; height: 26px; border-radius: 50%; border: 1px solid #e2e8f0; background: #f8fafc; color: #64748b; font-size: 13px; font-weight: 900; flex: 0 0 auto; }
+        .m-switch { display: flex; align-items: center; justify-content: space-between; background: #fdf4ff; border: 1.5px solid #f0abfc; border-radius: 14px; padding: 12px; margin-bottom: 10px; }
+        .m-switch b { font-size: 15px; font-weight: 900; color: #86198f; }
+        .m-switch small { display: block; font-size: 11px; color: #a21caf; font-weight: 700; margin-top: 2px; }
+        .m-tg { position: relative; width: 50px; height: 28px; flex: 0 0 auto; }
+        .m-tg input { opacity: 0; width: 0; height: 0; }
+        .m-tg span { position: absolute; inset: 0; background: #cbd5e1; border-radius: 999px; transition: .2s; }
+        .m-tg span::after { content: ''; position: absolute; left: 3px; top: 3px; width: 22px; height: 22px; background: #fff; border-radius: 50%; transition: .2s; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+        .m-tg input:checked + span { background: #c026d3; }
+        .m-tg input:checked + span::after { transform: translateX(22px); }
+        .m-step { display: flex; align-items: center; border: 1.5px solid #e9a8f5; border-radius: 10px; overflow: hidden; flex: 0 0 auto; background: #fff; }
+        .m-step button { width: 30px; height: 32px; border: 0; background: #fdf4ff; color: #a21caf; font-size: 18px; font-weight: 900; }
+        .m-step input { width: 36px; height: 32px; border: 0; text-align: center; font-size: 15px; font-weight: 900; color: #a21caf; font-family: inherit; background: #fff; -moz-appearance: textfield; }
+        .m-step input::-webkit-outer-spin-button, .m-step input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .m-pt-sum { background: #fdf4ff; border: 1px dashed #f0abfc; border-radius: 12px; padding: 10px 12px; font-size: 12px; font-weight: 700; color: #86198f; line-height: 1.6; margin-top: 4px; }
+        .m-pt-sum b { font-size: 15px; }
+        .m-hint { font-size: 11.5px; color: #94a3b8; font-weight: 700; text-align: center; margin-top: 10px; }
+        .m-foot { background: #fff; border-top: 1px solid #e2e8f0; padding: 8px 12px; padding-bottom: max(8px, env(safe-area-inset-bottom)); box-shadow: 0 -4px 14px rgba(15,23,42,.06); }
+        .m-sum { font-size: 13px; font-weight: 800; color: #475569; margin-bottom: 7px; }
+        .m-sum b { font-size: 18px; font-weight: 900; color: #e65c00; margin-left: 4px; }
+        .m-foot-btns { display: flex; gap: 6px; }
+        .m-foot-btns button { flex: 1; border: 1.5px solid #e2e8f0; background: #f8fafc; border-radius: 12px; padding: 9px 2px; font-family: inherit; font-size: 13.5px; font-weight: 800; color: #334155; }
+        .m-foot-btns button:first-child { background: #ff6600; border-color: #ff6600; color: #fff; }
+        html.mapp #mSheetBg.on { display: block; position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 90; }
+        html.mapp #mSheet.on { display: flex; flex-direction: column; position: fixed; left: 0; right: 0; bottom: 0; max-height: 82dvh; background: #fff; border-radius: 20px 20px 0 0; z-index: 91; box-shadow: 0 -10px 30px rgba(0,0,0,.2); animation: mUp .22s ease-out; }
+        @keyframes mUp { from { transform: translateY(40px); opacity: .4; } to { transform: none; opacity: 1; } }
+        .m-sheet-h { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 10px; border-bottom: 1px solid #f1f5f9; }
+        .m-sheet-h b { font-size: 16px; font-weight: 900; }
+        .m-sheet-b { overflow-y: auto; padding: 12px 16px; padding-bottom: max(16px, env(safe-area-inset-bottom)); font-size: 14px; line-height: 1.65; color: #334155; }
+        .m-sheet-b img { max-width: 100%; }
+        .m-opt-t { font-size: 13px; font-weight: 900; color: #475569; margin: 6px 0 8px; }
+        .m-seg { display: flex; gap: 8px; margin-bottom: 16px; }
+        .m-seg button { flex: 1; border: 2px solid #e2e8f0; background: #fff; border-radius: 14px; padding: 12px 6px; font-family: inherit; font-size: 14.5px; font-weight: 900; color: #475569; }
+        .m-seg button.on { border-color: #ff6600; background: #ff6600; color: #fff; }
+        .m-seg button small { display: block; font-size: 11px; font-weight: 700; opacity: .85; margin-top: 2px; }
+
         /* PC: 헤더 하단에 고정되는 '가입 후 경과 기간 선택' — 상하 여백 최소화 */
         .ydock { padding: 0 !important; margin: 0 !important; border-top: 1px solid #eef2f7; padding-top: 6px !important; }
         .ydock > div:first-child { margin-bottom: 4px !important; }
@@ -476,7 +565,7 @@
 
         <!-- 면책/감액 대기기간 요약 (하단) -->
         <div class="mt-4 border-t border-slate-200 pt-4 bg-slate-50 p-4 rounded-xl text-[12px] text-slate-600 border shadow-inner">
-            <h4 class="font-bold text-slate-800 mb-2">※ 가입 직후 보장 제한 (면책/감액) 요약</h4>
+            <h4 id="exemptTitle" class="font-bold text-slate-800 mb-2">※ 가입 직후 보장 제한 (면책/감액) 요약</h4>
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="flex-1">
                     <strong class="text-red-600 bg-red-50 px-1 rounded mr-1">암 질환</strong>
@@ -522,6 +611,40 @@
         </div>
 
     </main>
+
+    <!-- ═══════ 휴대폰 전용 앱 화면 (1단계: 주소에 ?m=1 이 있을 때만) ═══════ -->
+    <div id="mApp" aria-label="휴대폰 시뮬레이터">
+        <div class="m-top">
+            <div class="m-title">2610 통합보장 시뮬<span id="mPlanTag" class="m-plantag"></span></div>
+            <button type="button" class="m-icon" onclick="mOpenSheet('set')" aria-label="설정">⚙</button>
+        </div>
+        <div class="m-bal">
+            <div class="m-bal-row"><span class="m-bal-amt" id="mBal">100,000</span><span class="m-bal-unit">만원</span><span class="m-bal-ratio" id="mRatio"></span></div>
+            <div class="m-bar"><i id="mBarFill"></i></div>
+            <div class="m-lv" id="mLv"></div>
+        </div>
+        <div class="m-years" id="mYears"></div>
+        <div class="m-tabs" id="mTabs">
+            <button type="button" data-tab="cancer">암<b></b></button>
+            <button type="button" data-tab="pertx">암추가<b></b></button>
+            <button type="button" data-tab="sim">유사암·기타<b></b></button>
+            <button type="button" data-tab="heart">뇌·심장<b></b></button>
+        </div>
+        <div class="m-body" id="mBody"></div>
+        <div class="m-foot">
+            <div class="m-sum"><span id="mSumLbl">1년 미만 합계</span> <b id="mSum">0만</b></div>
+            <div class="m-foot-btns">
+                <button type="button" onclick="mOpenSheet('chart')">📊 그래프</button>
+                <button type="button" onclick="mOpenSheet('info')">ⓘ 설명</button>
+                <button type="button" onclick="mReset()">↺ 초기화</button>
+            </div>
+        </div>
+    </div>
+    <div id="mSheetBg" onclick="mCloseSheet()"></div>
+    <div id="mSheet" role="dialog" aria-modal="true">
+        <div class="m-sheet-h"><b id="mSheetTitle"></b><button type="button" class="m-icon" onclick="mCloseSheet()" aria-label="닫기">✕</button></div>
+        <div class="m-sheet-b" id="mSheetBody"></div>
+    </div>
 
     <!-- 커스텀 모달 (경고창) -->
     <div id="customModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/50 backdrop-blur-sm px-4">
@@ -1027,6 +1150,7 @@
             updateButtonPrices();
             renderBottomButtons();
             renderPerTxBox();
+            if (window.mRender) window.mRender();   // 휴대폰 앱 화면 갱신
         }
 
         function updateButtonPrices() {
@@ -1480,6 +1604,265 @@
             initYearSelector();
             setYear(1);
         };
+    </script>
+    <script>
+    /* ═══════ 휴대폰 전용 앱 화면 — 계산·상태는 위의 기존 함수를 그대로 호출한다 ═══════ */
+    (function () {
+        // 1단계(미리보기): 주소에 ?m=1 이 있을 때만 켠다
+        const ON = /[?&]m=1\b/.test(location.search);
+        if (!ON) return;
+        document.documentElement.classList.add('mapp');
+
+        // 탭별 항목 (id, 이름, 지급조건, 기존 toggleItem 인자)
+        const ITEMS = {
+            cancer: [
+                { sec: '암 보장', note: '기타피부암·갑상선암 제외 / 전액본인부담(비급여 포함)' },
+                { id: 'c1', name: '암 수술비', cond: '회당', red: true, cat: 'surgery', tname: '암 수술비' },
+                { id: 'c2', name: '항암 약물치료', cond: '연 1회', red: true, cat: 'drug', tname: '항암 약물치료' },
+                { id: 'c5', name: '항암 약물치료 (4기)', cond: '연 1회 · 항암 약물 자동 포함', red: true, cat: 'drug', tname: '항암 약물치료 (4기)', hot: true },
+                { id: 'c3', name: '항암 방사선치료', cond: '연 1회', red: true, cat: 'radiation', tname: '항암 방사선치료' },
+                { id: 'c4', name: '종합병원 중환자실', cond: '연 1회', red: true, cat: 'other', tname: '종합병원 중환자실' }
+            ],
+            sim: [
+                { sec: '유사암(기/갑)', note: '전액본인부담(비급여 포함)' },
+                { id: 'c8_1', name: '암 수술비', cond: '회당', red: false, cat: 'surgery', tname: '암 수술비 (소액암)' },
+                { id: 'c8_2', name: '항암 약물치료', cond: '각 연 1회', red: false, cat: 'drug', tname: '항암 약물치료 (소액암)' },
+                { id: 'c8_3', name: '항암 방사선치료', cond: '각 연 1회', red: false, cat: 'radiation', tname: '항암 방사선치료 (소액암)' },
+                { sec: '기타 질병', note: '감액 없음' },
+                { id: 'o1', name: '급여 특정중증(4종)', cond: '', red: false, cat: 'other', tname: '급여 특정중증치료(4종)' },
+                { id: 'o2', name: '비급여 수술(종합)', cond: '회당', red: false, cat: 'other', tname: '질병 비급여 수술 (종합)' },
+                { id: 'o3', name: '비급여 수술(상급)', cond: '회당 · 암 수술 시 자동', red: false, cat: 'other', tname: '질병 비급여 수술 (상급)' }
+            ],
+            heart: [
+                { sec: 'A 뇌/심장 수술·입원', note: '신체를 절개하는 수술 등' },
+                { id: 'h1', name: '수술비 (A)', cond: '회당', red: true, cat: 'heart_surgery', tname: '수술비 (A)' },
+                { id: 'h2', name: '중환자실 입원 (A)', cond: '연 1회 · 종합병원 이상', red: true, cat: 'other', tname: '중환자실 입원 (A)' },
+                { sec: 'B 뇌/심장 혈전 시술', note: '막힌 혈관 뚫는 치료' },
+                { id: 'h3', name: '혈전 용해 치료 (B)', cond: '연 1회 · 중환자실 자동 포함', red: true, cat: 'heart_procedure', tname: '혈전 용해 치료 (B)' },
+                { id: 'h4', name: '특정 혈전 제거술 (B)', cond: '연 1회', red: true, cat: 'heart_procedure', tname: '급여 특정 혈전 제거술 (B)' }
+            ]
+        };
+        const TAB_IDS = {
+            cancer: ['c1', 'c2', 'c3', 'c4', 'c5'],
+            sim: ['c8_1', 'c8_2', 'c8_3', 'o1', 'o2', 'o3'],
+            heart: ['h1', 'h2', 'h3', 'h4']
+        };
+        let tab = 'cancer', sheet = null;
+        const $ = id => document.getElementById(id);
+        const fmt = v => (Math.round(v * 100) / 100).toLocaleString();
+        const yClaims = () => claims[currentYear] || [];
+        const has = id => yClaims().some(it => it.id === id);
+        const lvNow = () => currentYear >= 10 && checkLevelUp();
+
+        function priceOf(it) {
+            const base = PLAN_DATA[currentPlan].items[it.id].base;
+            if (currentYear === 1 && it.red) return { v: base * 0.5, t: '(50% 감액)', c: 'dn' };
+            if (lvNow()) return { v: base * 1.2, t: '(120% 상향)', c: 'up' };
+            return { v: base, t: '', c: '' };
+        }
+
+        function rowHtml(it) {
+            const on = has(it.id), p = priceOf(it);
+            return `<div class="m-row${on ? ' on' : ''}" data-id="${it.id}">
+                <span class="m-chk">${on ? '✓' : ''}</span>
+                <div class="m-name"><b${it.hot ? ' style="color:#dc2626"' : ''}>${it.name}</b>${it.cond ? `<span class="${/회당/.test(it.cond) ? 'red' : ''}">(${it.cond})</span>` : ''}</div>
+                <div class="m-price"><b>${p.v < 100 ? fmt(p.v) : fmt(p.v)}</b><small>만</small>${p.t ? `<i class="${p.c}">${p.t}</i>` : ''}</div>
+                <button type="button" class="m-info" data-info="${it.id}" aria-label="설명">i</button>
+            </div>`;
+        }
+
+        function pertxHtml() {
+            const unit = PER_TX_UNIT[currentPlan], y = currentYear, lv = lvNow();
+            const mult = y === 1 ? 0.5 : (lv ? 10 : 1);
+            const tag = y === 1 ? '<i class="dn">(50% 감액)</i>' : (lv ? '<i class="up">(1,000%)</i>' : '');
+            const mode = perTxMode[y], c = perTxCounts[y];
+            const drugOn = has('c2') || has('c5'), radOn = has('c3'), simOn = has('c8_2') || has('c8_3');
+            const dis = perTxOn ? '' : ' dim';
+            const price = `<div class="m-price"><b>${fmt(unit * mult)}</b><small>만</small>${tag}</div>`;
+            const step = k => `<div class="m-step"><button type="button" data-step="${k}" data-d="-1">−</button><input type="number" inputmode="numeric" data-cnt="${k}" value="${c[k]}"${perTxOn ? '' : ' disabled'}><button type="button" data-step="${k}" data-d="1">+</button></div>`;
+            let h = `<label class="m-switch"><div><b>암추가보장 특약 가입</b><small>체크하면 항암 약물·방사선 선택과 함께 횟수만큼 합산</small></div>
+                <span class="m-tg"><input type="checkbox" id="mPtChk"${perTxOn ? ' checked' : ''}><span></span></span></label>`;
+            h += `<div class="m-sec">항암약물치료Ⅱ <small>주사제 / 주사제 외 중 하나 선택${drugOn ? '' : ' · 암 탭에서 항암 약물 선택 시 합산'}</small></div>`;
+            h += `<div class="m-row pt${mode === 'inj' && perTxOn ? ' on' : ''}${dis}" data-mode="inj">
+                <span class="m-chk rd">${mode === 'inj' ? '●' : ''}</span>
+                <div class="m-name"><b>주사제</b><span>(입원·통원 치료당)</span></div>${mode === 'inj' ? step('inj') : ''}${price}
+                <button type="button" class="m-info" data-info="pt_inj" aria-label="설명">i</button></div>`;
+            h += `<div class="m-row pt${mode === 'oral' && perTxOn ? ' on' : ''}${dis}" data-mode="oral">
+                <span class="m-chk rd">${mode === 'oral' ? '●' : ''}</span>
+                <div class="m-name"><b>주사제 외</b><span>(연간 1회한 · 연 1회)</span></div>${price}
+                <button type="button" class="m-info" data-info="pt_oral" aria-label="설명">i</button></div>`;
+            h += `<div class="m-sec">항암방사선치료Ⅱ <small>${radOn ? '암 방사선 선택됨 → 자동 합산' : '암 탭에서 방사선 선택 시 자동 합산'}</small></div>`;
+            h += `<div class="m-row pt${radOn && perTxOn ? ' on' : ''}${dis}">
+                <span class="m-chk">${radOn && perTxOn ? '✓' : ''}</span>
+                <div class="m-name"><b>방사선</b><span>(치료당)</span></div>${step('rad')}${price}
+                <button type="button" class="m-info" data-info="pt_rad" aria-label="설명">i</button></div>`;
+            h += `<div class="m-sec">유사암(기/갑) <small>각각 20% · 유사암 약물·방사선 선택 시 자동</small></div>`;
+            h += `<div class="m-row pt${simOn && perTxOn ? ' on' : ''}${dis}">
+                <span class="m-chk">${simOn && perTxOn ? '✓' : ''}</span>
+                <div class="m-name"><b>유사암 치료당</b><span>(같은 횟수 × 20% 단가)</span></div>
+                <div class="m-price"><b>${fmt(unit * PER_TX_SIM_RATE * (lv ? 10 : 1))}</b><small>만</small></div>
+                <button type="button" class="m-info" data-info="pt_sim" aria-label="설명">i</button></div>`;
+            const mine = yClaims().filter(it => it.autoAddedBy === 'pertx');
+            if (!perTxOn) h += `<div class="m-pt-sum">☝ 위의 스위치를 켜면 계산됩니다.</div>`;
+            else h += `<div class="m-pt-sum">${mine.length ? `이번 연차 치료당 합계 <b>${fmt(mine.reduce((a, it) => a + it.amount, 0))}만</b><br>` + mine.map(it => it.name + ' = ' + fmt(it.amount) + '만').join('<br>') : '이번 연차 치료당 합산 없음 — 암 탭에서 항암 약물·방사선을 선택하세요.'}</div>`;
+            return h;
+        }
+
+        function bodyHtml() {
+            if (tab === 'pertx') return pertxHtml();
+            let h = '';
+            ITEMS[tab].forEach(it => {
+                if (it.sec) h += `<div class="m-sec">${it.sec}${it.note ? ` <small>${it.note}</small>` : ''}</div>`;
+                else h += rowHtml(it);
+            });
+            return h + `<div class="m-hint">항목을 누르면 선택 / 다시 누르면 취소 · ⓘ 설명</div>`;
+        }
+
+        function render() {
+            const total = getTotalClaimed(), bal = Math.max(0, INITIAL_BALANCE - total);
+            const pct = bal / INITIAL_BALANCE * 100;
+            $('mBal').textContent = bal.toLocaleString();
+            $('mRatio').textContent = `(잔여 ${pct.toFixed(1)}% / 사용 ${(100 - pct).toFixed(1)}%)`;
+            $('mBarFill').style.width = pct + '%';
+            $('mPlanTag').textContent = `${currentPlan} · ${TERM}년${perTxOn ? ' · 암추가' : ''}`;
+            const lvEl = $('mLv');
+            lvEl.classList.toggle('on', lvNow());
+            lvEl.textContent = lvNow() ? '⬆ 레벨업 적용 중 — 일반 보장 120%, 치료당 1,000%' : '';
+
+            // 연차 칩
+            let yh = '';
+            for (let i = 1; i <= TERM; i++) {
+                const n = (claims[i] || []).length;
+                const lbl = i === 1 ? '1년 미만<span class="s">(50%)</span>' : (i === 10 && TERM === 20 ? `10년${checkLevelUp() ? '⬆' : ''}` : `${i}년`);
+                yh += `<button type="button" data-y="${i}" class="${i === currentYear ? 'on' : ''}${n ? ' has' : ''}">${lbl}</button>`;
+            }
+            const yBox = $('mYears'), sx = yBox.scrollLeft;
+            yBox.innerHTML = yh; yBox.scrollLeft = sx;
+
+            // 탭 배지
+            document.querySelectorAll('#mTabs button').forEach(b => {
+                const t = b.getAttribute('data-tab');
+                const n = t === 'pertx' ? yClaims().filter(it => it.autoAddedBy === 'pertx').length : yClaims().filter(it => TAB_IDS[t].includes(it.id)).length;
+                b.classList.toggle('on', t === tab);
+                const bd = b.querySelector('b'); bd.textContent = n; bd.classList.toggle('n', n > 0);
+            });
+
+            // 본문 (입력 중인 횟수 칸은 다시 그리지 않음)
+            const ae = document.activeElement;
+            if (!(ae && ae.matches && ae.matches('#mBody input[data-cnt]'))) {
+                const b = $('mBody'), st = b.scrollTop; b.innerHTML = bodyHtml(); b.scrollTop = st;
+            }
+            const ys = yClaims().reduce((a, it) => a + it.amount, 0);
+            $('mSumLbl').textContent = `${yearLabels[currentYear].replace(/\(.*\)/, '')} 합계`;
+            $('mSum').textContent = fmt(ys) + '만';
+            if (sheet === 'chart') fillChart();
+        }
+        window.mRender = render;
+
+        function centerYear() {
+            const b = document.querySelector('#mYears button.on');
+            if (b) b.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+        }
+
+        // ── 이벤트 ──
+        $('mYears').addEventListener('click', e => {
+            const b = e.target.closest('button[data-y]'); if (!b) return;
+            setYear(+b.getAttribute('data-y')); centerYear();
+        });
+        $('mTabs').addEventListener('click', e => {
+            const b = e.target.closest('button[data-tab]'); if (!b) return;
+            tab = b.getAttribute('data-tab'); $('mBody').scrollTop = 0; render();
+        });
+        $('mBody').addEventListener('click', e => {
+            const info = e.target.closest('[data-info]');
+            if (info) { e.stopPropagation(); showInfo(info.getAttribute('data-info')); return; }
+            const st = e.target.closest('[data-step]');
+            if (st) {
+                if (!perTxOn) return;
+                const k = st.getAttribute('data-step');
+                setPerTxCount(k, Math.max(0, (perTxCounts[currentYear][k] || 0) + (+st.getAttribute('data-d'))));
+                return;
+            }
+            if (e.target.closest('.m-step') || e.target.closest('.m-switch')) return;
+            const m = e.target.closest('[data-mode]');
+            if (m) { setPerTxMode(m.getAttribute('data-mode')); return; }
+            const r = e.target.closest('.m-row[data-id]');
+            if (r) {
+                const id = r.getAttribute('data-id');
+                const it = [].concat(...Object.values(ITEMS)).find(x => x.id === id);
+                toggleItem(id, it.tname, it.cat, it.red);
+            }
+        });
+        $('mBody').addEventListener('change', e => {
+            if (e.target.id === 'mPtChk') togglePerTx(e.target.checked);
+        });
+        $('mBody').addEventListener('input', e => {
+            const k = e.target.getAttribute && e.target.getAttribute('data-cnt');
+            if (k) setPerTxCount(k, e.target.value);
+        });
+        $('mBody').addEventListener('focusout', e => { if (e.target.getAttribute && e.target.getAttribute('data-cnt')) setTimeout(render, 0); });
+
+        // ── 바텀시트 ──
+        function openSheet(kind, title, html) {
+            sheet = kind;
+            $('mSheetTitle').textContent = title;
+            $('mSheetBody').innerHTML = html;
+            $('mSheetBg').classList.add('on'); $('mSheet').classList.add('on');
+        }
+        function fillChart() {
+            const src = $('yearlySummaryBox');
+            $('mSheetBody').innerHTML = `<div class="m-opt-t">연도별 보장금액 합산 · 현재 잔고 ${Math.max(0, INITIAL_BALANCE - getTotalClaimed()).toLocaleString()}만</div>` + src.innerHTML +
+                '<div class="m-hint">막대를 한 번 누르면 내용, 한 번 더 누르면 삭제</div>';
+        }
+        window.mOpenSheet = function (kind) {
+            if (kind === 'chart') { openSheet('chart', '📊 연도별 보장금액 합산 내역', ''); fillChart(); return; }
+            if (kind === 'info') {
+                const ex = $('exemptTitle').parentNode.innerHTML;
+                const lv = TERM === 20 ? $('levelUpGuide').innerHTML : '<p><b>10년 갱신형</b>은 레벨업(120%·치료당 1,000%)이 없습니다.</p>';
+                openSheet('info', 'ⓘ 보장 제한·레벨업 설명', `<div style="margin-bottom:14px">${ex}</div><div>${lv}</div>`);
+                return;
+            }
+            if (kind === 'set') {
+                const seg = (cur, opts) => '<div class="m-seg">' + opts.map(o => `<button type="button" data-set="${o[0]}" data-v="${o[1]}" class="${cur === o[1] ? 'on' : ''}">${o[2]}<small>${o[3]}</small></button>`).join('') + '</div>';
+                openSheet('set', '⚙ 시뮬레이션 설정',
+                    '<div class="m-opt-t">통장 한도</div>' + seg(currentPlan, [['plan', '10억', '💎 프리미엄 10억', '치료당 20만'], ['plan', '5억', '📘 표준형 5억', '치료당 10만']]) +
+                    '<div class="m-opt-t">갱신 기간</div>' + seg(String(TERM), [['term', '10', '10년 갱신', '1~10년 · 레벨업 없음'], ['term', '20', '20년 갱신', '1~20년 · 레벨업 있음']]) +
+                    `<label class="m-switch"><div><b>암추가보장 특약 가입</b><small>치료당 담보 (주사제·방사선 횟수 합산)</small></div><span class="m-tg"><input type="checkbox" id="mSetPt"${perTxOn ? ' checked' : ''}><span></span></span></label>` +
+                    '<div class="m-hint">한도·갱신 기간을 바꾸면 입력한 내용이 초기화됩니다.</div>');
+            }
+        };
+        window.mCloseSheet = function () { sheet = null; $('mSheetBg').classList.remove('on'); $('mSheet').classList.remove('on'); };
+        $('mSheetBody').addEventListener('click', e => {
+            const b = e.target.closest('[data-set]'); if (!b) return;
+            const k = b.getAttribute('data-set'), v = b.getAttribute('data-v');
+            if (k === 'plan') changePlan(v); else changeTerm(+v);
+            mOpenSheet('set'); centerYear();
+        });
+        $('mSheetBody').addEventListener('change', e => {
+            if (e.target.id === 'mSetPt') { togglePerTx(e.target.checked); mOpenSheet('set'); }
+        });
+        function showInfo(key) {
+            let title = '설명', html = '';
+            if (key.indexOf('pt_') === 0) {
+                const k = key.slice(3);
+                html = (lvNow() && k !== 'sim' ? PT_LV_TIP + '<hr style="margin:12px 0;border-color:#f1f5f9">' : '') + PT_TIPS[k];
+                title = '암추가보장(치료당)';
+            } else {
+                const it = [].concat(...Object.values(ITEMS)).find(x => x.id === key);
+                title = it.name;
+                html = PLAN_DATA[currentPlan].items[key].desc;
+                if (key === 'c5') html += '<p style="margin-top:8px"><b>4기 항암약물치료</b>를 선택하면 항암 약물치료가 함께 적용되며, 4기를 해제하기 전에는 항암 약물치료를 해제할 수 없습니다.</p>';
+                if (key === 'h3') html += '<p style="margin-top:8px">혈전용해제 사용 환자의 <b>98.9%</b>가 중환자실에 입원하므로, 선택하면 <b>중환자실 입원(A)</b>이 함께 적용됩니다.</p>';
+                if (lvNow()) html += '<p style="margin-top:8px;color:#2563eb;font-weight:700">⬆ 레벨업 적용 중 — 약정금액의 120%로 지급됩니다.</p>';
+            }
+            openSheet('info1', title, html);
+        }
+        window.mReset = function () {
+            if (getTotalClaimed() > 0 && !confirm('모든 연차의 입력 내용을 초기화할까요?')) return;
+            resetAll(); centerYear();
+        };
+        // 그래프 시트 안의 막대 삭제가 끝나면 시트도 갱신 (renderAll → render → fillChart)
+    })();
     </script>
 </body>
 </html>
