@@ -46,6 +46,8 @@
         }
 
         .btn-item { transition: all 0.2s ease; cursor: pointer; }
+        /* 암추가보장(치료당) — 그래프에서 한눈에 구분되도록 강렬한 자홍색 + 사선 줄무늬 */
+        .pertx-stripe { background-image: repeating-linear-gradient(45deg, rgba(255,255,255,.35) 0 5px, transparent 5px 10px); }
         
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
@@ -102,8 +104,8 @@
                 <div class="flex justify-between items-end mb-2">
                     <div class="flex flex-col gap-2">
                         <div class="flex items-center gap-2">
-                            <button id="planBtn-10억" onclick="changePlan('10억')" class="px-4 py-2 md:px-5 md:py-2.5 rounded-full font-extrabold text-sm md:text-base transition-all bg-hd-500 text-white shadow-md border-2 border-hd-500">💎 프리미엄 10억 통장</button>
-                            <button id="planBtn-5억" onclick="changePlan('5억')" class="px-4 py-2 md:px-5 md:py-2.5 rounded-full font-extrabold text-sm md:text-base transition-all bg-white text-slate-600 border-2 border-slate-200 hover:bg-slate-50">📘 표준형 5억 통장</button>
+                            <button id="planBtn-10억" onclick="changePlan('10억')" class="px-4 py-2 md:px-5 md:py-2.5 rounded-full font-extrabold text-sm md:text-base transition-all bg-hd-500 text-white shadow-md border-2 border-hd-500">💎 프리미엄 10억 통장<span class="pt-tag hidden w-max mx-auto mt-0.5 whitespace-nowrap text-[10px] leading-tight font-extrabold bg-fuchsia-600 text-white px-2 py-0.5 rounded-full" title="암추가보장 특약 가입">＋암추가 20만</span></button>
+                            <button id="planBtn-5억" onclick="changePlan('5억')" class="px-4 py-2 md:px-5 md:py-2.5 rounded-full font-extrabold text-sm md:text-base transition-all bg-white text-slate-600 border-2 border-slate-200 hover:bg-slate-50">📘 표준형 5억 통장<span class="pt-tag hidden w-max mx-auto mt-0.5 whitespace-nowrap text-[10px] leading-tight font-extrabold bg-fuchsia-600 text-white px-2 py-0.5 rounded-full" title="암추가보장 특약 가입">＋암추가 10만</span></button>
                         </div>
                         <span class="text-sm font-bold text-slate-500 mt-1">현재 통장 잔고</span>
                     </div>
@@ -158,7 +160,8 @@
         <!-- 전체 보장 항목 (가로 3칸 배열) -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
             
-            <!-- 1칸: 암 보장 -->
+            <!-- 1칸: 암 보장 + 암추가보장(치료당) -->
+            <div class="flex flex-col space-y-4">
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col">
                 <div class="flex items-center gap-2 mb-1">
                     <span class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-black text-sm">1~4</span>
@@ -230,6 +233,39 @@
                         </div>
                     </li>
                 </ul>
+            </div>
+
+                <!-- 암추가보장(치료당) 특약 — 체크(가입) 시 항암 약물·방사선 선택과 함께 횟수만큼 합산 -->
+                <div id="perTxCard" class="bg-white p-4 rounded-2xl shadow-sm border-2 border-fuchsia-300 flex flex-col">
+                    <label class="flex items-center gap-2 cursor-pointer select-none mb-1">
+                        <input type="checkbox" id="perTxChk" onchange="togglePerTx(this.checked)" class="w-5 h-5 accent-fuchsia-600 flex-shrink-0">
+                        <span class="px-2 h-7 rounded-full bg-fuchsia-600 text-white flex items-center justify-center font-black text-[11px] flex-shrink-0">치료당</span>
+                        <h3 class="text-base font-bold text-slate-800">암추가보장 특약</h3>
+                    </label>
+                    <p class="text-[10px] text-slate-400 mb-3">* 체크(가입) 후 위의 <b class="text-blue-500">항암 약물치료</b>·<b class="text-yellow-600">항암 방사선치료</b>를 선택하면 입력한 횟수만큼 함께 합산 / 유사암(기/갑)은 유사암 항목 선택 시 20% 합산</p>
+                    <div id="perTxBody" class="transition-opacity">
+                        <ul id="perTxRows" class="space-y-2"></ul>
+                        <div class="mt-3 bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-3">
+                            <div class="text-[12px] font-extrabold text-fuchsia-800 mb-2"><span id="perTxYr">1년 미만</span> · 연간 치료 횟수 입력</div>
+                            <div class="grid grid-cols-3 gap-2">
+                                <label class="flex flex-col items-center bg-white rounded-lg border border-fuchsia-200 p-1.5">
+                                    <span class="text-[11px] font-bold text-slate-600">주사제</span>
+                                    <span class="flex items-baseline gap-0.5"><input id="cnt-inj" type="number" inputmode="numeric" min="0" max="365" value="0" oninput="setPerTxCount('inj', this.value)" class="w-14 text-center text-base font-black text-fuchsia-700 border-b-2 border-fuchsia-300 focus:outline-none focus:border-fuchsia-600 bg-transparent"><span class="text-[11px] font-bold text-slate-500">회</span></span>
+                                </label>
+                                <label class="flex flex-col items-center bg-white rounded-lg border border-fuchsia-200 p-1.5">
+                                    <span class="text-[11px] font-bold text-slate-600">주사제 외</span>
+                                    <span class="flex items-baseline gap-0.5"><input id="cnt-oral" type="number" inputmode="numeric" min="0" max="365" value="0" oninput="setPerTxCount('oral', this.value)" class="w-14 text-center text-base font-black text-fuchsia-700 border-b-2 border-fuchsia-300 focus:outline-none focus:border-fuchsia-600 bg-transparent"><span class="text-[11px] font-bold text-slate-500">회</span></span>
+                                </label>
+                                <label class="flex flex-col items-center bg-white rounded-lg border border-fuchsia-200 p-1.5">
+                                    <span class="text-[11px] font-bold text-slate-600">방사선</span>
+                                    <span class="flex items-baseline gap-0.5"><input id="cnt-rad" type="number" inputmode="numeric" min="0" max="365" value="0" oninput="setPerTxCount('rad', this.value)" class="w-14 text-center text-base font-black text-fuchsia-700 border-b-2 border-fuchsia-300 focus:outline-none focus:border-fuchsia-600 bg-transparent"><span class="text-[11px] font-bold text-slate-500">회</span></span>
+                                </label>
+                            </div>
+                            <p class="text-[10px] text-slate-500 mt-2 leading-relaxed">※ 약관상 <b>주사제 외(먹는 약 등)는 연간 1회한</b>이라 2회 이상 입력해도 1회만 계산됩니다. 연차마다 따로 입력합니다.</p>
+                            <div id="perTxSum" class="text-[12px] font-bold text-fuchsia-700 mt-1.5 leading-relaxed"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- 2칸: 유사암 & 기타 질병 -->
@@ -641,8 +677,9 @@
                     let amt = item.baseAmount;
                     let nt = "";
                     if(isLevelUp) {
-                        amt = item.baseAmount * 1.2;
-                        nt = "120% 상향적용";
+                        const m = item.levelMult || 1.2;   // 치료당(암추가보장)은 1,000%
+                        amt = item.baseAmount * m;
+                        nt = m === 10 ? "레벨업 1,000% 적용" : "120% 상향적용";
                     }
                     item.amount = amt;
                     item.note = nt;
@@ -729,10 +766,8 @@
                 }
             }
             
-            // 1~9년차 변동 시 10년차 이상 레벨업 금액 재계산
-            if(currentYear <= 9) {
-                recalculateLevelUpYears();
-            }
+            // 암추가보장(치료당) 재합산 + 1~9년차 변동 시 10년차 이상 레벨업 금액 재계산
+            refreshPerTx();
 
             renderAll();
         }
@@ -742,12 +777,12 @@
             let yearArr = claims[year];
             let index = yearArr.findIndex(item => item.id === id);
             if(index > -1) {
-                yearArr.splice(index, 1);
+                const removed = yearArr.splice(index, 1)[0];
+                // 그래프에서 치료당 막대를 지우면 그 연차의 해당 횟수를 0으로
+                if (removed.autoAddedBy === 'pertx') perTxCounts[year][removed.kind] = 0;
                 
-                // 삭제 후 1~9년 차의 변동이 생겼다면 10년 차 레벨업 조건 재계산
-                if(year <= 9) {
-                    recalculateLevelUpYears();
-                }
+                // 치료당 재합산 + 레벨업 조건 재계산
+                refreshPerTx();
                 renderAll();
             }
         }
@@ -784,7 +819,7 @@
             }
             
             // 사용한 항목들을 프로그레스 바 우측에 희미한 블록으로 스택하여 표시
-            let usedByCategory = { surgery: 0, drug: 0, radiation: 0, heart_surgery: 0, heart_procedure: 0, other: 0 };
+            let usedByCategory = { surgery: 0, drug: 0, radiation: 0, pertx: 0, heart_surgery: 0, heart_procedure: 0, other: 0 };
             for(let y=1; y<=20; y++) {
                 claims[y].forEach(item => {
                     if (usedByCategory[item.category] !== undefined) {
@@ -797,6 +832,7 @@
                 surgery: 'bg-red-500/50',
                 drug: 'bg-blue-500/50',
                 radiation: 'bg-yellow-400/50',
+                pertx: 'bg-fuchsia-600/80 pertx-stripe',
                 heart_surgery: 'bg-purple-500/50',
                 heart_procedure: 'bg-teal-500/50',
                 other: 'bg-slate-400/50'
@@ -842,6 +878,7 @@
             // 4. 하단 버튼 금액 업데이트 및 활성화 상태 렌더링
             updateButtonPrices();
             renderBottomButtons();
+            renderPerTxBox();
         }
 
         function updateButtonPrices() {
@@ -925,6 +962,7 @@
                 surgery: 'bg-red-500 hover:bg-red-400', 
                 drug: 'bg-blue-500 hover:bg-blue-400', 
                 radiation: 'bg-yellow-400 hover:bg-yellow-300', 
+                pertx: 'bg-fuchsia-600 hover:bg-fuchsia-500 pertx-stripe', 
                 heart_surgery: 'bg-purple-500 hover:bg-purple-400', 
                 heart_procedure: 'bg-teal-500 hover:bg-teal-400', 
                 other: 'bg-slate-400 hover:bg-slate-300'
@@ -968,6 +1006,7 @@
                     <span class="flex items-center gap-2"><span class="w-4 h-4 md:w-5 md:h-5 bg-red-500 rounded shadow-inner"></span>수술(A)</span>
                     <span class="flex items-center gap-2"><span class="w-4 h-4 md:w-5 md:h-5 bg-blue-500 rounded shadow-inner"></span>약물</span>
                     <span class="flex items-center gap-2"><span class="w-4 h-4 md:w-5 md:h-5 bg-yellow-400 rounded shadow-inner"></span>방사선</span>
+                    <span class="flex items-center gap-2 text-fuchsia-700"><span class="w-4 h-4 md:w-5 md:h-5 bg-fuchsia-600 pertx-stripe rounded shadow-inner"></span>암추가(치료당)</span>
                     <span class="flex items-center gap-2"><span class="w-4 h-4 md:w-5 md:h-5 bg-purple-500 rounded shadow-inner"></span>뇌/심(수술)</span>
                     <span class="flex items-center gap-2"><span class="w-4 h-4 md:w-5 md:h-5 bg-teal-500 rounded shadow-inner"></span>뇌/심(시술 B)</span>
                     <span class="flex items-center gap-2"><span class="w-4 h-4 md:w-5 md:h-5 bg-slate-400 rounded shadow-inner"></span>기타</span>
@@ -1059,8 +1098,118 @@
         }
 
         function resetAll() {
-            for(let i=1; i<=20; i++) claims[i] = [];
+            for(let i=1; i<=20; i++) { claims[i] = []; perTxCounts[i] = { inj: 0, oral: 0, rad: 0 }; }
             setYear(1);
+        }
+
+        // ───────── 암추가보장(치료당) 특약 ─────────
+        // 약관: 주요치료통합보장 > 암추가보장
+        //  · 항암방사선치료Ⅱ: 치료당 1회 / 항암약물치료Ⅱ 주사제: 입원 또는 통원 치료당 1회 / 주사제 외: 연간 1회한
+        //  · 유사암(기타피부암·갑상선암·제자리암·경계성종양)은 각각 특약가입금액의 20%
+        //  · 레벨업(10년 차 이후) 시 치료당은 1,000% (예: 20만 → 2백만)
+        const PER_TX_UNIT = { '10억': 20, '5억': 10 };   // 만 원
+        const PER_TX_SIM_RATE = 0.2;
+        const PER_TX_KINDS = {
+            inj:  { label: '약물(주사제)',   full: '항암약물치료Ⅱ (주사제)',   when: '입원·통원 치료당', trig: ['c2', 'c5'], simTrig: ['c8_2'], cap: Infinity },
+            oral: { label: '약물(주사제 외)', full: '항암약물치료Ⅱ (주사제 외)', when: '연간 1회한',      trig: ['c2', 'c5'], simTrig: ['c8_2'], cap: 1 },
+            rad:  { label: '방사선',         full: '항암방사선치료Ⅱ',          when: '치료당',          trig: ['c3'],       simTrig: ['c8_3'], cap: Infinity }
+        };
+        let perTxOn = false;
+        let perTxCounts = {};
+        for (let i = 1; i <= 20; i++) perTxCounts[i] = { inj: 0, oral: 0, rad: 0 };
+
+        function fmtMan(v) { return (Math.round(v * 100) / 100).toLocaleString(); }
+
+        // 한 연차의 치료당 항목을 지우고 현재 선택·횟수 기준으로 다시 만든다
+        function syncPerTx(y) {
+            claims[y] = claims[y].filter(it => it.autoAddedBy !== 'pertx');
+            if (!perTxOn) return;
+            const arr = claims[y];
+            const unit = PER_TX_UNIT[currentPlan];
+            const levelUp = y >= 10 && checkLevelUp();
+            ['inj', 'oral', 'rad'].forEach(kind => {
+                const k = PER_TX_KINDS[kind];
+                const n = Math.min(perTxCounts[y][kind] || 0, k.cap);
+                if (!n) return;
+                [[false, k.trig], [true, k.simTrig]].forEach(([sim, trig]) => {
+                    if (!arr.some(it => trig.includes(it.id))) return;
+                    const u = sim ? unit * PER_TX_SIM_RATE : unit;
+                    const baseAmount = u * n;
+                    let amount = baseAmount, note = '';
+                    if (y === 1 && !sim) { amount = baseAmount * 0.5; note = '1년 미만 50% 감액'; }
+                    else if (levelUp) { amount = baseAmount * 10; note = '레벨업 1,000% 적용'; }
+                    const total = getTotalClaimed();
+                    if (total >= INITIAL_BALANCE) return;
+                    if (total + amount > INITIAL_BALANCE) { amount = INITIAL_BALANCE - total; note += (note ? ', ' : '') + '잔고 부족으로 남은 전액 차감'; }
+                    arr.push({ id: 'pt_' + (sim ? 's_' : 'c_') + kind, name: (sim ? '유사암 ' : '') + '암추가 ' + k.label + ' ' + fmtMan(u) + '만×' + n + '회',
+                               baseAmount, amount, category: 'pertx', note, autoAddedBy: 'pertx', kind, sim, levelMult: 10 });
+                });
+            });
+        }
+        function refreshPerTx() {
+            for (let y = 1; y <= 20; y++) syncPerTx(y);   // 1~9년 차가 먼저 정리되어야 10년 차 레벨업 판단이 맞다
+            recalculateLevelUpYears();
+        }
+        function togglePerTx(on) {
+            perTxOn = !!on;
+            refreshPerTx();
+            renderAll();
+        }
+        function setPerTxCount(kind, v) {
+            let n = parseInt(v, 10);
+            if (isNaN(n) || n < 0) n = 0;
+            if (n > 365) n = 365;
+            perTxCounts[currentYear][kind] = n;
+            refreshPerTx();
+            renderAll();
+        }
+        function renderPerTxBox() {
+            const unit = PER_TX_UNIT[currentPlan];
+            const y = currentYear;
+            const levelUp = y >= 10 && checkLevelUp();
+            const mult = y === 1 ? 0.5 : (levelUp ? 10 : 1);
+            const tag = y === 1 ? '<span class="text-red-500">(50% 감액)</span>' : (levelUp ? '<span class="text-blue-600">(1,000% 레벨업)</span>' : '');
+            const simMult = levelUp ? 10 : 1;
+            let rows = '';
+            ['inj', 'oral', 'rad'].forEach(kind => {
+                const k = PER_TX_KINDS[kind];
+                rows += `<li class="flex justify-between items-center p-2.5 rounded-xl border border-fuchsia-200 bg-fuchsia-50/40">
+                    <div class="flex flex-col items-start leading-tight"><span class="text-slate-700 font-bold text-[13px]">${k.full}</span><span class="text-[10px] text-fuchsia-600 font-bold mt-0.5">(${k.when})</span></div>
+                    <div class="flex items-center gap-1"><span class="text-fuchsia-700 font-black text-lg leading-none">${fmtMan(unit * mult)}</span>
+                    <div class="flex flex-col items-start leading-tight"><span class="text-[11px] font-bold text-slate-700">만 원</span><span class="text-[10px] font-bold">${tag}</span></div></div></li>`;
+            });
+            rows += `<li class="flex justify-between items-center p-2 rounded-xl border border-dashed border-fuchsia-200 bg-white">
+                    <span class="text-slate-600 font-bold text-[12px]">유사암(기/갑) <span class="text-[10px] font-normal text-slate-400">각각 20%</span></span>
+                    <span class="text-fuchsia-700 font-black text-[15px]">${fmtMan(unit * PER_TX_SIM_RATE * simMult)}<span class="text-[10px] text-slate-700 font-bold ml-0.5">만 원</span></span></li>`;
+            document.getElementById('perTxRows').innerHTML = rows;
+
+            const chk = document.getElementById('perTxChk');
+            if (chk.checked !== perTxOn) chk.checked = perTxOn;
+            const body = document.getElementById('perTxBody');
+            body.style.opacity = perTxOn ? '1' : '.45';
+            ['inj', 'oral', 'rad'].forEach(kind => {
+                const el = document.getElementById('cnt-' + kind);
+                el.disabled = !perTxOn;
+                if (document.activeElement !== el) el.value = perTxCounts[y][kind];
+            });
+            document.getElementById('perTxYr').textContent = yearLabels[y];
+            document.querySelectorAll('.pt-tag').forEach(t => { t.classList.toggle('hidden', !perTxOn); t.classList.toggle('block', perTxOn); });
+
+            // 이번 연차 합산 결과 / 안내
+            const sum = document.getElementById('perTxSum');
+            if (!perTxOn) { sum.innerHTML = '☝ 위의 체크박스를 눌러 특약에 가입하면 계산됩니다.'; return; }
+            const mine = claims[y].filter(it => it.autoAddedBy === 'pertx');
+            const tips = [];
+            const has = ids => claims[y].some(it => ids.includes(it.id));
+            const c = perTxCounts[y];
+            if ((c.inj || c.oral) && !has(['c2', 'c5', 'c8_2'])) tips.push('약물 횟수는 <b>항암 약물치료</b>를 선택해야 합산됩니다.');
+            if (c.rad && !has(['c3', 'c8_3'])) tips.push('방사선 횟수는 <b>항암 방사선치료</b>를 선택해야 합산됩니다.');
+            if (c.oral > 1) tips.push('주사제 외는 연간 1회한 → <b>1회</b>만 계산했습니다.');
+            let h = mine.length
+                ? '이번 연차 치료당 합계: <span class="text-base font-black">' + fmtMan(mine.reduce((a, it) => a + it.amount, 0)) + '만 원</span><br><span class="text-[11px] font-medium text-slate-600">' + mine.map(it => it.name + ' = ' + fmtMan(it.amount) + '만' + (it.note ? ' (' + it.note + ')' : '')).join('<br>') + '</span>'
+                : '이번 연차 치료당 합산 없음';
+            if (tips.length) h += '<br><span class="text-[11px] text-red-500">' + tips.join('<br>') + '</span>';
+            sum.innerHTML = h;
         }
 
         // 모달 관련 함수
