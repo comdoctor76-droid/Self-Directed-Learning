@@ -959,12 +959,17 @@
             const box = document.getElementById('yearlySummaryBox');
             
             // 막대그래프 비율을 구하기 위해 가장 높은 연도별 사용액 및 활성 연도 수 찾기
+            // 치료당(자홍) 조각은 금액이 작아도 마우스 오버·터치가 되도록 최소 1,000만 원 높이로 그린다
+            // (막대 위 금액·툴팁은 실제 금액 그대로)
+            const MIN_SEG = 1000;
+            const dispAmt = item => item.category === 'pertx' ? Math.max(item.amount, MIN_SEG) : item.amount;
             let maxYearlySum = 0;
             let activeYearsCount = 0;
             for(let y=1; y<=20; y++) {
                 let s = claims[y].reduce((sum, item) => sum + item.amount, 0);
+                let d = claims[y].reduce((sum, item) => sum + dispAmt(item), 0);
                 if(s > 0) activeYearsCount++;
-                if(s > maxYearlySum) maxYearlySum = s;
+                if(d > maxYearlySum) maxYearlySum = d;
             }
 
             // 추가된 연도 개수에 따라 막대 너비와 간격을 유동적으로 조절 (처음엔 크게, 많아지면 좁게)
@@ -1001,7 +1006,7 @@
                     
                     // 각 아이템별로 개별 막대 생성 (미리 그려진 배경 칸 없이 실제 비율만큼만 높이 차지)
                     claims[y].forEach(item => {
-                        let pct = (item.amount / maxYearlySum) * 100;
+                        let pct = (dispAmt(item) / maxYearlySum) * 100;
                         let safeName = item.name.replace(/'/g, "\\'");
                         // 새로운 항목을 위로 쌓이게 하기 위해 prepending 방식으로 누적
                         barsHtml = `<div class="w-full ${colors[item.category] || 'bg-slate-400'} transition-all duration-300 cursor-pointer relative group border-b border-white/20 last:border-0 first:rounded-t-md shadow-sm" style="height: ${pct}%;" 
