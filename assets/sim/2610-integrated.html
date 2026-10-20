@@ -46,6 +46,13 @@
         }
 
         .btn-item { transition: all 0.2s ease; cursor: pointer; }
+        /* PC: 헤더 하단에 고정되는 '가입 후 경과 기간 선택' — 상하 여백 최소화 */
+        .ydock { padding: 0 !important; margin: 0 !important; border-top: 1px solid #eef2f7; padding-top: 6px !important; }
+        .ydock > div:first-child { margin-bottom: 4px !important; }
+        .ydock > div:first-child span#yearRangeLabel { font-size: 13px; }
+        .ydock > div:first-child button { padding: 3px 10px !important; }
+        .ydock #yearSelector { margin-bottom: 0 !important; gap: 4px !important; }
+        .ydock .year-btn { padding-top: 2px !important; padding-bottom: 2px !important; font-size: 12.5px !important; line-height: 1.25 !important; }
         /* 암추가보장(치료당) — 그래프에서 한눈에 구분되도록 강렬한 자홍색 + 사선 줄무늬 */
         .pertx-stripe { background-image: repeating-linear-gradient(45deg, rgba(255,255,255,.35) 0 5px, transparent 5px 10px); }
         
@@ -98,6 +105,8 @@
                 <button id="termBtn-20" onclick="changeTerm(20)" class="px-3 py-1.5 rounded-full font-extrabold text-[13px] md:text-sm transition-all bg-hd-500 text-white shadow-md border-2 border-hd-500 whitespace-nowrap">20년 갱신</button>
             </div>
         </div>
+        <!-- PC(md 이상): 가입 후 경과 기간 선택이 이 자리로 옮겨 와서 스크롤해도 고정 / 모바일은 본문 원래 자리 -->
+        <div id="yearDock" class="hidden md:block max-w-7xl mx-auto px-4 pb-2"></div>
     </header>
 
     <main class="max-w-7xl mx-auto px-4 mt-6 space-y-6">
@@ -140,7 +149,7 @@
         </section>
 
         <!-- 가입 후 경과 기간 선택 & 전체 초기화 -->
-        <div class="pt-2 pb-2 mt-4">
+        <div id="yearBlock" class="pt-2 pb-2 mt-4">
             <div class="mb-3 flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <svg class="w-5 h-5 text-hd-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
@@ -676,7 +685,7 @@
 
         // 연차 버튼 글자 — 1년 미만에는 작은 (50%감액) 표시
         function yearBtnHtml(i) {
-            if (i === 1) return `${yearLabels[1]}<span class="block text-[9px] md:text-[10px] leading-tight text-red-500 font-bold">(50%감액)</span>`;
+            if (i === 1) return `${yearLabels[1]}<span class="block md:inline md:ml-1 text-[9px] md:text-[10px] leading-tight text-red-500 font-bold">(50%감액)</span>`;
             return yearLabels[i];
         }
 
@@ -1450,8 +1459,23 @@
             }, 200);
         }
 
+        // PC(768px 이상)에서는 연차 선택줄을 헤더 하단으로 옮겨 고정, 모바일에서는 원래 자리
+        (function () {
+            const block = document.getElementById('yearBlock');
+            const dock = document.getElementById('yearDock');
+            const home = block.parentNode, anchor = block.nextSibling;
+            const mq = window.matchMedia('(min-width: 768px)');
+            function place() {
+                if (mq.matches) { if (block.parentNode !== dock) { dock.appendChild(block); block.classList.add('ydock'); block.classList.remove('pt-2', 'pb-2', 'mt-4'); } }
+                else if (block.parentNode !== home) { home.insertBefore(block, anchor); block.classList.remove('ydock'); block.classList.add('pt-2', 'pb-2', 'mt-4'); }
+            }
+            if (mq.addEventListener) mq.addEventListener('change', place); else mq.addListener(place);
+            window.__placeYearBlock = place;
+        })();
+
         // 초기화
         window.onload = function() {
+            window.__placeYearBlock();
             new Image().src = 'levelup-table.webp';   // 설명 툴팁 이미지 미리 받아 두기
             initYearSelector();
             setYear(1);
