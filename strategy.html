@@ -274,7 +274,7 @@ function openTool(t){
   if(!t||!t.href)return;
   $('tlTitle').textContent=t.title||'';
   /* iframe은 열 때마다 새로 만들고 닫을 때 지운다 — src를 바꾸면 브라우저 '뒤로가기' 기록이 한 칸 더 생겨 뒤로가기가 꼬인다 */
-  var fr=document.createElement('iframe'); fr.id='tlFrame'; fr.title='시뮬레이터'; fr.setAttribute('data-src',t.href); fr.src=t.href;
+  var fr=document.createElement('iframe'); fr.id='tlFrame'; fr.title='시뮬레이터'; fr.setAttribute('data-src',t.href); fr.setAttribute('allow','web-share; clipboard-write'); fr.src=t.href;
   $('tlBody').innerHTML=''; $('tlBody').appendChild(fr);
   $('tl').classList.add('on'); document.body.style.overflow='hidden';
   try{history.pushState({tool:1},'');}catch(e){}
