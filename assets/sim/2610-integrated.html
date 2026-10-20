@@ -46,6 +46,14 @@
         }
 
         .btn-item { transition: all 0.2s ease; cursor: pointer; }
+        #PRINTAREA { display: none; }
+        @media print {
+            @page { size: A4 landscape; margin: 8mm; }
+            body > *:not(#PRINTAREA) { display: none !important; }
+            body { background: #fff !important; padding: 0 !important; overflow: visible !important; }
+            #PRINTAREA { display: block !important; }
+            #PRINTAREA img { display: block; width: auto; height: auto; max-width: 100%; max-height: 190mm; margin: 0 auto; }
+        }
         /* ═══════ 휴대폰 전용 앱 화면 ═══════ */
         #mApp, #mSheet, #mSheetBg { display: none; }
         html.mapp body { padding-bottom: 0 !important; overflow: hidden; }
@@ -1958,6 +1966,36 @@
             });
         }
 
+        function drawCard(c, F, s, X, Y, CW, RH, CARD_HEAD) {
+            c.fillStyle = '#fff'; rr(c, X, Y, CW, RH, 18); c.fill();
+            c.fillStyle = '#1A2744'; c.font = F(900, 27); const yl = yearLabels[s.y].replace(/\(.*\)/, ''); c.fillText(yl, X + s.IN, Y + 40);
+            c.fillStyle = '#e65c00'; c.font = F(900, 25); const sl = `${fmt(s.sum)}만 원`; c.fillText(sl, X + CW - s.IN - c.measureText(sl).width, Y + 40);
+            c.font = F(900, 27); const ylw = c.measureText(yl).width;
+            if (s.y === 1) { c.fillStyle = '#ef4444'; c.font = F(800, 17); c.fillText('50% 감액', X + s.IN + ylw + 8, Y + 38); }
+            if (s.y >= 10 && checkLevelUp()) { c.fillStyle = '#2563eb'; c.font = F(800, 17); c.fillText('⬆ 레벨업', X + s.IN + ylw + 8, Y + 38); }
+            const top0 = Y + CARD_HEAD - s.minTop, BX = X + s.IN, n = s.seg.length, step = Math.min(7, 32 / Math.max(1, n - 1));
+            s.seg.forEach(g => {
+                const col = COL[g.it.category] || '#94a3b8';
+                c.fillStyle = col; c.fillRect(BX, top0 + g.top, s.BAR_W, g.h - 2);
+                if (g.it.category === 'pertx') {
+                    c.save(); c.beginPath(); c.rect(BX, top0 + g.top, s.BAR_W, g.h - 2); c.clip();
+                    c.strokeStyle = 'rgba(255,255,255,.45)'; c.lineWidth = 5;
+                    for (let x = -g.h; x < s.BAR_W + g.h; x += 14) { c.beginPath(); c.moveTo(BX + x, top0 + g.top + g.h); c.lineTo(BX + x + g.h, top0 + g.top); c.stroke(); }
+                    c.restore();
+                }
+                const sy = top0 + g.top + g.h / 2, by = top0 + g.by + s.BOX_H / 2, ex = BX + s.BAR_W, mx = ex + 8 + (n - 1 - g.rank) * step, bx = X + s.BOX_X;
+                c.strokeStyle = col; c.lineWidth = 2.5; c.beginPath(); c.moveTo(ex + 3, sy); c.lineTo(mx, sy); c.lineTo(mx, by); c.lineTo(bx, by); c.stroke();
+                c.fillStyle = col; c.beginPath(); c.arc(ex + 3, sy, 4, 0, Math.PI * 2); c.fill();
+                const byy = top0 + g.by;
+                c.fillStyle = '#fff'; rr(c, bx, byy, s.BOX_W, s.BOX_H, 10); c.fill();
+                c.strokeStyle = col; c.lineWidth = 2.5; rr(c, bx, byy, s.BOX_W, s.BOX_H, 10); c.stroke();
+                c.fillStyle = col; rr(c, bx, byy, 9, s.BOX_H, 5); c.fill();
+                c.fillStyle = '#1e293b'; c.font = F(800, 19); c.fillText(fitText(c, g.it.name, s.BOX_W - 28), bx + 18, byy + 23);
+                c.fillStyle = '#e65c00'; c.font = F(900, 20); const am = `${fmt(g.it.amount)}만 원`; c.fillText(am, bx + 18, byy + 47);
+                if (g.it.note) { const aw = c.measureText(am).width; c.fillStyle = /감액|부족/.test(g.it.note) ? '#ef4444' : '#2563eb'; c.font = F(700, 15); c.fillText(fitText(c, '(' + g.it.note + ')', s.BOX_W - aw - 34), bx + 24 + aw, byy + 46); }
+            });
+        }
+
         async function makeImage() {
             try { await document.fonts.ready; } catch (e) {}
             const W = 1080, PAD = 40, HEAD = 410, FOOT = 110, COLGAP = 16, CARD_HEAD = 62, CARD_PAD = 22, ROWGAP = 16;
@@ -1990,36 +2028,7 @@
             let Y = HEAD;
             rows.forEach(r => {
                 const RH = rowH(r);
-                r.forEach((s, ci) => {
-                    const X = PAD + ci * (CW + COLGAP);
-                    c.fillStyle = '#fff'; rr(c, X, Y, CW, RH, 18); c.fill();
-                    c.fillStyle = '#1A2744'; c.font = F(900, 27); const yl = yearLabels[s.y].replace(/\(.*\)/, ''); c.fillText(yl, X + s.IN, Y + 40);
-                    c.fillStyle = '#e65c00'; c.font = F(900, 25); const sl = `${fmt(s.sum)}만 원`; c.fillText(sl, X + CW - s.IN - c.measureText(sl).width, Y + 40);
-                    c.font = F(900, 27); const ylw = c.measureText(yl).width;
-                    if (s.y === 1) { c.fillStyle = '#ef4444'; c.font = F(800, 17); c.fillText('50% 감액', X + s.IN + ylw + 8, Y + 38); }
-                    if (s.y >= 10 && checkLevelUp()) { c.fillStyle = '#2563eb'; c.font = F(800, 17); c.fillText('⬆ 레벨업', X + s.IN + ylw + 8, Y + 38); }
-                    const top0 = Y + CARD_HEAD - s.minTop, BX = X + s.IN, n = s.seg.length, step = Math.min(7, 32 / Math.max(1, n - 1));
-                    s.seg.forEach(g => {
-                        const col = COL[g.it.category] || '#94a3b8';
-                        c.fillStyle = col; c.fillRect(BX, top0 + g.top, s.BAR_W, g.h - 2);
-                        if (g.it.category === 'pertx') {
-                            c.save(); c.beginPath(); c.rect(BX, top0 + g.top, s.BAR_W, g.h - 2); c.clip();
-                            c.strokeStyle = 'rgba(255,255,255,.45)'; c.lineWidth = 5;
-                            for (let x = -g.h; x < s.BAR_W + g.h; x += 14) { c.beginPath(); c.moveTo(BX + x, top0 + g.top + g.h); c.lineTo(BX + x + g.h, top0 + g.top); c.stroke(); }
-                            c.restore();
-                        }
-                        const sy = top0 + g.top + g.h / 2, by = top0 + g.by + s.BOX_H / 2, ex = BX + s.BAR_W, mx = ex + 8 + (n - 1 - g.rank) * step, bx = X + s.BOX_X;
-                        c.strokeStyle = col; c.lineWidth = 2.5; c.beginPath(); c.moveTo(ex + 3, sy); c.lineTo(mx, sy); c.lineTo(mx, by); c.lineTo(bx, by); c.stroke();
-                        c.fillStyle = col; c.beginPath(); c.arc(ex + 3, sy, 4, 0, Math.PI * 2); c.fill();
-                        const byy = top0 + g.by;
-                        c.fillStyle = '#fff'; rr(c, bx, byy, s.BOX_W, s.BOX_H, 10); c.fill();
-                        c.strokeStyle = col; c.lineWidth = 2.5; rr(c, bx, byy, s.BOX_W, s.BOX_H, 10); c.stroke();
-                        c.fillStyle = col; rr(c, bx, byy, 9, s.BOX_H, 5); c.fill();
-                        c.fillStyle = '#1e293b'; c.font = F(800, 19); c.fillText(fitText(c, g.it.name, s.BOX_W - 28), bx + 18, byy + 23);
-                        c.fillStyle = '#e65c00'; c.font = F(900, 20); const am = `${fmt(g.it.amount)}만 원`; c.fillText(am, bx + 18, byy + 47);
-                        if (g.it.note) { const aw = c.measureText(am).width; c.fillStyle = /감액|부족/.test(g.it.note) ? '#ef4444' : '#2563eb'; c.font = F(700, 15); c.fillText(fitText(c, '(' + g.it.note + ')', s.BOX_W - aw - 34), bx + 24 + aw, byy + 46); }
-                    });
-                });
+                r.forEach((s, ci) => drawCard(c, F, s, PAD + ci * (CW + COLGAP), Y, CW, RH, CARD_HEAD));
                 Y += RH + ROWGAP;
             });
             // ── 꼬리
@@ -2028,6 +2037,74 @@
             c.fillText('스스로 학습하기 · 2610 주요치료비통합보장 시뮬레이터', PAD, H - 30);
             return new Promise(res => cv.toBlob(b => res({ blob: b, url: cv.toDataURL('image/png') }), 'image/png'));
         }
+
+        // ── PC 인쇄용 가로 보고서: 상단 연차 띠(선택 연차 색 표시) + 연차 카드 4칸 배치
+        async function makeReport() {
+            try { await document.fonts.ready; } catch (e) {}
+            const W = 2200, PAD = 50, COLS = 4, COLGAP = 18, CARD_HEAD = 62, CARD_PAD = 22, ROWGAP = 18;
+            const CW = (W - PAD * 2 - COLGAP * (COLS - 1)) / COLS;
+            const L = layout(CW);
+            const rows = []; for (let i = 0; i < L.length; i += COLS) rows.push(L.slice(i, i + COLS));
+            const rowH = r => CARD_HEAD + Math.max(...r.map(s => s.bodyH)) + CARD_PAD;
+            const HEAD = 330, FOOT = 80;
+            const H = HEAD + Math.max(120, rows.reduce((a, r) => a + rowH(r) + ROWGAP, 0)) + FOOT;   // 내용 높이에 맞춤(가로 용지 폭에 맞춰 인쇄)
+            const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+            const c = cv.getContext('2d');
+            const F = (w, sz) => `${w} ${sz}px 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif`;
+            c.fillStyle = '#f8fafc'; c.fillRect(0, 0, W, H);
+            // 머리
+            c.fillStyle = '#1A2744'; c.fillRect(0, 0, W, 120);
+            c.fillStyle = '#fff'; c.font = F(900, 44); c.fillText('2610 주요치료비통합보장 특약 보험금시뮬레이션', PAD, 64);
+            const d = new Date(), ds = `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
+            c.fillStyle = '#FFB37E'; c.font = F(700, 24);
+            c.fillText(`${currentPlan} 한도 · ${TERM}년 갱신${perTxOn ? ' · 암추가보장(치료당) 가입' : ''}  |  출력일 ${ds}`, PAD, 101);
+            const used = getTotalClaimed(), bal = Math.max(0, INITIAL_BALANCE - used), pct = bal / INITIAL_BALANCE * 100;
+            c.font = F(900, 50); const bs = `잔고 ${bal.toLocaleString()}만원`; c.fillStyle = '#fff'; c.fillText(bs, W - PAD - c.measureText(bs).width, 64);
+            c.font = F(700, 23); const us = `총 사용 ${fmt(used)}만 원 · 잔여 ${pct.toFixed(1)}% / 사용 ${(100 - pct).toFixed(1)}%`;
+            c.fillStyle = '#cbd5e1'; c.fillText(us, W - PAD - c.measureText(us).width, 101);
+            // 잔고 막대
+            c.fillStyle = '#334155'; rr(c, PAD, 142, W - PAD * 2, 16, 8); c.fill();
+            c.fillStyle = '#ff6600'; rr(c, PAD, 142, Math.max(16, (W - PAD * 2) * pct / 100), 16, 8); c.fill();
+            // 가입 후 경과 기간 띠: 담보를 선택했던 연차를 색으로 표시
+            c.fillStyle = '#334155'; c.font = F(900, 24); c.fillText(`가입 후 경과 기간 (1~${TERM}년 차)  ·  색이 칠해진 연차 = 담보를 선택한 연차`, PAD, 200);
+            const cg = 8, cw = (W - PAD * 2 - cg * (TERM - 1)) / TERM;
+            for (let i = 1; i <= TERM; i++) {
+                const x = PAD + (i - 1) * (cw + cg), yy = 216, ys = (claims[i] || []).reduce((a, it) => a + it.amount, 0), on = ys > 0;
+                const lvc = i === 10 && TERM === 20;
+                c.fillStyle = on ? '#ff6600' : '#fff'; rr(c, x, yy, cw, 82, 12); c.fill();
+                c.strokeStyle = on ? '#ff6600' : (lvc ? '#fca5a5' : '#cbd5e1'); c.lineWidth = 2; rr(c, x, yy, cw, 82, 12); c.stroke();
+                c.fillStyle = on ? '#fff' : '#64748b'; c.font = F(800, 20);
+                const lb = i === 1 ? '1년 미만' : `${i}년 차${lvc ? (checkLevelUp() ? '⬆' : '') : ''}`;
+                c.fillText(lb, x + (cw - c.measureText(lb).width) / 2, yy + 34);
+                c.font = F(900, 19); const am = on ? `${fmt(ys)}만` : '-';
+                c.fillText(am, x + (cw - c.measureText(am).width) / 2, yy + 64);
+            }
+            // 연차 카드
+            let Y = HEAD;
+            if (!rows.length) { c.fillStyle = '#94a3b8'; c.font = F(700, 28); c.fillText('선택한 담보가 없습니다.', PAD, Y + 60); }
+            rows.forEach(r => {
+                const RH = rowH(r);
+                r.forEach((s, ci) => drawCard(c, F, s, PAD + ci * (CW + COLGAP), Y, CW, RH, CARD_HEAD));
+                Y += RH + ROWGAP;
+            });
+            c.fillStyle = '#94a3b8'; c.font = F(700, 20);
+            c.fillText('※ 교육용 시뮬레이션 결과이며, 실제 보험금 지급은 약관 및 심사 기준에 따릅니다.', PAD, H - 30);
+            return cv.toDataURL('image/png');
+        }
+        // 인쇄: 다른 페이지의 인포그래픽 인쇄와 같은 방식 — 인쇄 전용 영역에 그림을 넣고 print()
+        window.printReport = async function () {
+            if (getTotalClaimed() <= 0) { showModal('인쇄할 결과가 없습니다', '먼저 담보 항목을 선택해 시뮬레이션해 주세요.'); return; }
+            const url = await makeReport();
+            let area = document.getElementById('PRINTAREA');
+            if (!area) { area = document.createElement('div'); area.id = 'PRINTAREA'; area.innerHTML = '<img id="PRINT_IMG" alt="시뮬레이션 결과">'; document.body.appendChild(area); }
+            const img = document.getElementById('PRINT_IMG');
+            let fired = false;
+            const go = () => { if (fired) return; fired = true; setTimeout(() => window.print(), 50); };
+            img.onload = () => { if (img.decode) img.decode().then(go).catch(go); else go(); };
+            img.onerror = go;
+            img.src = url;
+        };
+        window.__mMakeReport = makeReport;   // 확인용
 
         let last = null;
         window.mShareResult = async function () {
