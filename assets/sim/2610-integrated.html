@@ -246,25 +246,25 @@
                     <p class="text-[10px] text-slate-400 mb-3">* 체크(가입) 후 위의 <b class="text-blue-500">항암 약물치료</b>·<b class="text-yellow-600">항암 방사선치료</b>를 선택하면 입력한 횟수만큼 함께 합산 / 유사암(기/갑)은 유사암 항목 선택 시 20% 합산</p>
                     <div id="perTxBody" class="transition-opacity">
                         <ul id="perTxRows" class="space-y-2">
-                            <li id="ptrow-inj" onclick="setPerTxMode('inj')" class="flex items-center gap-1 pl-2 pr-2 py-2 rounded-xl border border-fuchsia-200 bg-fuchsia-50/40 cursor-pointer transition-opacity">
+                            <li id="ptrow-inj" onmousemove="ptTip(event,'inj')" onmouseleave="ptTipHide()" ontouchstart="ptTip(event,'inj',true)" onclick="setPerTxMode('inj')" class="flex items-center gap-1 pl-2 pr-2 py-2 rounded-xl border border-fuchsia-200 bg-fuchsia-50/40 cursor-pointer transition-opacity">
                                 <input type="radio" name="ptmode" id="ptmode-inj" value="inj" checked onclick="event.stopPropagation()" onchange="setPerTxMode('inj')" aria-label="주사제 선택" class="w-4 h-4 accent-fuchsia-600 flex-shrink-0">
                                 <div class="flex flex-col items-start leading-tight flex-1 min-w-0"><span class="text-slate-800 font-extrabold text-[14px]">항암약물치료Ⅱ (주사제)</span><span class="text-[11px] text-fuchsia-600 font-extrabold mt-0.5">(입원·통원 치료당)</span></div>
                                 <span class="flex items-baseline gap-px flex-shrink-0 bg-white border border-fuchsia-300 rounded-md px-1 py-px"><input id="cnt-inj" type="number" inputmode="numeric" min="0" max="365" value="17" oninput="setPerTxCount('inj', this.value)" aria-label="항암약물치료Ⅱ (주사제) 연간 횟수" class="w-8 text-center text-sm font-black text-fuchsia-700 focus:outline-none bg-transparent"><span class="text-[10px] font-bold text-slate-500">회</span></span>
                                 <div class="flex items-center justify-end gap-0.5 flex-shrink-0 w-[4.7rem]"><span id="ptp-inj" class="text-fuchsia-700 font-black text-base leading-none">20</span>
                                 <div class="flex flex-col items-start leading-tight"><span class="text-[11px] font-bold text-slate-700">만 원</span><span id="ptn-inj" class="text-[10px] font-bold whitespace-nowrap"></span></div></div></li>
-                            <li id="ptrow-oral" onclick="setPerTxMode('oral')" class="flex items-center gap-1 pl-2 pr-2 py-2 rounded-xl border border-fuchsia-200 bg-fuchsia-50/40 cursor-pointer transition-opacity">
+                            <li id="ptrow-oral" onmousemove="ptTip(event,'oral')" onmouseleave="ptTipHide()" ontouchstart="ptTip(event,'oral',true)" onclick="setPerTxMode('oral')" class="flex items-center gap-1 pl-2 pr-2 py-2 rounded-xl border border-fuchsia-200 bg-fuchsia-50/40 cursor-pointer transition-opacity">
                                 <input type="radio" name="ptmode" id="ptmode-oral" value="oral" onclick="event.stopPropagation()" onchange="setPerTxMode('oral')" aria-label="주사제 외 선택" class="w-4 h-4 accent-fuchsia-600 flex-shrink-0">
                                 <div class="flex flex-col items-start leading-tight flex-1 min-w-0"><span class="text-slate-800 font-extrabold text-[14px]">항암약물치료Ⅱ (주사제 외)</span><span class="text-[11px] text-fuchsia-600 font-extrabold mt-0.5">(연간 1회한)</span></div>
                                 <span class="flex-shrink-0 bg-white border border-dashed border-fuchsia-300 rounded-md px-1.5 py-px text-[11px] font-black text-fuchsia-700 whitespace-nowrap">연 1회</span>
                                 <div class="flex items-center justify-end gap-0.5 flex-shrink-0 w-[4.7rem]"><span id="ptp-oral" class="text-fuchsia-700 font-black text-base leading-none">20</span>
                                 <div class="flex flex-col items-start leading-tight"><span class="text-[11px] font-bold text-slate-700">만 원</span><span id="ptn-oral" class="text-[10px] font-bold whitespace-nowrap"></span></div></div></li>
-                            <li id="ptrow-rad" class="flex items-center gap-1 pl-2 pr-2 py-2 rounded-xl border border-fuchsia-200 bg-fuchsia-50/40 transition-opacity">
+                            <li id="ptrow-rad" onmousemove="ptTip(event,'rad')" onmouseleave="ptTipHide()" ontouchstart="ptTip(event,'rad',true)" class="flex items-center gap-1 pl-2 pr-2 py-2 rounded-xl border border-fuchsia-200 bg-fuchsia-50/40 transition-opacity">
                                 <span id="ptchk-rad" class="pt-auto w-4 h-4 flex-shrink-0 rounded border-2 border-fuchsia-300 bg-white text-white text-[11px] leading-none flex items-center justify-center font-black" title="암 보장에서 항암 방사선치료를 선택하면 자동으로 선택됩니다"></span>
                                 <div class="flex flex-col items-start leading-tight flex-1 min-w-0"><span class="text-slate-800 font-extrabold text-[14px]">항암방사선치료Ⅱ</span><span class="text-[11px] text-fuchsia-600 font-extrabold mt-0.5">(치료당)</span></div>
                                 <span class="flex items-baseline gap-px flex-shrink-0 bg-white border border-fuchsia-300 rounded-md px-1 py-px"><input id="cnt-rad" type="number" inputmode="numeric" min="0" max="365" value="30" oninput="setPerTxCount('rad', this.value)" aria-label="항암방사선치료Ⅱ 연간 횟수" class="w-8 text-center text-sm font-black text-fuchsia-700 focus:outline-none bg-transparent"><span class="text-[10px] font-bold text-slate-500">회</span></span>
                                 <div class="flex items-center justify-end gap-0.5 flex-shrink-0 w-[4.7rem]"><span id="ptp-rad" class="text-fuchsia-700 font-black text-base leading-none">20</span>
                                 <div class="flex flex-col items-start leading-tight"><span class="text-[11px] font-bold text-slate-700">만 원</span><span id="ptn-rad" class="text-[10px] font-bold whitespace-nowrap"></span></div></div></li>
-                            <li id="ptrow-sim" class="flex items-center gap-1 pl-2 pr-2 py-2 rounded-xl border border-dashed border-fuchsia-300 bg-white transition-opacity">
+                            <li id="ptrow-sim" onmousemove="ptTip(event,'sim')" onmouseleave="ptTipHide()" ontouchstart="ptTip(event,'sim',true)" class="flex items-center gap-1 pl-2 pr-2 py-2 rounded-xl border border-dashed border-fuchsia-300 bg-white transition-opacity">
                                 <span id="ptchk-sim" class="pt-auto w-4 h-4 flex-shrink-0 rounded border-2 border-fuchsia-300 bg-white text-white text-[11px] leading-none flex items-center justify-center font-black" title="유사암 약물·방사선치료를 선택하면 자동으로 선택됩니다"></span>
                                 <div class="flex flex-col items-start leading-tight flex-1 min-w-0"><span class="text-slate-700 font-extrabold text-[13px]">유사암(기/갑) <span class="text-[10px] font-bold text-slate-400">각각 20%</span></span><span id="ptsim-detail" class="text-[10px] font-bold text-fuchsia-600 mt-0.5">유사암 약물·방사선 선택 시 자동 합산</span></div>
                                 <span class="text-fuchsia-700 font-black text-[15px] flex-shrink-0 whitespace-nowrap"><span id="ptp-sim">4</span><span class="text-[10px] text-slate-700 font-bold ml-0.5">만 원</span></span></li>
@@ -533,6 +533,9 @@
         <div id="tooltipContent" class="font-bold text-center leading-relaxed"></div>
         <div class="absolute left-1/2 bottom-[-5px] w-2.5 h-2.5 bg-slate-800/95 border-b border-r border-slate-600 transform -translate-x-1/2 rotate-45"></div>
     </div>
+
+    <!-- 암추가보장(치료당) 설명 툴팁 (마우스 오버 / 휴대폰은 탭) -->
+    <div id="ptTipBox" class="fixed z-[210] hidden bg-white border-2 border-fuchsia-500 text-slate-800 text-[13px] leading-relaxed px-4 py-3 rounded-xl shadow-2xl w-[min(92vw,340px)] pointer-events-none"></div>
 
     <!-- 상세 설명 툴팁 (마우스 오버) -->
     <div id="itemTooltip" class="fixed z-[200] hidden bg-white/95 border-2 border-hd-500 text-slate-800 text-sm px-4 py-3 rounded-xl shadow-xl max-w-[260px] pointer-events-none transition-opacity duration-200">
@@ -1221,6 +1224,43 @@
             setYear(1);
         }
 
+        // ───────── 암추가보장 설명 툴팁 ─────────
+        const PT_TIPS = {
+            inj: '<b class="text-fuchsia-700">항암약물치료Ⅱ · 주사제</b><br>표적항암제·면역항암제를 <b>주사제</b>로 투여하면 보통 <b>3주에 한 번</b> 맞게 되어, 1년이면 <b>약 17회</b> 수준입니다. (입원 또는 통원 <b>치료당</b> 1회씩 지급)',
+            oral: '<b class="text-fuchsia-700">항암약물치료Ⅱ · 주사제 외</b><br><b>경구투여제</b>(먹는 항암제)를 사용하면 치료당이 아니라 <b>연간 1회</b>만 지급되어 <b>연 1회</b>로 계산합니다.',
+            rad: '<b class="text-fuchsia-700">항암방사선치료Ⅱ</b><br>방사선치료는 <b>주 5회씩</b> 받는 것이 표준이며, 약 6주 기준 <b>30회</b> 수준입니다. (치료당 1회씩 지급)',
+            sim: '<b class="text-fuchsia-700">유사암(기타피부암·갑상선암·제자리암·경계성종양)</b><br>유사암 항목에서 약물·방사선치료를 선택하면 자동으로 선택되며, 각각 일반 단가의 <b>20%</b>로 같은 횟수만큼 합산됩니다.'
+        };
+        const PT_LV_TIP = '<b class="text-blue-700">🚀 레벨업(10년 차 이후) — 치료당 1,000%</b><br>1~9년 차에 쓴 보장금액이 한도의 10% 이하라서 <b>레벨업이 적용되면</b>, 암추가보장(치료당)은 <b>지급금액의 10배(1,000%)</b>로 상향됩니다. (주요치료는 120%)<img src="levelup-table.webp" alt="LEVEL-UP 적용 이후 지급금액 예시" class="w-full mt-2 rounded-lg border border-slate-200"><div class="text-[11px] text-slate-500 mt-1">▲ LEVEL-UP 적용 이후 지급금액 예시</div>';
+        let ptTipPinned = false;
+        function ptTip(e, key, touch) {
+            if (touch) {   // 휴대폰: 탭하면 고정 표시, 다른 곳을 탭하면 닫힘
+                if (e.target.closest('input')) return;
+                ptTipPinned = true;
+            } else if (ptTipPinned) return;
+            const box = document.getElementById('ptTipBox');
+            const lv = e.target.closest && e.target.closest('.pt-lv');
+            const html = lv ? PT_LV_TIP : PT_TIPS[key];
+            if (box.getAttribute('data-k') !== (lv ? 'lv' : key)) { box.innerHTML = html; box.setAttribute('data-k', lv ? 'lv' : key); }
+            box.classList.remove('hidden');
+            const cx = e.clientX != null ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 20);
+            const cy = e.clientY != null ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 20);
+            const w = box.offsetWidth, h = box.offsetHeight;
+            let x = cx + 14, y = cy + 14;
+            if (x + w > window.innerWidth - 8) x = Math.max(8, window.innerWidth - w - 8);
+            if (y + h > window.innerHeight - 8) y = Math.max(8, cy - h - 14);
+            box.style.left = x + 'px'; box.style.top = y + 'px';
+        }
+        // 휴대폰: 설명 줄 밖을 탭하면 닫힘 (다른 설명 줄을 탭하면 그 설명으로 바뀜)
+        document.addEventListener('touchstart', function (ev) {
+            if (ptTipPinned && !ev.target.closest('[id^="ptrow-"]')) { ptTipPinned = false; ptTipHide(true); }
+        });
+        function ptTipHide(force) {
+            if (ptTipPinned && !force) return;
+            const box = document.getElementById('ptTipBox');
+            box.classList.add('hidden'); box.removeAttribute('data-k');
+        }
+
         // ───────── 암추가보장(치료당) 특약 ─────────
         // 약관: 주요치료통합보장 > 암추가보장
         //  · 항암방사선치료Ⅱ: 치료당 1회 / 항암약물치료Ⅱ 주사제: 입원 또는 통원 치료당 1회 / 주사제 외: 연간 1회한
@@ -1299,7 +1339,7 @@
             const y = currentYear;
             const levelUp = y >= 10 && checkLevelUp();
             const mult = y === 1 ? 0.5 : (levelUp ? 10 : 1);
-            const tag = y === 1 ? '<span class="text-red-500">(50% 감액)</span>' : (levelUp ? '<span class="text-blue-600 whitespace-nowrap">(1,000%)</span>' : '');
+            const tag = y === 1 ? '<span class="text-red-500">(50% 감액)</span>' : (levelUp ? '<span class="pt-lv text-blue-600 whitespace-nowrap underline decoration-dotted cursor-help">(1,000%)</span>' : '');
             const simMult = levelUp ? 10 : 1;
             ['inj', 'oral', 'rad'].forEach(kind => {
                 document.getElementById('ptp-' + kind).textContent = fmtMan(unit * mult);
@@ -1388,6 +1428,7 @@
 
         // 초기화
         window.onload = function() {
+            new Image().src = 'levelup-table.webp';   // 설명 툴팁 이미지 미리 받아 두기
             initYearSelector();
             setYear(1);
         };
