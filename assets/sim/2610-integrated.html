@@ -1608,10 +1608,17 @@
     <script>
     /* ═══════ 휴대폰 전용 앱 화면 — 계산·상태는 위의 기존 함수를 그대로 호출한다 ═══════ */
     (function () {
-        // 1단계(미리보기): 주소에 ?m=1 이 있을 때만 켠다
-        const ON = /[?&]m=1\b/.test(location.search);
-        if (!ON) return;
-        document.documentElement.classList.add('mapp');
+        // 휴대폰(폭 768px 미만)에서는 자동으로 앱 화면, PC는 기존 화면.
+        // 주소 끝 ?m=1 → 항상 앱 화면 / ?m=0 → 항상 기존 화면 (확인용)
+        const FORCE_ON = /[?&]m=1\b/.test(location.search), FORCE_OFF = /[?&]m=0\b/.test(location.search);
+        const mq = window.matchMedia('(max-width: 767px)');
+        function applyMode() {
+            const on = FORCE_ON || (!FORCE_OFF && mq.matches);
+            document.documentElement.classList.toggle('mapp', on);
+            if (!on && window.mCloseSheet) window.mCloseSheet();
+        }
+        applyMode();
+        if (mq.addEventListener) mq.addEventListener('change', applyMode); else mq.addListener(applyMode);
 
         // 탭별 항목 (id, 이름, 지급조건, 기존 toggleItem 인자)
         const ITEMS = {
