@@ -246,12 +246,14 @@
                     <p class="text-[10px] text-slate-400 mb-3">* 체크(가입) 후 위의 <b class="text-blue-500">항암 약물치료</b>·<b class="text-yellow-600">항암 방사선치료</b>를 선택하면 입력한 횟수만큼 함께 합산 / 유사암(기/갑)은 유사암 항목 선택 시 20% 합산</p>
                     <div id="perTxBody" class="transition-opacity">
                         <ul id="perTxRows" class="space-y-2">
-                            <li class="flex items-center gap-1 pl-2.5 pr-2 py-2 rounded-xl border border-fuchsia-200 bg-fuchsia-50/40">
+                            <li id="ptrow-inj" onclick="setPerTxMode('inj')" class="flex items-center gap-1 pl-2 pr-2 py-2 rounded-xl border border-fuchsia-200 bg-fuchsia-50/40 cursor-pointer transition-opacity">
+                                <input type="radio" name="ptmode" id="ptmode-inj" value="inj" checked onclick="event.stopPropagation()" onchange="setPerTxMode('inj')" aria-label="주사제 선택" class="w-4 h-4 accent-fuchsia-600 flex-shrink-0">
                                 <div class="flex flex-col items-start leading-tight flex-1 min-w-0"><span class="text-slate-800 font-extrabold text-[14px]">항암약물치료Ⅱ (주사제)</span><span class="text-[11px] text-fuchsia-600 font-extrabold mt-0.5">(입원·통원 치료당)</span></div>
                                 <span class="flex items-baseline gap-px flex-shrink-0 bg-white border border-fuchsia-300 rounded-md px-1 py-px"><input id="cnt-inj" type="number" inputmode="numeric" min="0" max="365" value="17" oninput="setPerTxCount('inj', this.value)" aria-label="항암약물치료Ⅱ (주사제) 연간 횟수" class="w-8 text-center text-sm font-black text-fuchsia-700 focus:outline-none bg-transparent"><span class="text-[10px] font-bold text-slate-500">회</span></span>
                                 <div class="flex items-center justify-end gap-0.5 flex-shrink-0 w-[4.7rem]"><span id="ptp-inj" class="text-fuchsia-700 font-black text-base leading-none">20</span>
                                 <div class="flex flex-col items-start leading-tight"><span class="text-[11px] font-bold text-slate-700">만 원</span><span id="ptn-inj" class="text-[10px] font-bold whitespace-nowrap"></span></div></div></li>
-                            <li class="flex items-center gap-1 pl-2.5 pr-2 py-2 rounded-xl border border-fuchsia-200 bg-fuchsia-50/40">
+                            <li id="ptrow-oral" onclick="setPerTxMode('oral')" class="flex items-center gap-1 pl-2 pr-2 py-2 rounded-xl border border-fuchsia-200 bg-fuchsia-50/40 cursor-pointer transition-opacity">
+                                <input type="radio" name="ptmode" id="ptmode-oral" value="oral" onclick="event.stopPropagation()" onchange="setPerTxMode('oral')" aria-label="주사제 외 선택" class="w-4 h-4 accent-fuchsia-600 flex-shrink-0">
                                 <div class="flex flex-col items-start leading-tight flex-1 min-w-0"><span class="text-slate-800 font-extrabold text-[14px]">항암약물치료Ⅱ (주사제 외)</span><span class="text-[11px] text-fuchsia-600 font-extrabold mt-0.5">(연간 1회한)</span></div>
                                 <span class="flex-shrink-0 bg-white border border-dashed border-fuchsia-300 rounded-md px-1.5 py-px text-[11px] font-black text-fuchsia-700 whitespace-nowrap">연 1회</span>
                                 <div class="flex items-center justify-end gap-0.5 flex-shrink-0 w-[4.7rem]"><span id="ptp-oral" class="text-fuchsia-700 font-black text-base leading-none">20</span>
@@ -519,7 +521,7 @@
                 </div>
                 <h3 class="text-lg font-bold text-slate-800" id="modalTitle">알림</h3>
             </div>
-            <p class="text-slate-600 mb-6" id="modalMessage">메시지 내용</p>
+            <p class="text-slate-600 mb-6 whitespace-pre-line" id="modalMessage">메시지 내용</p>
             <button onclick="closeModal()" class="w-full bg-hd-500 hover:bg-hd-600 text-white font-bold py-3 rounded-xl transition-colors">확인</button>
         </div>
     </div>
@@ -773,6 +775,12 @@
             let yearArr = claims[currentYear];
             let index = yearArr.findIndex(item => item.id === id);
 
+            // 4기 항암약물치료가 선택돼 있으면 일반 항암약물치료는 해제할 수 없다 (4기를 해제하면 함께 해제)
+            if (id === 'c2' && index > -1 && yearArr.some(item => item.id === 'c5')) {
+                showModal("해제할 수 없습니다", "4기 항암약물치료를 선택하면 항암약물치료가 함께 적용됩니다.\n항암약물치료를 해제하려면 먼저 4기 항암약물치료를 해제해 주세요.");
+                return;
+            }
+
             if (index > -1) {
                 // 이미 있으면 제거 (차감 취소)
                 yearArr.splice(index, 1);
@@ -817,12 +825,23 @@
         function removeItem(year, id) {
             let yearArr = claims[year];
             let index = yearArr.findIndex(item => item.id === id);
+            if (id === 'c2' && yearArr.some(item => item.id === 'c5')) {
+                showModal("해제할 수 없습니다", "4기 항암약물치료를 선택하면 항암약물치료가 함께 적용됩니다.\n항암약물치료를 해제하려면 먼저 4기 항암약물치료를 해제해 주세요.");
+                return;
+            }
             if(index > -1) {
                 const removed = yearArr.splice(index, 1)[0];
                 // 그래프에서 치료당 막대를 지우면 그 연차의 해당 횟수를 0으로
-                if (removed.autoAddedBy === 'pertx') perTxCounts[year][removed.kind] = 0;
+                if (removed.autoAddedBy === 'pertx') {
+                    if (removed.kind === 'oral') perTxMode[year] = 'inj';   // 주사제 외 막대를 지우면 기본(주사제)으로
+                    else perTxCounts[year][removed.kind] = 0;
+                }
                 
                 // 치료당 재합산 + 레벨업 조건 재계산
+                if (id === 'c5') {
+                    const c2i = yearArr.findIndex(item => item.id === 'c2' && item.autoAddedBy === 'c5');
+                    if (c2i > -1) yearArr.splice(c2i, 1);
+                }
                 refreshPerTx();
                 renderAll();
             }
@@ -1166,7 +1185,7 @@
         }
 
         function resetAll() {
-            for(let i=1; i<=20; i++) { claims[i] = []; perTxCounts[i] = { ...PER_TX_DEFAULT }; }
+            for(let i=1; i<=20; i++) { claims[i] = []; perTxCounts[i] = { ...PER_TX_DEFAULT }; perTxMode[i] = 'inj'; }
             setYear(1);
         }
 
@@ -1183,6 +1202,8 @@
             rad:  { label: '방사선',         full: '항암방사선치료Ⅱ',          when: '치료당',          trig: ['c3'],       simTrig: ['c8_3'], cap: Infinity }
         };
         let perTxOn = false;
+        const perTxMode = {};   // 연차별 약물 선택: 'inj'(주사제) | 'oral'(주사제 외) 중 하나
+        for (let i = 1; i <= 20; i++) perTxMode[i] = 'inj';
         let perTxCounts = {};
         const PER_TX_DEFAULT = { inj: 17, oral: 1, rad: 30 };   // 기본 연간 횟수(주사제·방사선은 수정 가능, 주사제 외는 연간 1회한 고정)
         for (let i = 1; i <= 20; i++) perTxCounts[i] = { ...PER_TX_DEFAULT };
@@ -1198,7 +1219,10 @@
             const levelUp = y >= 10 && checkLevelUp();
             ['inj', 'oral', 'rad'].forEach(kind => {
                 const k = PER_TX_KINDS[kind];
-                const n = Math.min(perTxCounts[y][kind] || 0, k.cap);
+                // 약물은 주사제 / 주사제 외 중 하나만 선택. 주사제 외는 연간 1회한이라 입력 없이 1회
+                let n = Math.min(perTxCounts[y][kind] || 0, k.cap);
+                if (kind === 'inj' && perTxMode[y] !== 'inj') n = 0;
+                if (kind === 'oral') n = perTxMode[y] === 'oral' ? 1 : 0;
                 if (!n) return;
                 [[false, k.trig], [true, k.simTrig]].forEach(([sim, trig]) => {
                     if (!arr.some(it => trig.includes(it.id))) return;
@@ -1221,6 +1245,12 @@
         }
         function togglePerTx(on) {
             perTxOn = !!on;
+            refreshPerTx();
+            renderAll();
+        }
+        function setPerTxMode(mode) {
+            if (!perTxOn) return;
+            perTxMode[currentYear] = mode;
             refreshPerTx();
             renderAll();
         }
@@ -1249,9 +1279,15 @@
             if (chk.checked !== perTxOn) chk.checked = perTxOn;
             const body = document.getElementById('perTxBody');
             body.style.opacity = perTxOn ? '1' : '.45';
+            const mode = perTxMode[y];
+            ['inj', 'oral'].forEach(k => {
+                const r = document.getElementById('ptmode-' + k);
+                r.checked = (mode === k); r.disabled = !perTxOn;
+                document.getElementById('ptrow-' + k).style.opacity = (perTxOn && mode !== k) ? '.5' : '1';
+            });
             ['inj', 'rad'].forEach(kind => {
                 const el = document.getElementById('cnt-' + kind);
-                el.disabled = !perTxOn;
+                el.disabled = !perTxOn || (kind === 'inj' && mode !== 'inj');
                 if (document.activeElement !== el) el.value = perTxCounts[y][kind];
             });
             document.querySelectorAll('.pt-tag').forEach(t => { t.classList.toggle('hidden', !perTxOn); t.classList.toggle('block', perTxOn); });
