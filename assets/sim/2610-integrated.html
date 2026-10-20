@@ -249,26 +249,24 @@
                             <li class="flex items-center gap-2 p-2.5 rounded-xl border border-fuchsia-200 bg-fuchsia-50/40">
                                 <div class="flex flex-col items-start leading-tight flex-1 min-w-0"><span class="text-slate-700 font-bold text-[13px]">항암약물치료Ⅱ (주사제)</span><span class="text-[10px] text-fuchsia-600 font-bold mt-0.5">(입원·통원 치료당)</span></div>
                                 <span class="flex items-baseline gap-0.5 flex-shrink-0 bg-white border border-fuchsia-300 rounded-lg px-1.5 py-0.5"><input id="cnt-inj" type="number" inputmode="numeric" min="0" max="365" value="17" oninput="setPerTxCount('inj', this.value)" aria-label="항암약물치료Ⅱ (주사제) 연간 횟수" class="w-11 text-center text-base font-black text-fuchsia-700 focus:outline-none bg-transparent"><span class="text-[11px] font-bold text-slate-500">회</span></span>
-                                <div class="flex items-center gap-1 flex-shrink-0"><span id="ptp-inj" class="text-fuchsia-700 font-black text-lg leading-none">20</span>
-                                <div class="flex flex-col items-start leading-tight"><span class="text-[11px] font-bold text-slate-700">만 원</span><span id="ptn-inj" class="text-[10px] font-bold"></span></div></div></li>
+                                <div class="flex items-center justify-end gap-1 flex-shrink-0 w-[5.6rem]"><span id="ptp-inj" class="text-fuchsia-700 font-black text-lg leading-none">20</span>
+                                <div class="flex flex-col items-start leading-tight"><span class="text-[11px] font-bold text-slate-700">만 원</span><span id="ptn-inj" class="text-[10px] font-bold whitespace-nowrap"></span></div></div></li>
                             <li class="flex items-center gap-2 p-2.5 rounded-xl border border-fuchsia-200 bg-fuchsia-50/40">
                                 <div class="flex flex-col items-start leading-tight flex-1 min-w-0"><span class="text-slate-700 font-bold text-[13px]">항암약물치료Ⅱ (주사제 외)</span><span class="text-[10px] text-fuchsia-600 font-bold mt-0.5">(연간 1회한)</span></div>
                                 <span class="flex-shrink-0 bg-white border border-dashed border-fuchsia-300 rounded-lg px-2 py-1 text-[11px] font-black text-fuchsia-700 whitespace-nowrap">연 1회</span>
-                                <div class="flex items-center gap-1 flex-shrink-0"><span id="ptp-oral" class="text-fuchsia-700 font-black text-lg leading-none">20</span>
-                                <div class="flex flex-col items-start leading-tight"><span class="text-[11px] font-bold text-slate-700">만 원</span><span id="ptn-oral" class="text-[10px] font-bold"></span></div></div></li>
+                                <div class="flex items-center justify-end gap-1 flex-shrink-0 w-[5.6rem]"><span id="ptp-oral" class="text-fuchsia-700 font-black text-lg leading-none">20</span>
+                                <div class="flex flex-col items-start leading-tight"><span class="text-[11px] font-bold text-slate-700">만 원</span><span id="ptn-oral" class="text-[10px] font-bold whitespace-nowrap"></span></div></div></li>
                             <li class="flex items-center gap-2 p-2.5 rounded-xl border border-fuchsia-200 bg-fuchsia-50/40">
                                 <div class="flex flex-col items-start leading-tight flex-1 min-w-0"><span class="text-slate-700 font-bold text-[13px]">항암방사선치료Ⅱ</span><span class="text-[10px] text-fuchsia-600 font-bold mt-0.5">(치료당)</span></div>
                                 <span class="flex items-baseline gap-0.5 flex-shrink-0 bg-white border border-fuchsia-300 rounded-lg px-1.5 py-0.5"><input id="cnt-rad" type="number" inputmode="numeric" min="0" max="365" value="30" oninput="setPerTxCount('rad', this.value)" aria-label="항암방사선치료Ⅱ 연간 횟수" class="w-11 text-center text-base font-black text-fuchsia-700 focus:outline-none bg-transparent"><span class="text-[11px] font-bold text-slate-500">회</span></span>
-                                <div class="flex items-center gap-1 flex-shrink-0"><span id="ptp-rad" class="text-fuchsia-700 font-black text-lg leading-none">20</span>
-                                <div class="flex flex-col items-start leading-tight"><span class="text-[11px] font-bold text-slate-700">만 원</span><span id="ptn-rad" class="text-[10px] font-bold"></span></div></div></li>
+                                <div class="flex items-center justify-end gap-1 flex-shrink-0 w-[5.6rem]"><span id="ptp-rad" class="text-fuchsia-700 font-black text-lg leading-none">20</span>
+                                <div class="flex flex-col items-start leading-tight"><span class="text-[11px] font-bold text-slate-700">만 원</span><span id="ptn-rad" class="text-[10px] font-bold whitespace-nowrap"></span></div></div></li>
                             <li class="flex justify-between items-center p-2 rounded-xl border border-dashed border-fuchsia-200 bg-white">
                                 <span class="text-slate-600 font-bold text-[12px]">유사암(기/갑) <span class="text-[10px] font-normal text-slate-400">각각 20%</span></span>
                                 <span class="text-fuchsia-700 font-black text-[15px]"><span id="ptp-sim">4</span><span class="text-[10px] text-slate-700 font-bold ml-0.5">만 원</span></span></li>
                         </ul>
                         <div class="mt-3 bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-3">
-                            <div class="text-[12px] font-extrabold text-fuchsia-800 mb-2"><span id="perTxYr">1년 미만</span> · 연간 치료 횟수는 위 칸에서 입력</div>
-                            <p class="text-[10px] text-slate-500 mt-2 leading-relaxed">※ 약관상 <b>주사제 외(먹는 약 등)는 연간 1회한</b>이라 2회 이상 입력해도 1회만 계산됩니다. 연차마다 따로 입력합니다.</p>
-                            <div id="perTxSum" class="text-[12px] font-bold text-fuchsia-700 mt-1.5 leading-relaxed"></div>
+                            <div id="perTxSum" class="text-[12px] font-bold text-fuchsia-700 leading-relaxed"></div>
                         </div>
                     </div>
                 </div>
@@ -1207,7 +1205,7 @@
             const y = currentYear;
             const levelUp = y >= 10 && checkLevelUp();
             const mult = y === 1 ? 0.5 : (levelUp ? 10 : 1);
-            const tag = y === 1 ? '<span class="text-red-500">(50% 감액)</span>' : (levelUp ? '<span class="text-blue-600">(1,000% 레벨업)</span>' : '');
+            const tag = y === 1 ? '<span class="text-red-500">(50% 감액)</span>' : (levelUp ? '<span class="text-blue-600 whitespace-nowrap">(1,000%)</span>' : '');
             const simMult = levelUp ? 10 : 1;
             ['inj', 'oral', 'rad'].forEach(kind => {
                 document.getElementById('ptp-' + kind).textContent = fmtMan(unit * mult);
@@ -1224,7 +1222,6 @@
                 el.disabled = !perTxOn;
                 if (document.activeElement !== el) el.value = perTxCounts[y][kind];
             });
-            document.getElementById('perTxYr').textContent = yearLabels[y];
             document.querySelectorAll('.pt-tag').forEach(t => { t.classList.toggle('hidden', !perTxOn); t.classList.toggle('block', perTxOn); });
 
             // 이번 연차 합산 결과 / 안내
