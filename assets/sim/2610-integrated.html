@@ -87,12 +87,16 @@
 <body class="text-slate-800 antialiased min-h-screen pb-20">
 
     <header class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-hd-500 rounded-lg flex items-center justify-center text-white font-bold text-xl leading-none pt-0.5">H</div>
-                <h1 class="text-xl font-extrabold text-slate-800 tracking-tight">주요치료통합보장 가이드</h1>
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+            <h1 class="text-lg md:text-xl font-extrabold text-slate-800 tracking-tight">2610 주요치료비통합보장 특약 보험금시뮬레이션</h1>
+            <div class="flex items-center gap-2 flex-wrap">
+                <button id="planBtn-10억" onclick="changePlan('10억')" class="px-3 py-1.5 rounded-full font-extrabold text-[13px] md:text-sm leading-tight text-center transition-all bg-hd-500 text-white shadow-md border-2 border-hd-500">💎 프리미엄 10억 통장<span class="pt-tag hidden w-max mx-auto mt-0.5 whitespace-nowrap text-[10px] leading-tight font-extrabold bg-fuchsia-600 text-white px-2 py-0.5 rounded-full" title="암추가보장 특약 가입">＋암추가 20만</span></button>
+                <button id="planBtn-5억" onclick="changePlan('5억')" class="px-3 py-1.5 rounded-full font-extrabold text-[13px] md:text-sm leading-tight text-center transition-all bg-white text-slate-600 border-2 border-slate-200 hover:bg-slate-50">📘 표준형 5억 통장<span class="pt-tag hidden w-max mx-auto mt-0.5 whitespace-nowrap text-[10px] leading-tight font-extrabold bg-fuchsia-600 text-white px-2 py-0.5 rounded-full" title="암추가보장 특약 가입">＋암추가 10만</span></button>
             </div>
-            <span id="planBadge" class="text-xs font-bold bg-slate-100 text-slate-600 px-3 py-1.5 rounded-full border border-slate-200">10억한도 갱신형</span>
+            <div class="flex items-center gap-2 ml-auto">
+                <button id="termBtn-10" onclick="changeTerm(10)" class="px-3 py-1.5 rounded-full font-extrabold text-[13px] md:text-sm transition-all bg-white text-slate-600 border-2 border-slate-200 hover:bg-slate-50 whitespace-nowrap">10년 갱신</button>
+                <button id="termBtn-20" onclick="changeTerm(20)" class="px-3 py-1.5 rounded-full font-extrabold text-[13px] md:text-sm transition-all bg-hd-500 text-white shadow-md border-2 border-hd-500 whitespace-nowrap">20년 갱신</button>
+            </div>
         </div>
     </header>
 
@@ -103,10 +107,6 @@
                 <!-- 플랜 선택 버튼 및 잔고 표시 (나란히 배치) -->
                 <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-2 mb-2">
                     <div class="flex flex-col gap-2">
-                        <div class="flex items-center gap-2">
-                            <button id="planBtn-10억" onclick="changePlan('10억')" class="px-4 py-2 md:px-5 md:py-2.5 rounded-full font-extrabold text-sm md:text-base transition-all bg-hd-500 text-white shadow-md border-2 border-hd-500">💎 프리미엄 10억 통장<span class="pt-tag hidden w-max mx-auto mt-0.5 whitespace-nowrap text-[10px] leading-tight font-extrabold bg-fuchsia-600 text-white px-2 py-0.5 rounded-full" title="암추가보장 특약 가입">＋암추가 20만</span></button>
-                            <button id="planBtn-5억" onclick="changePlan('5억')" class="px-4 py-2 md:px-5 md:py-2.5 rounded-full font-extrabold text-sm md:text-base transition-all bg-white text-slate-600 border-2 border-slate-200 hover:bg-slate-50">📘 표준형 5억 통장<span class="pt-tag hidden w-max mx-auto mt-0.5 whitespace-nowrap text-[10px] leading-tight font-extrabold bg-fuchsia-600 text-white px-2 py-0.5 rounded-full" title="암추가보장 특약 가입">＋암추가 10만</span></button>
-                        </div>
                         <span class="text-sm font-bold text-slate-500 mt-1">현재 통장 잔고</span>
                     </div>
                     <div class="text-right flex flex-wrap items-baseline justify-end gap-x-1">
@@ -144,7 +144,7 @@
             <div class="mb-3 flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <svg class="w-5 h-5 text-hd-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    <span class="text-base font-bold text-slate-800">가입 후 경과 기간 선택 (1~20년 차)</span>
+                    <span class="text-base font-bold text-slate-800" id="yearRangeLabel">가입 후 경과 기간 선택 (1~20년 차)</span>
                 </div>
                 <button onclick="resetAll()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 transition px-4 py-2 rounded-lg text-xs font-bold shadow-sm whitespace-nowrap">전체 초기화</button>
             </div>
@@ -481,7 +481,7 @@
         </div>
 
         <!-- 레벨업(10년 차 이후 보장 상향) 상세 설명 -->
-        <div class="mt-4 bg-blue-50 border border-blue-200 p-4 rounded-xl text-[12.5px] text-slate-700 shadow-inner leading-relaxed">
+        <div id="levelUpGuide" class="mt-4 bg-blue-50 border border-blue-200 p-4 rounded-xl text-[12.5px] text-slate-700 shadow-inner leading-relaxed">
             <h4 class="font-extrabold text-blue-800 text-[14px] mb-2">🚀 레벨업(LEVEL-UP) 상세 설명 — 10년 차 이후 보장금액 상향</h4>
             <div class="space-y-2.5">
                 <div>
@@ -590,6 +590,7 @@
         
         let INITIAL_BALANCE = PLAN_DATA[currentPlan].balance;
         let currentYear = 1;
+        let TERM = 20;   // 갱신 기간: 20(1~20년 차, 레벨업 있음) | 10(1~10년 차, 레벨업 없음)
         
         // 데이터 구조: 1~20년차 데이터를 각각의 배열로 보관
         let claims = {};
@@ -632,6 +633,24 @@
             document.getElementById('itemTooltip').classList.add('hidden');
         }
 
+        // 갱신 기간(10년/20년) 변경: 10년 갱신은 1~10년 차만, 레벨업 없음
+        function changeTerm(t) {
+            if (TERM === t) return;
+            if (getTotalClaimed() > 0) {
+                if (!confirm("갱신 기간을 변경하면 현재까지 시뮬레이션한 내역이 모두 초기화됩니다. 변경하시겠습니까?")) return;
+            }
+            TERM = t;
+            const on = "px-3 py-1.5 rounded-full font-extrabold text-[13px] md:text-sm transition-all bg-hd-500 text-white shadow-md border-2 border-hd-500 whitespace-nowrap";
+            const off = "px-3 py-1.5 rounded-full font-extrabold text-[13px] md:text-sm transition-all bg-white text-slate-600 border-2 border-slate-200 hover:bg-slate-50 whitespace-nowrap";
+            document.getElementById('termBtn-10').className = t === 10 ? on : off;
+            document.getElementById('termBtn-20').className = t === 20 ? on : off;
+            document.getElementById('yearRangeLabel').textContent = `가입 후 경과 기간 선택 (1~${t}년 차)`;
+            document.getElementById('levelUpGuide').classList.toggle('hidden', t === 10);
+            yearLabels[10] = t === 10 ? "10년 차" : "10년 차(레벨업)";
+            initYearSelector();
+            resetAll();
+        }
+
         // 플랜 변경 함수
         function changePlan(plan) {
             if (currentPlan === plan) return;
@@ -645,14 +664,12 @@
             
             // 버튼 스타일 갱신
             if (plan === '10억') {
-                document.getElementById('planBtn-10억').className = "px-5 py-2.5 rounded-full font-extrabold text-sm md:text-base transition-all bg-hd-500 text-white shadow-md border-2 border-hd-500";
-                document.getElementById('planBtn-5억').className = "px-5 py-2.5 rounded-full font-extrabold text-sm md:text-base transition-all bg-white text-slate-600 border-2 border-slate-200 hover:bg-slate-50";
+                document.getElementById('planBtn-10억').className = "px-3 py-1.5 rounded-full font-extrabold text-[13px] md:text-sm leading-tight text-center transition-all bg-hd-500 text-white shadow-md border-2 border-hd-500";
+                document.getElementById('planBtn-5억').className = "px-3 py-1.5 rounded-full font-extrabold text-[13px] md:text-sm leading-tight text-center transition-all bg-white text-slate-600 border-2 border-slate-200 hover:bg-slate-50";
             } else {
-                document.getElementById('planBtn-10억').className = "px-5 py-2.5 rounded-full font-extrabold text-sm md:text-base transition-all bg-white text-slate-600 border-2 border-slate-200 hover:bg-slate-50";
-                document.getElementById('planBtn-5억').className = "px-5 py-2.5 rounded-full font-extrabold text-sm md:text-base transition-all bg-hd-500 text-white shadow-md border-2 border-hd-500";
+                document.getElementById('planBtn-10억').className = "px-3 py-1.5 rounded-full font-extrabold text-[13px] md:text-sm leading-tight text-center transition-all bg-white text-slate-600 border-2 border-slate-200 hover:bg-slate-50";
+                document.getElementById('planBtn-5억').className = "px-3 py-1.5 rounded-full font-extrabold text-[13px] md:text-sm leading-tight text-center transition-all bg-hd-500 text-white shadow-md border-2 border-hd-500";
             }
-            
-            document.getElementById('planBadge').innerText = plan + "한도 갱신형";
             
             resetAll(); // 전체 초기화 및 UI 갱신
         }
@@ -667,7 +684,7 @@
         function initYearSelector() {
             const container = document.getElementById('yearSelector');
             let html = '';
-            for(let i=1; i<=20; i++) {
+            for(let i=1; i<=TERM; i++) {
                 html += `<button onclick="setYear(${i})" id="btn-yr-${i}" class="year-btn flex-1 text-center bg-white border border-slate-300 text-slate-600 transition px-1 py-1.5 md:px-2 md:py-2 rounded-lg text-[11px] md:text-sm font-medium hover:bg-slate-50 hover:border-hd-300 relative">${yearBtnHtml(i)}</button>`;
             }
             container.innerHTML = html;
@@ -677,7 +694,7 @@
             currentYear = y;
             
             // 상단 버튼 스타일 갱신
-            for(let i=1; i<=20; i++) {
+            for(let i=1; i<=TERM; i++) {
                 const btn = document.getElementById(`btn-yr-${i}`);
                 if(btn) {
                     let baseClass = "year-btn flex-1 text-center transition px-1 py-1.5 md:px-2 md:py-2 rounded-lg text-[11px] md:text-sm relative ";
@@ -688,7 +705,7 @@
                     }
 
                     // 10년 차 레벨업 버튼 특별 스타일 적용
-                    if (i === 10) {
+                    if (i === 10 && TERM === 20) {
                         if (checkLevelUp()) {
                             baseClass += "level-up-active ";
                         } else {
@@ -708,6 +725,7 @@
         }
 
         function checkLevelUp() {
+            if (TERM === 10) return false;   // 10년 갱신형은 레벨업 없음
             // 1~9년차까지 사용한 총액 계산
             let totalUpTo9 = 0;
             for(let i = 1; i <= 9; i++) {
@@ -967,7 +985,11 @@
 
             // 10년차 버튼 이름 동적 변경 (조건 충족 시 '레벨업', 잔고 90% 미만 시 일반 '10년 차')
             const btn10 = document.getElementById('btn-yr-10');
-            if(btn10) {
+            if(btn10 && TERM === 10) {
+                yearLabels[10] = "10년 차";
+                btn10.innerText = yearLabels[10];
+                btn10.classList.remove('level-up-active', 'level-up-inactive');
+            } else if(btn10) {
                 if(checkLevelUp()) {
                     yearLabels[10] = "10년 차(레벨업)";
                     btn10.innerText = yearLabels[10];
