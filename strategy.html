@@ -38,6 +38,15 @@ body{font-family:'Noto Sans KR',sans-serif;background:#FBF8F5;color:#26282C;font
 .mcard p{font-size:14.5px;color:#6B7078}
 .mcard .go{margin-top:12px;font-size:14px;font-weight:800;color:#E8651A}
 .mcard.empty .go{color:#9AA0A8}
+.mcard.tool{border-color:#FFD2B5}
+.mcard.tool .thumb{background-position:center top}
+.mcard.tool .thumb .menu{background:#E8651A;border-color:rgba(255,255,255,.5)}
+.tl{display:none;position:fixed;inset:0;z-index:10000;background:#fff;flex-direction:column}
+.tl.on{display:flex}
+.tl-top{display:flex;align-items:center;gap:8px;background:#1A2744;color:#fff;padding:10px 12px;padding-top:max(10px,env(safe-area-inset-top))}
+.tl-title{flex:1;font-size:15.5px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-b{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;font-size:17px;font-weight:900;cursor:pointer;font-family:inherit}
+.tl iframe{flex:1;width:100%;border:0;background:#f8fafc}
 .mcard .adm{position:absolute;top:10px;right:10px;display:flex;gap:6px;z-index:2}
 .mcard .adm span{background:rgba(255,255,255,.95);border:1px solid #EEE7DF;border-radius:999px;font-size:12.5px;font-weight:800;padding:5px 10px;color:#1A2744}
 .mcard .adm span.del{color:#C0392B}
@@ -126,6 +135,14 @@ body:has(#PENBAR.open) .pv-scroll:not(.w){padding-right:132px}
   </div>
 </footer>
 
+<!-- 시뮬레이터 전체 화면 -->
+<div class="tl" id="tl" role="dialog" aria-modal="true" aria-label="시뮬레이터" data-pen-skip>
+  <div class="tl-top"><div class="tl-title" id="tlTitle"></div>
+    <button class="tl-b" id="tlNew" type="button" title="새 창으로 열기">↗</button>
+    <button class="tl-b" id="tlClose" type="button" aria-label="닫기">✕</button></div>
+  <iframe id="tlFrame" title="시뮬레이터" src="about:blank"></iframe>
+</div>
+
 <!-- 프레젠테이션 뷰어 -->
 <div class="pv" id="pv" role="dialog" aria-modal="true" aria-label="프레젠테이션">
   <div class="pv-top" data-pen-skip>
@@ -190,7 +207,14 @@ function render(){
   if(!state.months.length){box.innerHTML='<div class="note">아직 올라온 영업전략 자료가 없습니다.</div>';return;}
   box.innerHTML=state.months.map(function(m,i){
     var n=(m.slides||[]).length, first=n?m.slides[0]:null;
-    return '<button type="button" class="mcard'+(n?'':' empty')+'" data-i="'+i+'">'+
+    /* 그 달의 시뮬레이터 등 도구 카드 — 해당 월 카드보다 앞에 놓인다 */
+    var tools=(m.tools||[]).map(function(t,ti){
+      return '<button type="button" class="mcard tool" data-i="'+i+'" data-t="'+ti+'">'+
+        '<div class="thumb"'+(t.thumb?' style="background-image:url(\''+esc(t.thumb)+'\')"':'')+'>'+(t.thumb?'':'<span class="ico">🧮</span>')+
+        '<span class="menu">'+esc(t.tag||'시뮬레이터')+'</span></div>'+
+        '<div class="info"><h3>'+esc(t.title)+'</h3><p>'+esc(t.desc||'')+'</p><div class="go">시뮬레이터 열기 →</div></div></button>';
+    }).join('');
+    return tools+'<button type="button" class="mcard'+(n?'':' empty')+'" data-i="'+i+'">'+
       (isAdmin()?'<span class="adm"><span class="add" data-a="add">＋ 올리기</span>'+(n?'<span class="del" data-a="del">삭제</span>':'')+'</span>':'')+
       '<div class="thumb"'+(first?' style="background-image:url(\''+esc(first)+'\')"':'')+'>'+(first?'':'<span class="ico">📊</span>')+
       '<span class="menu">'+m.year+'년 '+m.month+'월</span></div>'+
@@ -202,6 +226,7 @@ function render(){
 $('months').addEventListener('click',function(e){
   var c=e.target.closest('.mcard'); if(!c)return;
   var m=state.months[+c.getAttribute('data-i')], a=e.target.closest('[data-a]');
+  if(c.hasAttribute('data-t')){openTool(m.tools[+c.getAttribute('data-t')]);return;}
   if(a&&a.getAttribute('data-a')==='del'){delMonth(m);return;}
   if((a&&a.getAttribute('data-a')==='add')||!(m.slides||[]).length){ if(isAdmin())openUp(m); return; }
   openViewer(m,0);
@@ -211,6 +236,22 @@ function load(){
     .then(function(d){state=d&&d.months?d:{months:[]};render();})
     .catch(function(){$('months').innerHTML='<div class="note">자료 목록을 불러오지 못했습니다. 새로고침 해 주세요.</div>';});
 }
+
+/* ── 시뮬레이터(도구) 전체 화면 열기 ── */
+function openTool(t){
+  if(!t||!t.href)return;
+  $('tlTitle').textContent=t.title||''; $('tlFrame').src=t.href;
+  $('tl').classList.add('on'); document.body.style.overflow='hidden';
+  try{history.pushState({tool:1},'');}catch(e){}
+}
+function closeTool(fromPop){
+  var o=$('tl'); if(!o.classList.contains('on'))return;
+  o.classList.remove('on'); document.body.style.overflow=''; $('tlFrame').src='about:blank';
+  if(!fromPop){try{if(history.state&&history.state.tool)history.back();}catch(e){}}
+}
+$('tlClose').onclick=function(){closeTool(false);};
+$('tlNew').onclick=function(){var f=$('tlFrame').getAttribute('src');if(f&&f!=='about:blank')window.open(f,'_blank');};
+window.addEventListener('popstate',function(){closeTool(true);});
 
 /* ── 프레젠테이션 뷰어 ── */
 function openViewer(m,i){cur=m;idx=i||0;zoom=1;$('pv').classList.add('on');document.body.style.overflow='hidden';show();}

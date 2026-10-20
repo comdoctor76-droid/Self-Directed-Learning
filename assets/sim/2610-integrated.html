@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주요치료통합보장(10억한도) 인터랙티브 가이드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans KR"', 'sans-serif'],
+                    },
+                    colors: {
+                        hd: {
+                            50: '#fff4ed',
+                            100: '#ffe6d4',
+                            200: '#fcd3b6',
+                            500: '#ff6600', // 현대해상 메인 오렌지
+                            600: '#e65c00',
+                            700: '#cc5200',
+                            900: '#7a3100',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f8fafc; }
+        .tab-active { border-bottom: 3px solid #ff6600; color: #ff6600; font-weight: 700; }
+        .tab-inactive { border-bottom: 3px solid #e2e8f0; color: #64748b; }
+        .progress-bar-fill { transition: width 0.5s ease-in-out; }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-item { transition: all 0.2s ease; cursor: pointer; }
+        
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @keyframes pulseRed {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); border-color: #ef4444; color: #ef4444; }
+            70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); border-color: #fca5a5; color: #f87171; }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); border-color: #ef4444; color: #ef4444; }
+        }
+        .level-up-active {
+            animation: pulseRed 1.5s infinite !important;
+            font-weight: 900 !important;
+        }
+        .level-up-inactive {
+            background-color: #f1f5f9 !important;
+            color: #94a3b8 !important;
+            border-color: #cbd5e1 !important;
+            opacity: 0.8;
+        }
+
+        #itemTooltip {
+            position: fixed;
+            z-index: 200;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #ff6600;
+            color: #333;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            max-width: 250px;
+            font-size: 13px;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen pb-20">
+
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-hd-500 rounded-lg flex items-center justify-center text-white font-bold text-xl leading-none pt-0.5">H</div>
+                <h1 class="text-xl font-extrabold text-slate-800 tracking-tight">주요치료통합보장 가이드</h1>
+            </div>
+            <span id="planBadge" class="text-xs font-bold bg-slate-100 text-slate-600 px-3 py-1.5 rounded-full border border-slate-200">10억한도 갱신형</span>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 mt-6 space-y-6">
+        
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden relative mb-4">
+            <div class="p-5 md:p-7">
+                <!-- 플랜 선택 버튼 및 잔고 표시 (나란히 배치) -->
+                <div class="flex justify-between items-end mb-2">
+                    <div class="flex flex-col gap-2">
+                        <div class="flex items-center gap-2">
+                            <button id="planBtn-10억" onclick="changePlan('10억')" class="px-4 py-2 md:px-5 md:py-2.5 rounded-full font-extrabold text-sm md:text-base transition-all bg-hd-500 text-white shadow-md border-2 border-hd-500">💎 프리미엄 10억 통장</button>
+                            <button id="planBtn-5억" onclick="changePlan('5억')" class="px-4 py-2 md:px-5 md:py-2.5 rounded-full font-extrabold text-sm md:text-base transition-all bg-white text-slate-600 border-2 border-slate-200 hover:bg-slate-50">📘 표준형 5억 통장</button>
+                        </div>
+                        <span class="text-sm font-bold text-slate-500 mt-1">현재 통장 잔고</span>
+                    </div>
+                    <div class="text-right flex items-baseline gap-1">
+                        <span class="text-4xl md:text-5xl font-black text-hd-600 tracking-tight" id="balanceDisplay">100,000</span>
+                        <span class="text-xl md:text-2xl font-bold text-hd-600">만원</span>
+                    </div>
+                </div>
+
+                <!-- 잔고 막대 표시 -->
+                <div class="w-full bg-slate-700 rounded-full h-5 overflow-hidden relative shadow-inner flex" id="progressContainer">
+                    <div class="bg-gradient-to-r from-hd-500 to-orange-400 h-5 progress-bar-fill flex items-center justify-end px-2 whitespace-nowrap" id="progressBar" style="width: 100%;">
+                        <span class="text-white text-xs font-bold" id="progressText">100.0%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- LEVEL-UP 알림 바 -->
+            <div id="levelUpBanner" class="bg-blue-50 border-t border-blue-100 p-4 transition-all hidden">
+                <div class="flex items-start gap-3">
+                    <div class="bg-blue-500 text-white rounded-full p-1 mt-0.5 shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <div class="text-sm text-blue-900">
+                        <strong class="text-blue-700 block mb-0.5">LEVEL-UP 달성 완료! (120% 상향 적용중)</strong>
+                        1~9년 차까지의 잔고가 90%(9억) 이상 유지되어, 현재 선택하신 10년 차 이상 보장부터는 약정금액의 <strong>120%</strong>가 지급(차감)됩니다.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 가입 후 경과 기간 선택 & 전체 초기화 -->
+        <div class="pt-2 pb-2 mt-4">
+            <div class="mb-3 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-hd-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <span class="text-base font-bold text-slate-800">가입 후 경과 기간 선택 (1~20년 차)</span>
+                </div>
+                <button onclick="resetAll()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 transition px-4 py-2 rounded-lg text-xs font-bold shadow-sm whitespace-nowrap">전체 초기화</button>
+            </div>
+            <!-- 모바일 4줄, 데스크탑 2줄 배치를 위한 grid 적용 -->
+            <div id="yearSelector" class="grid grid-cols-5 md:grid-cols-10 gap-1.5 md:gap-2 mb-4">
+                <!-- 자바스크립트로 1~20년 버튼이 주입됩니다. -->
+            </div>
+        </div>
+
+        <!-- 연도별 합산 내역 -->
+        <div class="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-200 shadow-sm">
+            <h3 class="text-sm font-bold text-slate-700 mb-3 tracking-tight">연도별 보장금액 합산 내역</h3>
+            <div id="yearlySummaryBox" class="space-y-3 text-sm">
+                <!-- 자바스크립트로 요약 내용이 주입됩니다. -->
+            </div>
+            <div class="text-center text-[11px] font-bold text-slate-400 mt-3">
+                ↓ 아래 항목을 클릭하여 시뮬레이션 해보세요. 다시 누르면 취소됩니다.
+            </div>
+        </div>
+
+        <!-- 모바일 가로모드 권장 메시지 -->
+        <div class="block lg:hidden text-center text-[13px] font-bold text-hd-600 bg-hd-50 py-2.5 mb-4 rounded-xl border border-hd-200 shadow-sm">
+        <!-- 전체 보장 항목 (가로 3칸 배열) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+            
+            <!-- 1칸: 암 보장 -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-black text-sm">1~3</span>
+                    <h3 class="text-base font-bold text-slate-800">암 보장</h3>
+                </div>
+                <p class="text-[10px] text-slate-400 mb-3">* 기타피부암, 갑상선암 제외 / <strong class="text-red-500">전액본인부담(비급여포함)</strong></p>
+                
+                <ul class="space-y-2.5 flex-1">
+                    <li id="btn-c1" onclick="toggleItem('c1', '암 수술비', 'surgery', true)" onmouseenter="showItemTooltip(event, 'c1')" onmousemove="moveItemTooltip(event)" onmouseleave="hideItemTooltip()" class="btn-item flex justify-between items-center p-2.5 rounded-xl border border-red-200 bg-red-50/20 hover:bg-red-50 transition-all cursor-pointer relative overflow-hidden" data-reduction="true" data-category="surgery">
+                        <div class="absolute inset-0 bg-red-100/30"></div>
+                        <div class="flex flex-col items-start leading-tight relative z-10">
+                            <span class="text-slate-700 font-bold text-[13px]">암 수술비</span>
+                            <span class="text-[10px] text-red-500 font-bold mt-0.5">(회당)</span>
+                        </div>
+                        <div class="flex items-center gap-1 relative z-10">
+                            <span class="price-number text-hd-600 font-black text-lg leading-none"></span>
+                            <div class="flex flex-col items-start leading-tight">
+                                <span class="text-[11px] font-bold text-slate-700">만 원</span>
+                                <span class="note-display text-[10px] text-red-500 font-bold mt-0.5 hidden"></span>
+                            </div>
+                        </div>
+                    </li>
+                    <li id="btn-c2" onclick="toggleItem('c2', '항암 약물치료', 'drug', true)" onmouseenter="showItemTooltip(event, 'c2')" onmousemove="moveItemTooltip(event)" onmouseleave="hideItemTooltip()" class="btn-item flex justify-between items-center p-2.5 rounded-xl border border-blue-200 bg-blue-50/20 hover:bg-blue-50 transition-all cursor-pointer relative overflow-hidden" data-reduction="true" data-category="drug">
+                        <div class="absolute inset-0 bg-blue-100/30"></div>
+                        <div class="flex flex-col items-start leading-tight relative z-10">
+                            <span class="text-slate-700 font-bold text-[13px]">항암 약물치료</span>
+                            <span class="text-[10px] text-slate-400 font-normal mt-0.5">(연 1회)</span>
+                        </div>
+                        <div class="flex items-center gap-1 relative z-10">
+                            <span class="price-number text-hd-600 font-black text-lg leading-none"></span>
+                            <div class="flex flex-col items-start leading-tight">
+                                <span class="text-[11px] font-bold text-slate-700">만 원</span>
+                                <span class="note-display text-[10px] text-red-500 font-bold mt-0.5 hidden"></span>
+                            </div>
+                        </div>
+                    </li>
+                    <li id="btn-c5" onclick="toggleItem('c5', '항암 약물치료 (4기)', 'drug', true)" onmouseenter="showItemTooltip(event, 'c5')" onmousemove="moveItemTooltip(event)" onmouseleave="hideItemTooltip()" class="btn-item flex justify-between items-center p-2.5 rounded-xl border border-blue-300 bg-blue-50/40 hover:bg-blue-100 transition-all cursor-pointer relative overflow-hidden" data-reduction="true" data-category="drug">
+                        <div class="absolute inset-0 bg-blue-200/40"></div>
+                        <div class="flex flex-col items-start leading-tight relative z-10">
+                            <span class="text-red-600 font-extrabold text-[13px]">항암 약물치료 (4기)</span>
+                            <span class="text-[10px] text-slate-500 font-normal mt-0.5">(연 1회)</span>
+                        </div>
+                        <div class="flex items-center gap-1 relative z-10">
+                            <span class="price-number text-hd-600 font-black text-lg leading-none"></span>
+                            <div class="flex flex-col items-start leading-tight">
+                                <span class="text-[11px] font-bold text-slate-700">만 원</span>
+                                <span class="note-display text-[10px] text-red-500 font-bold mt-0.5 hidden"></span>
+                            </div>
+                        </div>
+                    </li>
+                    <li id="btn-c3" onclick="toggleItem('c3', '항암 방사선치료', 'radiation', true)" onmouseenter="showItemTooltip(event, 'c3')" onmousemove="moveItemTooltip(event)" onmouseleave="hideItemTooltip()" class="btn-item flex justify-between items-center p-2.5 rounded-xl border border-yellow-300 bg-yellow-50/20 hover:bg-yellow-50 transition-all cursor-pointer relative overflow-hidden" data-reduction="true" data-category="radiation">
+                        <div class="absolute inset-0 bg-yellow-100/30"></div>
+                        <div class="flex flex-col items-start leading-tight relative z-10">
+                            <span class="text-slate-700 font-bold text-[13px]">항암 방사선치료</span>
+                            <span class="text-[10px] text-slate-400 font-normal mt-0.5">(연 1회)</span>
+                        </div>
+                        <div class="flex items-center gap-1 relative z-10">
+                            <span class="price-number text-hd-600 font-black text-lg leading-none"></span>
+                            <div class="flex flex-col items-start leading-tight">
+                                <span class="text-[11px] font-bold text-slate-700">만 원</span>
+                                <span class="note-display text-[10px] text-red-500 font-bold mt-0.5 hidden"></span>
+                            </div>
+                        </div>
+                    </li>
+                    <li id="btn-c4" onclick="toggleItem('c4', '종합병원 중환자실', 'other', true)" onmouseenter="showItemTooltip(event, 'c4')" onmousemove="moveItemTooltip(event)" onmouseleave="hideItemTooltip()" class="btn-item flex justify-between items-center p-2.5 rounded-xl border border-slate-300 bg-slate-50/50 hover:bg-slate-100 transition-all cursor-pointer relative overflow-hidden" data-reduction="true" data-category="other">
+                        <div class="absolute inset-0 bg-slate-200/30"></div>
+                        <div class="flex flex-col items-start leading-tight relative z-10">
+                            <span class="text-slate-700 font-bold text-[13px]">종합병원 중환자실</span>
+                            <span class="text-[10px] text-slate-400 font-normal mt-0.5">(연 1회)</span>
+                        </div>
+                        <div class="flex items-center gap-1 relative z-10">
+                            <span class="price-number text-hd-600 font-black text-lg leading-none"></span>
+                            <div class="flex flex-col items-start leading-tight">
+                                <span class="text-[11px] font-bold text-slate-700">만 원</span>
+                                <span class="note-display text-[10px] text-red-500 font-bold mt-0.5 hidden"></span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 2칸: 소액암 & 기타 질병 -->
+            <div class="flex flex-col space-y-4">
+                <!-- 소액암 -->
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-sm font-bold text-slate-800 mb-2">유사암(기/갑) <span class="text-[10px] font-normal text-slate-400">/ <strong class="text-red-500">전액본인부담(비급여포함)</strong></span></h3>
+                    <ul class="space-y-2.5">
+                        <li id="btn-c8_1" onclick="toggleItem('c8_1', '암 수술비 (소액암)', 'surgery', false)" onmouseenter="showItemTooltip(event, 'c8_1')" onmousemove="moveItemTooltip(event)" onmouseleave="hideItemTooltip()" class="btn-item flex justify-between items-center p-2.5 rounded-xl border border-red-100 bg-red-50/10 hover:bg-red-50 transition-all cursor-pointer relative overflow-hidden" data-reduction="false" data-category="surgery">
+                            <div class="absolute inset-0 bg-red-50/30"></div>
+                            <div class="flex flex-col items-start leading-tight relative z-10">
+                                <span class="text-slate-700 font-bold text-[13px]">암 수술비</span>
+                                <span class="text-[10px] text-red-500 font-bold mt-0.5">(회당)</span>
+                            </div>
+                            <div class="flex items-center gap-1 relative z-10">
+                                <span class="price-number text-hd-600 font-black text-lg leading-none"></span>
+                                <div class="flex flex-col items-start leading-tight">
+                                    <span class="text-[11px] font-bold text-slate-700">만 원</span>
+                                    <span class="note-display text-[10px] text-red-500 font-bold mt-0.5 hidden"></span>
+                                </div>
+                            </div>
+                        </li>
+                        <li id="btn-c8_2" onclick="toggleItem('c8_2', '항암 약물치료 (소액암)', 'drug', false)" onmouseenter="showItemTooltip(event, 'c8_2')" onmousemove="moveItemTooltip(event)" onmouseleave="hideItemTooltip()" class="btn-item flex justify-between items-center p-2.5 rounded-xl border border-blue-100 bg-blue-50/10 hover:bg-blue-50 transition-all cursor-pointer relative overflow-hidden" data-reduction="false" data-category="drug">
+                            <div class="absolute inset-0 bg-blue-50/30"></div>
+                            <div class="flex flex-col items-start leading-tight relative z-10">
+                                <span class="text-slate-700 font-bold text-[13px]">항암 약물치료</span>
+                                <span class="text-[10px] text-slate-400 font-normal mt-0.5">(각 연 1회)</span>
+                            </div>
+                            <div class="flex items-center gap-1 relative z-10">
+                                <span class="price-number text-hd-600 font-black text-lg leading-none"></span>
+                                <div class="flex flex-col items-start leading-tight">
+                                    <span class="text-[11px] font-bold text-slate-700">만 원</span>
+                                    <span class="note-display text-[10px] text-red-500 font-bold mt-0.5 hidden"></span>
+                                </div>
+                            </div>
+                        </li>
+                        <li id="btn-c8_3" onclick="toggleItem('c8_3', '항암 방사선치료 (소액암)', 'radiation', false)" onmouseenter="showItemTooltip(event, 'c8_3')" onmousemove="moveItemTooltip(event)" onmouseleave="hideItemTooltip()" class="btn-item flex justify-between items-center p-2.5 rounded-xl border border-yellow-200 bg-yellow-50/10 hover:bg-yellow-50 transition-all cursor-pointer relative overflow-hidden" data-reduction="false" data-category="radiation">
+                            <div class="absolute inset-0 bg-yellow-50/30"></div>
+                            <div class="flex flex-col items-start leading-tight relative z-10">
+                                <span class="text-slate-700 font-bold text-[13px]">항암 방사선치료</span>
+                                <span class="text-[10px] text-slate-400 font-normal mt-0.5">(각 연 1회)</span>
+                            </div>
+                            <div class="flex items-center gap-1 relative z-10">
+                                <span class="price-number text-hd-600 font-black text-lg leading-none"></span>
+                                <div class="flex flex-col items-start leading-tight">
+                                    <span class="text-[11px] font-bold text-slate-700">만 원</span>
+                                    <span class="note-display text-[10px] text-red-500 font-bold mt-0.5 hidden"></span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 기타 질병 -->
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex-1">
+                    <h3 class="text-sm font-bold text-slate-800 mb-2">기타 질병 <span class="text-[10px] font-normal text-slate-400 ml-1">* 감액 없음</span></h3>
+                    <ul class="space-y-2">
+                        <li id="btn-o1" onclick="toggleItem('o1', '급여 특정중증치료(4종)', 'other', false)" onmouseenter="showItemTooltip(event, 'o1')" onmousemove="moveItemTooltip(event)" onmouseleave="hideItemTooltip()" class="btn-item flex justify-between items-center p-2 rounded-xl border border-slate-200 bg-slate-50/30 hover:bg-slate-50 transition-all cursor-pointer" data-reduction="false" data-category="other">
+                            <span class="text-slate-700 font-bold text-[12px]">급여 특정중증(4종)</span>
+                            <div class="flex items-center gap-1">
+                                <span class="price-number text-hd-600 font-black text-[15px] leading-none"></span>
+                                <div class="flex flex-col items-start leading-tight">
+                                    <span class="text-[10px] font-bold text-slate-700">만 원</span>
+                                </div>
+                            </div>
+                        </li>
+                        <li id="btn-o2" onclick="toggleItem('o2', '질병 비급여 수술 (종합)', 'other', false)" onmouseenter="showItemTooltip(event, 'o2')" onmousemove="moveItemTooltip(event)" onmouseleave="hideItemTooltip()" class="btn-item flex justify-between items-center p-2 rounded-xl border border-slate-200 bg-slate-50/30 hover:bg-slate-50 transition-all cursor-pointer" data-reduction="false" data-category="other">
+                            <div class="flex flex-col items-start leading-tight">
+                                <span class="text-slate-700 font-bold text-[12px]">비급여 수술(종합)</span>
+                                <span class="text-[10px] text-red-500 font-bold mt-0.5">(회당)</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="price-number text-hd-600 font-black text-[15px] leading-none"></span>
+                                <div class="flex flex-col items-start leading-tight">
+                                    <span class="text-[10px] font-bold text-slate-700">만 원</span>
+                                </div>
+                            </div>
+                        </li>
+                        <li id="btn-o3" onclick="toggleItem('o3', '질병 비급여 수술 (상급)', 'other', false)" onmouseenter="showItemTooltip(event, 'o3')" onmousemove="moveItemTooltip(event)" onmouseleave="hideItemTooltip()" class="btn-item flex justify-between items-center p-2 rounded-xl border border-slate-200 bg-slate-50/30 hover:bg-slate-50 transition-all cursor-pointer" data-reduction="false" data-category="other">
+                            <div class="flex flex-col items-start leading-tight">
+                                <span class="text-slate-700 font-bold text-[12px]">비급여 수술(상급)</span>
+                                <span class="text-[10px] text-red-500 font-bold mt-0.5">(회당)</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="price-number text-hd-600 font-black text-[15px] leading-none"></span>
+                                <div class="flex flex-col items-start leading-tight">
+                                    <span class="text-[10px] font-bold text-slate-700">만 원</span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 3칸: 뇌심 A & B -->
+            <div class="flex flex-col space-y-4">
+                <!-- 뇌/심장 (A) -->
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-black text-sm">A</span>
+                        <h3 class="text-base font-bold text-slate-800">뇌/심장 수술·입원</h3>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mb-3">* 신체를 절개하는 수술 등</p>
+                    
+                    <ul class="space-y-2.5">
+                        <li id="btn-h1" onclick="toggleItem('h1', '수술비 (A)', 'heart_surgery', true)" onmouseenter="showItemTooltip(event, 'h1')" onmousemove="moveItemTooltip(event)" onmouseleave="hideItemTooltip()" class="btn-item flex justify-between items-center p-2.5 rounded-xl border border-purple-200 bg-purple-50/20 hover:bg-purple-50 transition-all cursor-pointer relative overflow-hidden" data-reduction="true" data-category="heart_surgery">
+                            <div class="absolute inset-0 bg-purple-100/30"></div>
+                            <div class="flex flex-col items-start leading-tight relative z-10">
+                                <span class="text-slate-700 font-bold text-[13px]">수술비 (A)</span>
+                                <span class="text-[10px] text-red-500 font-bold mt-0.5">(회당)</span>
+                            </div>
+                            <div class="flex items-center gap-1 relative z-10">
+                                <span class="price-number text-hd-600 font-black text-lg leading-none"></span>
+                                <div class="flex flex-col items-start leading-tight">
+                                    <span class="text-[11px] font-bold text-slate-700">만 원</span>
+                                    <span class="note-display text-[10px] text-red-500 font-bold mt-0.5 hidden"></span>
+                                </div>
+                            </div>
+                        </li>
+                        <li id="btn-h2" onclick="toggleItem('h2', '중환자실 입원 (A)', 'other', true)" onmouseenter="showItemTooltip(event, 'h2')" onmousemove="moveItemTooltip(event)" onmouseleave="hideItemTooltip()" class="btn-item flex flex-col p-2.5 rounded-xl border border-slate-300 bg-slate-50/50 hover:bg-slate-100 transition-all cursor-pointer relative overflow-hidden" data-reduction="true" data-category="other">
+                            <div class="absolute inset-0 bg-slate-200/30"></div>
+                            <div class="flex justify-between items-center w-full relative z-10">
+                                <div class="flex flex-col items-start leading-tight">
+                                    <span class="text-slate-700 font-bold text-[13px]">중환자실 입원 (A)</span>
+                                    <span class="text-[10px] text-slate-400 font-normal mt-0.5">(연 1회)</span>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <span class="price-number text-hd-600 font-black text-lg leading-none"></span>
+                                    <div class="flex flex-col items-start leading-tight">
+                                        <span class="text-[11px] font-bold text-slate-700">만 원</span>
+                                        <span class="note-display text-[10px] text-red-500 font-bold mt-0.5 hidden"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[10px] text-slate-500 mt-1.5 bg-white inline-block px-1.5 py-0.5 rounded border border-slate-200 w-max relative z-10">종합병원 이상급</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 뇌/심장 (B) -->
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-black text-sm">B</span>
+                        <h3 class="text-base font-bold text-slate-800">뇌/심장 혈전 시술</h3>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mb-3">* 막힌 혈관 뚫는 치료</p>
+                    
+                    <ul class="space-y-2.5">
+                        <li id="btn-h3" onclick="toggleItem('h3', '혈전 용해 치료 (B)', 'heart_procedure', true)" onmouseenter="showItemTooltip(event, 'h3')" onmousemove="moveItemTooltip(event)" onmouseleave="hideItemTooltip()" class="btn-item flex flex-col p-2.5 rounded-xl border border-teal-200 bg-teal-50/20 hover:bg-teal-50 transition-all cursor-pointer relative overflow-hidden" data-reduction="true" data-category="heart_procedure">
+                            <div class="absolute inset-0 bg-teal-100/30"></div>
+                            <div class="flex justify-between items-center w-full relative z-10">
+                                <div class="flex flex-col items-start leading-tight">
+                                    <span class="text-slate-700 font-bold text-[13px]">혈전 용해 치료 (B)</span>
+                                    <span class="text-[10px] text-slate-400 font-normal mt-0.5">(연 1회)</span>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <span class="price-number text-hd-600 font-black text-lg leading-none"></span>
+                                    <div class="flex flex-col items-start leading-tight">
+                                        <span class="text-[11px] font-bold text-slate-700">만 원</span>
+                                        <span class="note-display text-[10px] text-red-500 font-bold mt-0.5 hidden"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li id="btn-h4" onclick="toggleItem('h4', '급여 특정 혈전 제거술 (B)', 'heart_procedure', true)" onmouseenter="showItemTooltip(event, 'h4')" onmousemove="moveItemTooltip(event)" onmouseleave="hideItemTooltip()" class="btn-item flex flex-col p-2.5 rounded-xl border border-teal-200 bg-teal-50/20 hover:bg-teal-50 transition-all cursor-pointer relative overflow-hidden" data-reduction="true" data-category="heart_procedure">
+                            <div class="absolute inset-0 bg-teal-100/30"></div>
+                            <div class="flex justify-between items-center w-full relative z-10">
+                                <div class="flex flex-col items-start leading-tight">
+                                    <span class="text-slate-700 font-bold text-[13px]">특정 혈전 제거술 (B)</span>
+                                    <span class="text-[10px] text-slate-400 font-normal mt-0.5">(연 1회)</span>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <span class="price-number text-hd-600 font-black text-lg leading-none"></span>
+                                    <div class="flex flex-col items-start leading-tight">
+                                        <span class="text-[11px] font-bold text-slate-700">만 원</span>
+                                        <span class="note-display text-[10px] text-red-500 font-bold mt-0.5 hidden"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 면책/감액 대기기간 요약 (하단) -->
+        <div class="mt-4 border-t border-slate-200 pt-4 bg-slate-50 p-4 rounded-xl text-[12px] text-slate-600 border shadow-inner">
+            <h4 class="font-bold text-slate-800 mb-2">※ 가입 직후 보장 제한 (면책/감액) 요약</h4>
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1">
+                    <strong class="text-red-600 bg-red-50 px-1 rounded mr-1">암 질환</strong>
+                    90일 대기(면책) 후 보장 개시 / 1년 미만 발병 시 50% 감액 (단, 소액암 제외)
+                </div>
+                <div class="flex-1">
+                    <strong class="text-blue-600 bg-blue-50 px-1 rounded mr-1">뇌·심장 질환</strong>
+                    가입 즉시 보장 개시 (면책 없음) / 1년 미만 시술, 수술 등 발생 시 50% 감액
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 커스텀 모달 (경고창) -->
+    <div id="customModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl transform scale-95 transition-transform duration-200" id="modalContent">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800" id="modalTitle">알림</h3>
+            </div>
+            <p class="text-slate-600 mb-6" id="modalMessage">메시지 내용</p>
+            <button onclick="closeModal()" class="w-full bg-hd-500 hover:bg-hd-600 text-white font-bold py-3 rounded-xl transition-colors">확인</button>
+        </div>
+    </div>
+
+    <!-- 툴팁 컨테이너 (그래프용) -->
+    <div id="chartTooltip" class="fixed z-[150] hidden bg-slate-800/95 text-white text-xs px-3 py-2 rounded-lg shadow-xl pointer-events-none transform -translate-x-1/2 -translate-y-full mt-[-10px] whitespace-nowrap border border-slate-600 z-50">
+        <div id="tooltipContent" class="font-bold text-center leading-relaxed"></div>
+        <div class="absolute left-1/2 bottom-[-5px] w-2.5 h-2.5 bg-slate-800/95 border-b border-r border-slate-600 transform -translate-x-1/2 rotate-45"></div>
+    </div>
+
+    <!-- 상세 설명 툴팁 (마우스 오버) -->
+    <div id="itemTooltip" class="fixed z-[200] hidden bg-white/95 border-2 border-hd-500 text-slate-800 text-sm px-4 py-3 rounded-xl shadow-xl max-w-[260px] pointer-events-none transition-opacity duration-200">
+    </div>
+
+    <script>
+        let currentPlan = '10억';
+        let selectedBarForRemove = null;
+        
+        const PLAN_DATA = {
+            '10억': {
+                balance: 100000,
+                items: {
+                    c1: { base: 1000, desc: '건강보험이 적용되지 않아 환자가 100% 생돈을 내야 하는 비싼 암 수술을 받을 때 지원합니다.' },
+                    c2: { base: 5000, desc: '표적항암제처럼 효과는 좋지만 비싼 약물 치료를 받을 때 1년에 한 번씩 크게 지원합니다.' },
+                    c3: { base: 5000, desc: '중입자, 양성자 등 고액의 최신 항암 방사선 치료를 받을 때 1년에 한 번씩 지원합니다.' },
+                    c4: { base: 1000, desc: '암으로 상태가 위중해져 큰 병원 중환자실에 입원하게 될 때 드리는 위로금 겸 지원금입니다.' },
+                    c5: { base: 5000, desc: '4기 암 진단 후 비싼 약물 치료를 받을 때 1년에 한 번씩 든든하게 지원합니다.' },
+                    c8_1: { base: 200, desc: '비교적 치료가 쉽고 완치율이 높은 피부암이나 갑상선암을 수술할 때 지원합니다.' },
+                    c8_2: { base: 1000, desc: '피부암이나 갑상선암으로 비싼 항암 약물치료를 받을 때 각각 1년에 한 번씩 지원합니다.' },
+                    c8_3: { base: 1000, desc: '피부암이나 갑상선암으로 비싼 항암 방사선치료를 받을 때 각각 1년에 한 번씩 지원합니다.' },
+                    h1: { base: 1000, desc: '뇌출혈, 심근경색 등 뇌/심장에 문제가 생겨 수술을 받을 때 지원합니다.' },
+                    h2: { base: 1000, desc: '뇌/심장 질환으로 위중해져 종합병원 이상 중환자실에 입원할 때 지원합니다.' },
+                    h3: { base: 3000, desc: '핏덩어리(혈전)가 혈관을 막아 약물로 녹이는 응급 시술을 받을 때 각각 지원합니다.' },
+                    h4: { base: 3000, desc: '막힌 혈관에 기구를 넣어 혈전을 직접 빼내는 시술을 받을 때 각각 지원합니다.' },
+                    o1: { base: 1000, desc: '건강보험이 적용되는 큰 질병으로 인해 특정 중증 치료를 받을 때 나오는 지원금입니다.' },
+                    o2: { base: 30, desc: '일반적인 질병으로 종합병원에서 비급여 수술을 받았을 때 소소하게 보탬이 되는 수술비입니다.' },
+                    o3: { base: 50, desc: '일반적인 질병으로 상급종합병원(대학병원 등)에서 비급여 수술을 받았을 때 지원합니다.' }
+                }
+            },
+            '5억': {
+                balance: 50000,
+                items: {
+                    c1: { base: 1000, desc: '건강보험이 적용되지 않아 환자가 100% 생돈을 내야 하는 비싼 암 수술을 받을 때 지원합니다.' },
+                    c2: { base: 2000, desc: '표적항암제처럼 효과는 좋지만 비싼 약물 치료를 받을 때 1년에 한 번씩 크게 지원합니다.' },
+                    c3: { base: 2000, desc: '중입자, 양성자 등 고액의 최신 항암 방사선 치료를 받을 때 1년에 한 번씩 지원합니다.' },
+                    c4: { base: 1000, desc: '암으로 상태가 위중해져 큰 병원 중환자실에 입원하게 될 때 드리는 위로금 겸 지원금입니다.' },
+                    c5: { base: 3000, desc: '4기 암 진단 후 비싼 약물 치료를 받을 때 1년에 한 번씩 든든하게 지원합니다.' },
+                    c8_1: { base: 200, desc: '비교적 치료가 쉽고 완치율이 높은 피부암이나 갑상선암을 수술할 때 지원합니다.' },
+                    c8_2: { base: 400, desc: '피부암이나 갑상선암으로 비싼 항암 약물치료를 받을 때 각각 1년에 한 번씩 지원합니다.' },
+                    c8_3: { base: 400, desc: '피부암이나 갑상선암으로 비싼 항암 방사선치료를 받을 때 각각 1년에 한 번씩 지원합니다.' },
+                    h1: { base: 1000, desc: '뇌출혈, 심근경색 등 뇌/심장에 문제가 생겨 수술을 받을 때 지원합니다.' },
+                    h2: { base: 1000, desc: '뇌/심장 질환으로 위중해져 종합병원 이상 중환자실에 입원할 때 지원합니다.' },
+                    h3: { base: 1000, desc: '핏덩어리(혈전)가 혈관을 막아 약물로 녹이는 응급 시술을 받을 때 각각 지원합니다.' },
+                    h4: { base: 1000, desc: '막힌 혈관에 기구를 넣어 혈전을 직접 빼내는 시술을 받을 때 각각 지원합니다.' },
+                    o1: { base: 1000, desc: '건강보험이 적용되는 큰 질병으로 인해 특정 중증 치료를 받을 때 나오는 지원금입니다.' },
+                    o2: { base: 10, desc: '일반적인 질병으로 종합병원에서 비급여 수술을 받았을 때 소소하게 보탬이 되는 수술비입니다.' },
+                    o3: { base: 30, desc: '일반적인 질병으로 상급종합병원(대학병원 등)에서 비급여 수술을 받았을 때 지원합니다.' }
+                }
+            }
+        };
+        
+        let INITIAL_BALANCE = PLAN_DATA[currentPlan].balance;
+        let currentYear = 1;
+        
+        // 데이터 구조: 1~20년차 데이터를 각각의 배열로 보관
+        let claims = {};
+        for(let i=1; i<=20; i++) {
+            claims[i] = [];
+        }
+        
+        // 연차별 라벨 설정
+        const yearLabels = { 1: "1년 미만", 10: "10년 차(레벨업)" };
+        for(let i=2; i<=20; i++) {
+            if(i !== 10) yearLabels[i] = `${i}년 차`;
+        }
+
+        // 아이템 툴팁 표시
+        function showItemTooltip(e, id) {
+            if(!PLAN_DATA[currentPlan].items[id]) return;
+            const desc = PLAN_DATA[currentPlan].items[id].desc;
+            const tooltip = document.getElementById('itemTooltip');
+            tooltip.innerHTML = desc;
+            tooltip.classList.remove('hidden');
+
+            let x = e.clientX + 15;
+            let y = e.clientY + 15;
+            if (x + 250 > window.innerWidth) x = e.clientX - 265;
+            tooltip.style.left = x + 'px';
+            tooltip.style.top = y + 'px';
+        }
+
+        function moveItemTooltip(e) {
+            const tooltip = document.getElementById('itemTooltip');
+            if (tooltip.classList.contains('hidden')) return;
+            let x = e.clientX + 15;
+            let y = e.clientY + 15;
+            if (x + 250 > window.innerWidth) x = e.clientX - 265;
+            tooltip.style.left = x + 'px';
+            tooltip.style.top = y + 'px';
+        }
+
+        function hideItemTooltip() {
+            document.getElementById('itemTooltip').classList.add('hidden');
+        }
+
+        // 플랜 변경 함수
+        function changePlan(plan) {
+            if (currentPlan === plan) return;
+            
+            if (getTotalClaimed() > 0) {
+                if (!confirm("플랜을 변경하면 현재까지 시뮬레이션한 내역이 모두 초기화됩니다. 변경하시겠습니까?")) return;
+            }
+
+            currentPlan = plan;
+            INITIAL_BALANCE = PLAN_DATA[currentPlan].balance;
+            
+            // 버튼 스타일 갱신
+            if (plan === '10억') {
+                document.getElementById('planBtn-10억').className = "px-5 py-2.5 rounded-full font-extrabold text-sm md:text-base transition-all bg-hd-500 text-white shadow-md border-2 border-hd-500";
+                document.getElementById('planBtn-5억').className = "px-5 py-2.5 rounded-full font-extrabold text-sm md:text-base transition-all bg-white text-slate-600 border-2 border-slate-200 hover:bg-slate-50";
+            } else {
+                document.getElementById('planBtn-10억').className = "px-5 py-2.5 rounded-full font-extrabold text-sm md:text-base transition-all bg-white text-slate-600 border-2 border-slate-200 hover:bg-slate-50";
+                document.getElementById('planBtn-5억').className = "px-5 py-2.5 rounded-full font-extrabold text-sm md:text-base transition-all bg-hd-500 text-white shadow-md border-2 border-hd-500";
+            }
+            
+            document.getElementById('planBadge').innerText = plan + "한도 갱신형";
+            
+            resetAll(); // 전체 초기화 및 UI 갱신
+        }
+
+        // 초기화 시 연차 버튼 동적 생성
+        function initYearSelector() {
+            const container = document.getElementById('yearSelector');
+            let html = '';
+            for(let i=1; i<=20; i++) {
+                html += `<button onclick="setYear(${i})" id="btn-yr-${i}" class="year-btn flex-1 text-center bg-white border border-slate-300 text-slate-600 transition px-1 py-1.5 md:px-2 md:py-2 rounded-lg text-[11px] md:text-sm font-medium hover:bg-slate-50 hover:border-hd-300 relative">${yearLabels[i]}</button>`;
+            }
+            container.innerHTML = html;
+        }
+
+        function setYear(y) {
+            currentYear = y;
+            
+            // 상단 버튼 스타일 갱신
+            for(let i=1; i<=20; i++) {
+                const btn = document.getElementById(`btn-yr-${i}`);
+                if(btn) {
+                    let baseClass = "year-btn flex-1 text-center transition px-1 py-1.5 md:px-2 md:py-2 rounded-lg text-[11px] md:text-sm relative ";
+                    if(i === y) {
+                        baseClass += "bg-white border-2 border-hd-500 text-hd-600 font-bold shadow-sm ";
+                    } else {
+                        baseClass += "bg-white border border-slate-300 text-slate-600 font-medium hover:bg-slate-50 hover:border-hd-300 ";
+                    }
+
+                    // 10년 차 레벨업 버튼 특별 스타일 적용
+                    if (i === 10) {
+                        if (checkLevelUp()) {
+                            baseClass += "level-up-active ";
+                        } else {
+                            baseClass += "level-up-inactive ";
+                        }
+                    }
+                    btn.className = baseClass;
+                }
+            }
+
+            // 10년차 이상 레벨업 재계산 및 렌더링
+            if(y >= 10) {
+                recalculateLevelUpYears();
+            }
+
+            renderAll();
+        }
+
+        function checkLevelUp() {
+            // 1~9년차까지 사용한 총액 계산
+            let totalUpTo9 = 0;
+            for(let i = 1; i <= 9; i++) {
+                claims[i].forEach(item => totalUpTo9 += item.amount);
+            }
+            // 잔고가 90% 이상 남았는지 여부
+            return (INITIAL_BALANCE - totalUpTo9) >= (INITIAL_BALANCE * 0.9);
+        }
+
+        function recalculateLevelUpYears() {
+            const isLevelUp = checkLevelUp();
+            // 10~20년차에 담긴 항목들의 금액을 레벨업 여부에 따라 재조정
+            for(let i=10; i<=20; i++) {
+                claims[i].forEach(item => {
+                    let amt = item.baseAmount;
+                    let nt = "";
+                    if(isLevelUp) {
+                        amt = item.baseAmount * 1.2;
+                        nt = "120% 상향적용";
+                    }
+                    item.amount = amt;
+                    item.note = nt;
+                });
+            }
+        }
+
+        function getTotalClaimed() {
+            let total = 0;
+            for(let y=1; y<=20; y++) {
+                claims[y].forEach(item => total += item.amount);
+            }
+            return total;
+        }
+
+        // 아이템 클릭(토글) 처리
+        function toggleItem(id, name, category, reductionApplies) {
+            let yearArr = claims[currentYear];
+            let index = yearArr.findIndex(item => item.id === id);
+
+            if (index > -1) {
+                // 이미 있으면 제거 (차감 취소)
+                yearArr.splice(index, 1);
+            } else {
+                // 없으면 추가
+                let baseAmount = PLAN_DATA[currentPlan].items[id].base;
+                let amount = baseAmount;
+                let note = "";
+
+                if (currentYear === 1 && reductionApplies) {
+                    amount = baseAmount * 0.5;
+                    note = "1년 미만 50% 감액";
+                } else if (currentYear >= 10) {
+                    if(checkLevelUp()) {
+                        amount = baseAmount * 1.2;
+                        note = "120% 상향적용";
+                    }
+                }
+
+                let currentTotal = getTotalClaimed();
+                if (currentTotal >= INITIAL_BALANCE) {
+                    showModal("잔고 부족", "통장 잔고가 0원입니다. 더 이상 보장을 추가할 수 없습니다.");
+                    return;
+                }
+
+                if (currentTotal + amount > INITIAL_BALANCE) {
+                    amount = INITIAL_BALANCE - currentTotal; // 남은 전액
+                    note += (note ? ", " : "") + "잔고 부족으로 남은 전액 차감";
+                }
+
+                yearArr.push({ id, name, baseAmount, amount, category, note });
+            }
+            
+            // 1~9년차 변동 시 10년차 이상 레벨업 금액 재계산
+            if(currentYear <= 9) {
+                recalculateLevelUpYears();
+            }
+
+            renderAll();
+        }
+
+        // 히스토리 항목 클릭 시 삭제 처리
+        function removeItem(year, id) {
+            let yearArr = claims[year];
+            let index = yearArr.findIndex(item => item.id === id);
+            if(index > -1) {
+                yearArr.splice(index, 1);
+                
+                // 삭제 후 1~9년 차의 변동이 생겼다면 10년 차 레벨업 조건 재계산
+                if(year <= 9) {
+                    recalculateLevelUpYears();
+                }
+                renderAll();
+            }
+        }
+
+        // 전체 렌더링 컨트롤러
+        function renderAll() {
+            const totalClaimed = getTotalClaimed();
+            const currentBalance = Math.max(0, INITIAL_BALANCE - totalClaimed);
+            
+            // 1. 잔고 및 프로그레스 바 업데이트
+            const display = document.getElementById('balanceDisplay');
+            const bar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const progressContainer = document.getElementById('progressContainer');
+            
+            // 이전에 추가된 사용 영역(회색/희미한 블록) 초기화
+            progressContainer.querySelectorAll('.used-block').forEach(el => el.remove());
+            
+            display.innerHTML = currentBalance.toLocaleString() + ' <span class="text-2xl md:text-3xl font-bold">만원</span>';
+            
+            const percentage = (currentBalance / INITIAL_BALANCE) * 100;
+            bar.style.width = percentage + '%';
+            progressText.innerText = percentage.toFixed(1) + '%';
+            
+            if(percentage > 50) {
+                bar.className = "bg-gradient-to-r from-hd-500 to-orange-400 h-5 progress-bar-fill flex items-center justify-end px-2 whitespace-nowrap";
+                display.className = "text-4xl md:text-5xl font-black text-hd-600 tracking-tight transition-colors";
+            } else if (percentage > 20) {
+                bar.className = "bg-gradient-to-r from-yellow-500 to-yellow-400 h-5 progress-bar-fill flex items-center justify-end px-2 whitespace-nowrap";
+                display.className = "text-4xl md:text-5xl font-black text-yellow-500 tracking-tight transition-colors";
+            } else {
+                bar.className = "bg-gradient-to-r from-red-500 to-red-400 h-5 progress-bar-fill flex items-center justify-end px-2 whitespace-nowrap";
+                display.className = "text-4xl md:text-5xl font-black text-red-500 tracking-tight transition-colors";
+            }
+            
+            // 사용한 항목들을 프로그레스 바 우측에 희미한 블록으로 스택하여 표시
+            let usedByCategory = { surgery: 0, drug: 0, radiation: 0, heart_surgery: 0, heart_procedure: 0, other: 0 };
+            for(let y=1; y<=20; y++) {
+                claims[y].forEach(item => {
+                    if (usedByCategory[item.category] !== undefined) {
+                        usedByCategory[item.category] += item.amount;
+                    }
+                });
+            }
+
+            const categoryColors = {
+                surgery: 'bg-red-500/50',
+                drug: 'bg-blue-500/50',
+                radiation: 'bg-yellow-400/50',
+                heart_surgery: 'bg-purple-500/50',
+                heart_procedure: 'bg-teal-500/50',
+                other: 'bg-slate-400/50'
+            };
+
+            for (const [cat, amt] of Object.entries(usedByCategory)) {
+                if (amt > 0) {
+                    const pct = (amt / INITIAL_BALANCE) * 100;
+                    const block = document.createElement('div');
+                    block.className = `h-full ${categoryColors[cat]} used-block transition-all`;
+                    block.style.width = pct + '%';
+                    progressContainer.appendChild(block);
+                }
+            }
+
+            // 10년차 버튼 이름 동적 변경 (조건 충족 시 '레벨업', 잔고 90% 미만 시 일반 '10년 차')
+            const btn10 = document.getElementById('btn-yr-10');
+            if(btn10) {
+                if(checkLevelUp()) {
+                    yearLabels[10] = "10년 차(레벨업)";
+                    btn10.innerText = yearLabels[10];
+                    btn10.classList.add('level-up-active');
+                    btn10.classList.remove('level-up-inactive');
+                } else {
+                    yearLabels[10] = "10년 차";
+                    btn10.innerText = yearLabels[10];
+                    btn10.classList.remove('level-up-active');
+                    btn10.classList.add('level-up-inactive');
+                }
+            }
+
+            // 2. 10년차 이상 레벨업 배너 표시 여부
+            const banner = document.getElementById('levelUpBanner');
+            if (currentYear >= 10 && checkLevelUp()) {
+                banner.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
+            }
+
+            // 3. 연차별 요약 텍스트 및 막대그래프 렌더링
+            renderSummary();
+
+            // 4. 하단 버튼 금액 업데이트 및 활성화 상태 렌더링
+            updateButtonPrices();
+            renderBottomButtons();
+        }
+
+        function updateButtonPrices() {
+            const isLevelUp = currentYear >= 10 && checkLevelUp();
+            const isYear1 = currentYear === 1;
+
+            document.querySelectorAll('.btn-item').forEach(btn => {
+                const id = btn.id.replace('btn-', '');
+                if(!PLAN_DATA[currentPlan].items[id]) return;
+                
+                let base = PLAN_DATA[currentPlan].items[id].base;
+                const isReduction = btn.getAttribute('data-reduction') === 'true';
+                
+                let displayAmount = base; // 기본 금액을 먼저 할당
+                let note = '';
+                let noteColorClass = '';
+
+                // 조건에 따라 실제 화면에 표시될 금액(displayAmount) 계산
+                if (isYear1 && isReduction) {
+                    displayAmount = base * 0.5;
+                    note = `(50% 감액)`;
+                    noteColorClass = 'text-red-500';
+                } else if (isLevelUp) {
+                    displayAmount = base * 1.2;
+                    note = `(120% 상향)`;
+                    noteColorClass = 'text-blue-600';
+                }
+
+                const priceDisplay = btn.querySelector('.price-number');
+                if(priceDisplay) {
+                    if (base === 0) {
+                        btn.style.display = 'none';
+                    } else {
+                        btn.style.display = 'flex';
+                        // 변경: 기존 base가 아닌 조건부 계산된 displayAmount 출력
+                        priceDisplay.innerHTML = displayAmount < 100 ? displayAmount : displayAmount.toLocaleString();
+                    }
+                }
+                
+                const noteDisplay = btn.querySelector('.note-display');
+                if(noteDisplay) {
+                    if (note) {
+                        noteDisplay.innerHTML = note;
+                        noteDisplay.className = `note-display text-[10px] font-bold mt-0.5 ${noteColorClass}`;
+                    } else {
+                        noteDisplay.innerHTML = '';
+                        noteDisplay.className = `note-display hidden`;
+                    }
+                }
+            });
+        }
+
+        function renderSummary() {
+            const box = document.getElementById('yearlySummaryBox');
+            let html = '<div class="flex overflow-x-auto gap-5 items-end pb-4 pt-10 h-56 scrollbar-hide relative pl-2">';
+            let hasAnyClaim = false;
+
+            // 막대그래프 비율을 구하기 위해 가장 높은 연도별 사용액 찾기
+            let maxYearlySum = 0;
+            for(let y=1; y<=20; y++) {
+                let s = claims[y].reduce((sum, item) => sum + item.amount, 0);
+                if(s > maxYearlySum) maxYearlySum = s;
+            }
+
+            // 개별 아이템 색상 매핑
+            const colors = {
+                surgery: 'bg-red-500 hover:bg-red-400', 
+                drug: 'bg-blue-500 hover:bg-blue-400', 
+                radiation: 'bg-yellow-400 hover:bg-yellow-300', 
+                heart_surgery: 'bg-purple-500 hover:bg-purple-400', 
+                heart_procedure: 'bg-teal-500 hover:bg-teal-400', 
+                other: 'bg-slate-400 hover:bg-slate-300'
+            };
+
+            for(let y=1; y<=20; y++) {
+                let yearSum = claims[y].reduce((sum, item) => sum + item.amount, 0);
+                if(yearSum > 0) {
+                    hasAnyClaim = true;
+                    
+                    let barsHtml = '';
+                    
+                    // 각 아이템별로 개별 막대 생성 (비율 기반 스택 구조)
+                    claims[y].forEach(item => {
+                        let pct = (item.amount / maxYearlySum) * 100;
+                        let safeName = item.name.replace(/'/g, "\\'");
+                        // 새로운 항목을 위로 쌓이게 하기 위해 prepending 방식으로 누적
+                        barsHtml = `<div class="w-full ${colors[item.category] || 'bg-slate-400'} transition-all cursor-pointer relative group border-b border-white/20 last:border-0" style="height: ${pct}%;" 
+                                onclick="handleBarClick(event, ${y}, '${item.id}', '${safeName}', ${item.amount})"
+                                onmouseenter="showTooltip(event, '${safeName}', ${item.amount})"
+                                onmouseleave="hideTooltip()"
+                                onmousemove="moveTooltip(event)">
+                                </div>` + barsHtml;
+                    });
+
+                    html += `
+                    <div class="flex flex-col items-center justify-end h-full min-w-[50px] flex-shrink-0 relative">
+                        <span class="text-[12px] font-black text-slate-700 mb-1.5 absolute top-[-26px] whitespace-nowrap">${yearSum.toLocaleString()}만</span>
+                        <div class="w-12 bg-slate-100 rounded-t-md overflow-hidden flex flex-col justify-end shadow-sm flex-1 relative">
+                            ${barsHtml}
+                        </div>
+                        <span class="text-[11px] font-bold text-slate-700 mt-2 whitespace-nowrap bg-slate-100 px-2 py-1 rounded-md border border-slate-200 shadow-sm">${yearLabels[y]}</span>
+                    </div>`;
+                }
+            }
+            html += '</div>';
+
+            if(hasAnyClaim) {
+                html = `
+                <div class="flex flex-wrap gap-3 mb-4 justify-center text-[11px] font-medium text-slate-600 bg-white p-2.5 rounded-lg border border-slate-200 shadow-sm">
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-red-500 rounded-sm shadow-inner"></span>수술(A)</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-blue-500 rounded-sm shadow-inner"></span>약물</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-yellow-400 rounded-sm shadow-inner"></span>방사선</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-purple-500 rounded-sm shadow-inner"></span>뇌/심(수술)</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-teal-500 rounded-sm shadow-inner"></span>뇌/심(시술 B)</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-slate-400 rounded-sm shadow-inner"></span>기타</span>
+                </div>` + html;
+            } else {
+                html = `<div class="text-slate-400 text-sm py-12 text-center bg-white rounded-xl border border-slate-200 flex flex-col items-center justify-center shadow-inner mt-2">
+                    <svg class="w-10 h-10 mb-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                    아직 시뮬레이션 내역이 없습니다.<br>하단에서 보장을 추가해보세요.
+                </div>`;
+            }
+
+            box.innerHTML = html;
+        }
+
+        function showTooltip(e, name, amount) {
+            const tooltip = document.getElementById('chartTooltip');
+            const content = document.getElementById('tooltipContent');
+            content.innerHTML = `<span class="text-orange-300 font-bold">${name}</span><br><span class="text-white text-sm">${amount.toLocaleString()}만 원</span><br><span class="text-[10px] text-slate-300 font-normal mt-0.5 block">(한 번 더 탭/클릭 시 삭제)</span>`;
+            
+            tooltip.style.left = e.clientX + 'px';
+            tooltip.style.top = (e.clientY - 15) + 'px';
+            tooltip.classList.remove('hidden');
+        }
+
+        function moveTooltip(e) {
+            if (selectedBarForRemove) return; // 모바일 탭으로 고정된 경우 커서를 따라 움직이지 않음
+            const tooltip = document.getElementById('chartTooltip');
+            tooltip.style.left = e.clientX + 'px';
+            tooltip.style.top = (e.clientY - 15) + 'px';
+        }
+
+        function hideTooltip() {
+            if (!selectedBarForRemove) { // 모바일 환경에서 탭되어 고정된 상태가 아닐 때만 숨김
+                document.getElementById('chartTooltip').classList.add('hidden');
+            }
+        }
+
+        function handleBarClick(e, year, id, name, amount) {
+            // 모바일 터치 환경인지 확인
+            const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+            
+            if (isTouch) {
+                if (selectedBarForRemove === id) {
+                    // 두 번째 탭 시 삭제 처리
+                    removeItem(year, id);
+                    selectedBarForRemove = null;
+                    document.getElementById('chartTooltip').classList.add('hidden');
+                } else {
+                    // 첫 번째 탭 시 툴팁 고정 표시
+                    selectedBarForRemove = id;
+                    showTooltip(e, name, amount);
+                    
+                    // 빈 공간 터치 시 툴팁 해제 이벤트 등록
+                    document.addEventListener('touchstart', function closeTip(event) {
+                        if(!event.target.closest('.w-full')) {
+                            selectedBarForRemove = null;
+                            document.getElementById('chartTooltip').classList.add('hidden');
+                            document.removeEventListener('touchstart', closeTip);
+                        }
+                    }, {once: true});
+                }
+            } else {
+                // 데스크탑: 한 번 클릭으로 바로 삭제
+                removeItem(year, id);
+                document.getElementById('chartTooltip').classList.add('hidden');
+            }
+        }
+
+        function renderBottomButtons() {
+            document.querySelectorAll('.btn-item').forEach(btn => {
+                btn.classList.remove('ring-2', 'ring-offset-2', 'ring-red-400', 'ring-blue-400', 'ring-yellow-400', 'ring-purple-400', 'ring-teal-400', 'ring-slate-400', 'shadow-md');
+            });
+            // 현재 활성화된 연차의 아이템만 탭에서 활성 상태로 표시
+            claims[currentYear].forEach(item => {
+                const btn = document.getElementById(`btn-${item.id}`);
+                if(btn) {
+                    const category = btn.getAttribute('data-category');
+                    const ringColors = {
+                        surgery: 'ring-red-400',
+                        drug: 'ring-blue-400',
+                        radiation: 'ring-yellow-400',
+                        heart_surgery: 'ring-purple-400',
+                        heart_procedure: 'ring-teal-400',
+                        other: 'ring-slate-400'
+                    };
+                    btn.classList.add('ring-2', 'ring-offset-2', ringColors[category] || 'ring-hd-500', 'shadow-md');
+                }
+            });
+        }
+
+        function resetAll() {
+            for(let i=1; i<=20; i++) claims[i] = [];
+            setYear(1);
+        }
+
+        // 모달 관련 함수
+        function showModal(title, message) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerText = message;
+            const modal = document.getElementById('customModal');
+            const content = document.getElementById('modalContent');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('customModal');
+            const content = document.getElementById('modalContent');
+            
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 200);
+        }
+
+        // 초기화
+        window.onload = function() {
+            initYearSelector();
+            setYear(1);
+        };
+    </script>
+</body>
+</html>

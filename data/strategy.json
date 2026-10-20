@@ -21,6 +21,15 @@
     "assets/strategy/2026-10/mva3pglj-08.jpg",
     "assets/strategy/2026-10/mva3pglj-09.jpg",
     "assets/strategy/2026-10/mva3pglj-10.jpg"
+   ],
+   "tools": [
+    {
+     "tag": "신담보 시뮬레이터",
+     "title": "2610 주요치료비통합보장",
+     "desc": "3대질병 통합치료비 10억통장 시뮬레이터",
+     "href": "assets/sim/2610-integrated.html",
+     "thumb": "assets/strategy/2026-10/mvb7hyun-11.jpg"
+    }
    ]
   }
  ]
