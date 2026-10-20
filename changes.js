@@ -161,7 +161,7 @@
     return '<button type="button" class="it" data-id="' + e.id + '"><span class="v">' + esc(e.v) + '</span><span class="d">' + esc(e.at) + '</span><span class="n">' + esc(e.note) + '</span></button>';
   }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-  var NAMES = { 'audiobook.html': '오디오북', 'preface-guide.html': '시작하며(서문)', 'conclusion-guide.html': '결론', 'index.html': '메인', 'strategy.html': '이달의 이슈 · 영업전략', 'sales-guide.html': '특약나열식 제안의 문제점', 'receipt-guide.html': '상담 1일차 · 의료비 영수증', 'priority-guide.html': '상담 2일차 · 중증질환과 보험', 'bias-guide.html': '고객이 범하는 인지적 오류', 'design-guide.html': '상담 4일차 · 보험설계의 기술', 'practical-guide.html': '상담 실전설계', 'lung-cancer-guide.html': '폐암 가이드', 'breast-cancer-guide.html': '유방암 가이드', 'cancer-guide.html': '항암치료 가이드', 'corporate-guide.html': '법인컨설팅 가이드' };
+  var NAMES = { 'audiobook.html': '오디오북', 'preface-guide.html': '프롤로그', 'conclusion-guide.html': '에필로그', 'index.html': '메인', 'strategy.html': '이달의 이슈 · 영업전략', 'sales-guide.html': '특약나열식 제안의 문제점', 'receipt-guide.html': '상담 1일차 · 의료비 영수증', 'priority-guide.html': '상담 2일차 · 중증질환과 보험', 'bias-guide.html': '고객이 범하는 인지적 오류', 'design-guide.html': '상담 4일차 · 보험설계의 기술', 'practical-guide.html': '상담 실전설계', 'lung-cancer-guide.html': '폐암 가이드', 'breast-cancer-guide.html': '유방암 가이드', 'cancer-guide.html': '항암치료 가이드', 'corporate-guide.html': '법인컨설팅 가이드' };
   function pageName(pg) { return NAMES[pg] || pg; }
 
   /* ── 버전 배지 연결 ── */
