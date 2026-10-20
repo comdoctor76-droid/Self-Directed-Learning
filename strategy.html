@@ -39,6 +39,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:#FBF8F5;color:#26282C;font
 .mcard .go{margin-top:12px;font-size:14px;font-weight:800;color:#E8651A}
 .mcard.empty .go{color:#9AA0A8}
 .mgroup{margin-bottom:34px}
+.mg-back{display:inline-flex;align-items:center;gap:4px;margin:0 0 14px;background:#fff;border:1.5px solid #EEE7DF;border-radius:999px;padding:8px 14px;font-family:inherit;font-size:14px;font-weight:800;color:#1A2744;cursor:pointer}
+.mg-back:active{transform:scale(.97)}
 .mg-h{font-size:18px;font-weight:900;color:#1A2744;margin:0 0 12px;padding-left:10px;border-left:4px solid #E8651A}
 .mcard.tool{border-color:#FFD2B5}
 .mcard.tool .thumb{background-position:center top}
@@ -48,7 +50,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#FBF8F5;color:#26282C;font
 .tl-top{display:flex;align-items:center;gap:8px;background:#1A2744;color:#fff;padding:10px 12px;padding-top:max(10px,env(safe-area-inset-top))}
 .tl-title{flex:1;font-size:15.5px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tl-b{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;font-size:17px;font-weight:900;cursor:pointer;font-family:inherit}
-.tl iframe{flex:1;width:100%;border:0;background:#f8fafc}
+.tl iframe{flex:1;width:100%;height:100%;border:0;background:#f8fafc}
 .mcard .adm{position:absolute;top:10px;right:10px;display:flex;gap:6px;z-index:2}
 .mcard .adm span{background:rgba(255,255,255,.95);border:1px solid #EEE7DF;border-radius:999px;font-size:12.5px;font-weight:800;padding:5px 10px;color:#1A2744}
 .mcard .adm span.del{color:#C0392B}
@@ -142,7 +144,7 @@ body:has(#PENBAR.open) .pv-scroll:not(.w){padding-right:132px}
   <div class="tl-top"><div class="tl-title" id="tlTitle"></div>
     <button class="tl-b" id="tlNew" type="button" title="새 창으로 열기">↗</button>
     <button class="tl-b" id="tlClose" type="button" aria-label="닫기">✕</button></div>
-  <iframe id="tlFrame" title="시뮬레이터" src="about:blank"></iframe>
+  <div id="tlBody" style="flex:1;display:flex;min-height:0"></div>
 </div>
 
 <!-- 프레젠테이션 뷰어 -->
@@ -203,36 +205,61 @@ function sortMonths(){state.months.sort(function(a,b){return a.id<b.id?1:-1;});}
 function toast(m,err){if(window.AdminEditor&&AdminEditor.toast)AdminEditor.toast(m,err);else alert(m);}
 
 /* ── 목록 ── */
+var viewMonth=null;   /* 월 카드를 눌러 들어간 상태(그 달 id). null이면 월 목록 */
 function render(){
-  $('upOpen').style.display=isAdmin()?'':'none';
+  $('upOpen').style.display=(isAdmin()&&!viewMonth)?'':'none';
   var box=$('months'); sortMonths();
   if(!state.months.length){box.innerHTML='<div class="note">아직 올라온 영업전략 자료가 없습니다.</div>';return;}
-  box.innerHTML=state.months.map(function(m,i){
-    var n=(m.slides||[]).length, first=n?m.slides[0]:null;
-    /* 그 달의 시뮬레이터 등 도구 카드 — 해당 월 카드보다 앞에 놓인다 */
-    var tools=(m.tools||[]).map(function(t,ti){
-      return '<button type="button" class="mcard tool" data-i="'+i+'" data-t="'+ti+'">'+
+  var vm=viewMonth?state.months.filter(function(x){return x.id===viewMonth;})[0]:null;
+  if(viewMonth&&!vm)viewMonth=null;
+  if(vm){ /* ── 월 안: 시뮬레이터 카드(상단) → 이달의 매거진 카드 ── */
+    var mi=state.months.indexOf(vm), n2=(vm.slides||[]).length, f2=n2?vm.slides[0]:null;
+    var tl=(vm.tools||[]).map(function(t,ti){
+      return '<button type="button" class="mcard tool" data-i="'+mi+'" data-t="'+ti+'">'+
         '<div class="thumb"'+(t.thumb?' style="background-image:url(\''+esc(t.thumb)+'\')"':'')+'>'+(t.thumb?'':'<span class="ico">🧮</span>')+
         '<span class="menu">'+esc(t.tag||'시뮬레이터')+'</span></div>'+
         '<div class="info"><h3>'+esc(t.title)+'</h3><p>'+esc(t.desc||'')+'</p><div class="go">시뮬레이터 열기 →</div></div></button>';
     }).join('');
-    /* 월별 묶음: '10월 영업전략' 머리글 아래에 시뮬레이터 카드(상단) → 이달의 매거진 카드(슬라이드 프레젠테이션) */
-    return '<section class="mgroup"><h3 class="mg-h">'+esc(m.title||(m.month+'월 영업전략'))+'</h3><div class="g">'+tools+'<button type="button" class="mcard'+(n?'':' empty')+'" data-i="'+i+'">'+
+    box.innerHTML='<button type="button" class="mg-back" id="mgBack">← 월별 영업전략</button>'+
+      '<section class="mgroup"><h3 class="mg-h">'+esc(vm.title||(vm.month+'월 영업전략'))+'</h3><div class="g">'+tl+
+      '<button type="button" class="mcard mag'+(n2?'':' empty')+'" data-i="'+mi+'">'+
+      '<div class="thumb"'+(f2?' style="background-image:url(\''+esc(f2)+'\')"':'')+'>'+(f2?'':'<span class="ico">📊</span>')+
+      '<span class="menu">'+vm.year+'년 '+vm.month+'월</span></div>'+
+      '<div class="info"><h3>이달의 매거진</h3><p>'+(n2?'슬라이드 '+n2+'장':'자료 준비 중')+'</p>'+
+      '<div class="go">'+(n2?'프레젠테이션 보기 →':'곧 올라옵니다')+'</div></div></button></div></section>';
+    return;
+  }
+  /* ── 월 목록: 월마다 카드 하나 (누르면 안으로) ── */
+  box.innerHTML='<div class="g">'+state.months.map(function(m,i){
+    var n=(m.slides||[]).length, first=n?m.slides[0]:null, cnt=(m.tools||[]).length+(n?1:0);
+    return '<button type="button" class="mcard month'+(cnt?'':' empty')+'" data-i="'+i+'">'+
       (isAdmin()?'<span class="adm"><span class="add" data-a="add">＋ 올리기</span>'+(n?'<span class="del" data-a="del">삭제</span>':'')+'</span>':'')+
       '<div class="thumb"'+(first?' style="background-image:url(\''+esc(first)+'\')"':'')+'>'+(first?'':'<span class="ico">📊</span>')+
       '<span class="menu">'+m.year+'년 '+m.month+'월</span></div>'+
-      '<div class="info"><h3>이달의 매거진</h3>'+
-      '<p>'+(n?'슬라이드 '+n+'장':'자료 준비 중')+'</p>'+
-      '<div class="go">'+(n?'프레젠테이션 보기 →':(isAdmin()?'눌러서 자료 올리기':'곧 올라옵니다'))+'</div></div></button></div></section>';
-  }).join('');
+      '<div class="info"><h3>'+esc(m.title||(m.month+'월 영업전략'))+'</h3>'+
+      '<p>'+(cnt?'카드 '+cnt+'개 (시뮬레이터·이달의 매거진)':'자료 준비 중')+'</p>'+
+      '<div class="go">'+(cnt?'열어 보기 →':(isAdmin()?'눌러서 자료 올리기':'곧 올라옵니다'))+'</div></div></button>';
+  }).join('')+'</div>';
+}
+function openMonth(id){
+  viewMonth=id; render(); window.scrollTo(0,0);
+  try{history.pushState({m:id},'');}catch(e){}
+}
+function closeMonth(fromPop){
+  if(!viewMonth)return;
+  viewMonth=null; render(); window.scrollTo(0,0);
+  if(!fromPop){try{if(history.state&&history.state.m)history.back();}catch(e){}}
 }
 $('months').addEventListener('click',function(e){
+  if(e.target.closest('#mgBack')){closeMonth(false);return;}
   var c=e.target.closest('.mcard'); if(!c)return;
   var m=state.months[+c.getAttribute('data-i')], a=e.target.closest('[data-a]');
   if(c.hasAttribute('data-t')){openTool(m.tools[+c.getAttribute('data-t')]);return;}
+  if(c.classList.contains('mag')){ if((m.slides||[]).length)openViewer(m,0); return; }
   if(a&&a.getAttribute('data-a')==='del'){delMonth(m);return;}
-  if((a&&a.getAttribute('data-a')==='add')||!(m.slides||[]).length){ if(isAdmin())openUp(m); return; }
-  openViewer(m,0);
+  var cnt=(m.tools||[]).length+((m.slides||[]).length?1:0);
+  if((a&&a.getAttribute('data-a')==='add')||!cnt){ if(isAdmin())openUp(m); return; }
+  openMonth(m.id);
 });
 function load(){
   return fetch(DATA_PATH+'?_='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();})
@@ -243,18 +270,24 @@ function load(){
 /* ── 시뮬레이터(도구) 전체 화면 열기 ── */
 function openTool(t){
   if(!t||!t.href)return;
-  $('tlTitle').textContent=t.title||''; $('tlFrame').src=t.href;
+  $('tlTitle').textContent=t.title||'';
+  /* iframe은 열 때마다 새로 만들고 닫을 때 지운다 — src를 바꾸면 브라우저 '뒤로가기' 기록이 한 칸 더 생겨 뒤로가기가 꼬인다 */
+  var fr=document.createElement('iframe'); fr.id='tlFrame'; fr.title='시뮬레이터'; fr.setAttribute('data-src',t.href); fr.src=t.href;
+  $('tlBody').innerHTML=''; $('tlBody').appendChild(fr);
   $('tl').classList.add('on'); document.body.style.overflow='hidden';
   try{history.pushState({tool:1},'');}catch(e){}
 }
 function closeTool(fromPop){
   var o=$('tl'); if(!o.classList.contains('on'))return;
-  o.classList.remove('on'); document.body.style.overflow=''; $('tlFrame').src='about:blank';
+  o.classList.remove('on'); document.body.style.overflow=''; $('tlBody').innerHTML='';
   if(!fromPop){try{if(history.state&&history.state.tool)history.back();}catch(e){}}
 }
 $('tlClose').onclick=function(){closeTool(false);};
-$('tlNew').onclick=function(){var f=$('tlFrame').getAttribute('src');if(f&&f!=='about:blank')window.open(f,'_blank');};
-window.addEventListener('popstate',function(){closeTool(true);});
+$('tlNew').onclick=function(){var f=$('tlFrame')&&$('tlFrame').getAttribute('data-src');if(f)window.open(f,'_blank');};
+window.addEventListener('popstate',function(){
+  if($('tl').classList.contains('on')){closeTool(true);return;}   /* 시뮬레이터가 열려 있으면 그것만 닫는다 */
+  if(viewMonth)closeMonth(true);
+});
 
 /* ── 프레젠테이션 뷰어 ── */
 function openViewer(m,i){cur=m;idx=i||0;zoom=1;$('pv').classList.add('on');document.body.style.overflow='hidden';show();}
