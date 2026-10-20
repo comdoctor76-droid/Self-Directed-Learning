@@ -248,14 +248,10 @@
                         <ul id="perTxRows" class="space-y-2"></ul>
                         <div class="mt-3 bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-3">
                             <div class="text-[12px] font-extrabold text-fuchsia-800 mb-2"><span id="perTxYr">1년 미만</span> · 연간 치료 횟수 입력</div>
-                            <div class="grid grid-cols-3 gap-2">
+                            <div class="grid grid-cols-2 gap-2">
                                 <label class="flex flex-col items-center bg-white rounded-lg border border-fuchsia-200 p-1.5">
                                     <span class="text-[11px] font-bold text-slate-600">주사제</span>
                                     <span class="flex items-baseline gap-0.5"><input id="cnt-inj" type="number" inputmode="numeric" min="0" max="365" value="17" oninput="setPerTxCount('inj', this.value)" class="w-14 text-center text-base font-black text-fuchsia-700 border-b-2 border-fuchsia-300 focus:outline-none focus:border-fuchsia-600 bg-transparent"><span class="text-[11px] font-bold text-slate-500">회</span></span>
-                                </label>
-                                <label class="flex flex-col items-center bg-white rounded-lg border border-fuchsia-200 p-1.5">
-                                    <span class="text-[11px] font-bold text-slate-600">주사제 외</span>
-                                    <span class="flex items-baseline gap-0.5"><input id="cnt-oral" type="number" inputmode="numeric" min="0" max="365" value="12" oninput="setPerTxCount('oral', this.value)" class="w-14 text-center text-base font-black text-fuchsia-700 border-b-2 border-fuchsia-300 focus:outline-none focus:border-fuchsia-600 bg-transparent"><span class="text-[11px] font-bold text-slate-500">회</span></span>
                                 </label>
                                 <label class="flex flex-col items-center bg-white rounded-lg border border-fuchsia-200 p-1.5">
                                     <span class="text-[11px] font-bold text-slate-600">방사선</span>
@@ -1144,7 +1140,7 @@
         };
         let perTxOn = false;
         let perTxCounts = {};
-        const PER_TX_DEFAULT = { inj: 17, oral: 12, rad: 30 };   // 기본 연간 횟수(수정 가능)
+        const PER_TX_DEFAULT = { inj: 17, oral: 1, rad: 30 };   // 기본 연간 횟수(주사제·방사선은 수정 가능, 주사제 외는 연간 1회한 고정)
         for (let i = 1; i <= 20; i++) perTxCounts[i] = { ...PER_TX_DEFAULT };
 
         function fmtMan(v) { return (Math.round(v * 100) / 100).toLocaleString(); }
@@ -1216,7 +1212,7 @@
             if (chk.checked !== perTxOn) chk.checked = perTxOn;
             const body = document.getElementById('perTxBody');
             body.style.opacity = perTxOn ? '1' : '.45';
-            ['inj', 'oral', 'rad'].forEach(kind => {
+            ['inj', 'rad'].forEach(kind => {
                 const el = document.getElementById('cnt-' + kind);
                 el.disabled = !perTxOn;
                 if (document.activeElement !== el) el.value = perTxCounts[y][kind];
@@ -1233,7 +1229,6 @@
             const c = perTxCounts[y];
             if ((c.inj || c.oral) && !has(['c2', 'c5', 'c8_2'])) tips.push('약물 횟수는 <b>항암 약물치료</b>를 선택해야 합산됩니다.');
             if (c.rad && !has(['c3', 'c8_3'])) tips.push('방사선 횟수는 <b>항암 방사선치료</b>를 선택해야 합산됩니다.');
-            if (c.oral > 1) tips.push('주사제 외는 연간 1회한 → <b>1회</b>만 계산했습니다.');
             let h = mine.length
                 ? '이번 연차 치료당 합계: <span class="text-base font-black">' + fmtMan(mine.reduce((a, it) => a + it.amount, 0)) + '만 원</span><br><span class="text-[11px] font-medium text-slate-600">' + mine.map(it => it.name + ' = ' + fmtMan(it.amount) + '만' + (it.note ? ' (' + it.note + ')' : '')).join('<br>') + '</span>'
                 : '이번 연차 치료당 합산 없음';
