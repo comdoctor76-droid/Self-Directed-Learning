@@ -101,7 +101,7 @@
         <section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden relative mb-4">
             <div class="p-5 md:p-7">
                 <!-- 플랜 선택 버튼 및 잔고 표시 (나란히 배치) -->
-                <div class="flex justify-between items-end mb-2">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-2 mb-2">
                     <div class="flex flex-col gap-2">
                         <div class="flex items-center gap-2">
                             <button id="planBtn-10억" onclick="changePlan('10억')" class="px-4 py-2 md:px-5 md:py-2.5 rounded-full font-extrabold text-sm md:text-base transition-all bg-hd-500 text-white shadow-md border-2 border-hd-500">💎 프리미엄 10억 통장<span class="pt-tag hidden w-max mx-auto mt-0.5 whitespace-nowrap text-[10px] leading-tight font-extrabold bg-fuchsia-600 text-white px-2 py-0.5 rounded-full" title="암추가보장 특약 가입">＋암추가 20만</span></button>
@@ -109,16 +109,18 @@
                         </div>
                         <span class="text-sm font-bold text-slate-500 mt-1">현재 통장 잔고</span>
                     </div>
-                    <div class="text-right flex items-baseline gap-1">
+                    <div class="text-right flex flex-wrap items-baseline justify-end gap-x-1">
                         <span class="text-4xl md:text-5xl font-black text-hd-600 tracking-tight" id="balanceDisplay">100,000</span>
-                        <span class="text-xl md:text-2xl font-bold text-hd-600">만원</span>
+                        <span class="text-xl md:text-2xl font-bold text-hd-600 whitespace-nowrap">만원</span>
+                        <span id="balanceRatio" class="text-xs md:text-sm font-bold whitespace-nowrap ml-1"></span>
                     </div>
                 </div>
 
                 <!-- 잔고 막대 표시 -->
-                <div class="w-full bg-slate-700 rounded-full h-5 overflow-hidden relative shadow-inner flex" id="progressContainer">
-                    <div class="bg-gradient-to-r from-hd-500 to-orange-400 h-5 progress-bar-fill flex items-center justify-end px-2 whitespace-nowrap" id="progressBar" style="width: 100%;">
-                        <span class="text-white text-xs font-bold" id="progressText">100.0%</span>
+                <div class="w-full bg-slate-700 rounded-full h-8 overflow-hidden relative shadow-inner flex" id="progressContainer">
+                    <div class="bg-gradient-to-r from-hd-500 to-orange-400 h-8 progress-bar-fill flex items-center justify-end px-2 whitespace-nowrap" id="progressBar" style="width: 100%;">
+                        <span class="text-white text-sm font-black" id="progressText">100.0%</span>
+                        <span id="usedInBar" class="hidden ml-1.5 bg-slate-800/80 text-white text-xs font-black px-1.5 py-0.5 rounded-md"></span>
                     </div>
                 </div>
             </div>
@@ -613,12 +615,18 @@
             resetAll(); // 전체 초기화 및 UI 갱신
         }
 
+        // 연차 버튼 글자 — 1년 미만에는 작은 (50%감액) 표시
+        function yearBtnHtml(i) {
+            if (i === 1) return `${yearLabels[1]}<span class="block text-[9px] md:text-[10px] leading-tight text-red-500 font-bold">(50%감액)</span>`;
+            return yearLabels[i];
+        }
+
         // 초기화 시 연차 버튼 동적 생성
         function initYearSelector() {
             const container = document.getElementById('yearSelector');
             let html = '';
             for(let i=1; i<=20; i++) {
-                html += `<button onclick="setYear(${i})" id="btn-yr-${i}" class="year-btn flex-1 text-center bg-white border border-slate-300 text-slate-600 transition px-1 py-1.5 md:px-2 md:py-2 rounded-lg text-[11px] md:text-sm font-medium hover:bg-slate-50 hover:border-hd-300 relative">${yearLabels[i]}</button>`;
+                html += `<button onclick="setYear(${i})" id="btn-yr-${i}" class="year-btn flex-1 text-center bg-white border border-slate-300 text-slate-600 transition px-1 py-1.5 md:px-2 md:py-2 rounded-lg text-[11px] md:text-sm font-medium hover:bg-slate-50 hover:border-hd-300 relative">${yearBtnHtml(i)}</button>`;
             }
             container.innerHTML = html;
         }
@@ -802,17 +810,20 @@
             display.innerText = currentBalance.toLocaleString();
             
             const percentage = (currentBalance / INITIAL_BALANCE) * 100;
+            const usedPct = 100 - percentage;
             bar.style.width = percentage + '%';
-            progressText.innerText = percentage.toFixed(1) + '%';
+            progressText.innerText = percentage >= 8 ? percentage.toFixed(1) + '%' : '';
+            document.getElementById('balanceRatio').innerHTML =
+                `(<span class="text-hd-600">잔여 ${percentage.toFixed(1)}%</span> / <span class="text-slate-500">사용 ${usedPct.toFixed(1)}%</span>)`;
             
             if(percentage > 50) {
-                bar.className = "bg-gradient-to-r from-hd-500 to-orange-400 h-5 progress-bar-fill flex items-center justify-end px-2 whitespace-nowrap";
+                bar.className = "bg-gradient-to-r from-hd-500 to-orange-400 h-8 progress-bar-fill flex items-center justify-end px-2 whitespace-nowrap";
                 display.className = "text-4xl md:text-5xl font-black text-hd-600 tracking-tight transition-colors";
             } else if (percentage > 20) {
-                bar.className = "bg-gradient-to-r from-yellow-500 to-yellow-400 h-5 progress-bar-fill flex items-center justify-end px-2 whitespace-nowrap";
+                bar.className = "bg-gradient-to-r from-yellow-500 to-yellow-400 h-8 progress-bar-fill flex items-center justify-end px-2 whitespace-nowrap";
                 display.className = "text-4xl md:text-5xl font-black text-yellow-500 tracking-tight transition-colors";
             } else {
-                bar.className = "bg-gradient-to-r from-red-500 to-red-400 h-5 progress-bar-fill flex items-center justify-end px-2 whitespace-nowrap";
+                bar.className = "bg-gradient-to-r from-red-500 to-red-400 h-8 progress-bar-fill flex items-center justify-end px-2 whitespace-nowrap";
                 display.className = "text-4xl md:text-5xl font-black text-red-500 tracking-tight transition-colors";
             }
             
@@ -836,14 +847,33 @@
                 other: 'bg-slate-400/50'
             };
 
-            for (const [cat, amt] of Object.entries(usedByCategory)) {
-                if (amt > 0) {
-                    const pct = (amt / INITIAL_BALANCE) * 100;
-                    const block = document.createElement('div');
-                    block.className = `h-full ${categoryColors[cat]} used-block transition-all`;
-                    block.style.width = pct + '%';
-                    progressContainer.appendChild(block);
+            // 사용 영역: 항목별 색 블록을 한 묶음으로 두고 가운데에 '-사용비율' 표시
+            const usedTotal = Object.values(usedByCategory).reduce((a, b) => a + b, 0);
+            if (usedTotal <= 0) document.getElementById('usedInBar').classList.add('hidden');
+            if (usedTotal > 0) {
+                const wrap = document.createElement('div');
+                wrap.className = 'h-full flex relative used-block transition-all';
+                wrap.style.width = Math.min(100, (usedTotal / INITIAL_BALANCE) * 100) + '%';
+                for (const [cat, amt] of Object.entries(usedByCategory)) {
+                    if (amt > 0) {
+                        const block = document.createElement('div');
+                        block.className = `h-full ${categoryColors[cat]}`;
+                        block.style.width = (amt / usedTotal) * 100 + '%';
+                        wrap.appendChild(block);
+                    }
                 }
+                // 사용 영역이 넓으면 그 안에, 좁으면 남은 막대 끝(사용 영역 바로 옆)에 표시
+                const inBar = document.getElementById('usedInBar');
+                inBar.classList.toggle('hidden', !(usedPct < 14 && percentage >= 30));
+                inBar.textContent = '-' + usedPct.toFixed(1) + '%';
+                if (usedPct >= 14) {
+                    const lb = document.createElement('span');
+                    lb.className = 'absolute inset-0 flex items-center justify-center text-white text-sm font-black pointer-events-none';
+                    lb.style.textShadow = '0 1px 2px rgba(0,0,0,.6)';
+                    lb.textContent = '-' + usedPct.toFixed(1) + '%';
+                    wrap.appendChild(lb);
+                }
+                progressContainer.appendChild(wrap);
             }
 
             // 10년차 버튼 이름 동적 변경 (조건 충족 시 '레벨업', 잔고 90% 미만 시 일반 '10년 차')
@@ -855,7 +885,7 @@
                     btn10.classList.add('level-up-active');
                     btn10.classList.remove('level-up-inactive');
                 } else {
-                    yearLabels[10] = "10년 차";
+                    yearLabels[10] = "10년 차(레벨업X)";
                     btn10.innerText = yearLabels[10];
                     btn10.classList.remove('level-up-active');
                     btn10.classList.add('level-up-inactive');
