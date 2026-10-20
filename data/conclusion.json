@@ -1,0 +1,35 @@
+{
+  "hero": {
+    "badge": "결론",
+    "title": "오늘부터",
+    "titleSpan": "행동하세요",
+    "subtitle": "성과만을 위한 영업이 아닌 성장을 위한 영업 — 씨를 뿌리고, 잡초를 뽑고, 거름을 주고, 가지치기를 합니다.",
+    "tip": ""
+  },
+  "nav": [
+    {
+      "href": "#s1",
+      "label": "① 오늘부터 행동하세요"
+    }
+  ],
+  "sections": [
+    {
+      "id": "s1",
+      "no": "SECTION 01",
+      "title": "오늘부터 행동하세요",
+      "desc": "알고 있는 것을 오늘부터 행동으로",
+      "photo": {
+        "src": "assets/mechanism/preface-book.webp",
+        "alt": "책 속에 적힌 명언 - 존 러스킨"
+      },
+      "prose": "\n<p>즉, 교육은 암기하고 외우는 게 교육이 아니라, 훈련을 통해 <b>행동하지 않던 방식대로 행동하도록 가르치는 것</b>을 의미합니다.</p>\n<p>우린 이미 많은 것을 알고 있습니다.<br>하지만 많은 지식을 가지고도 어떻게 연결하고 말해야 하는지는 대다수가 모릅니다.<br>결정적 이유는 오늘 배우고 사용하지 않기 때문입니다.</p>\n<p>강사는 교육을 통해 외우지 않아도 되는 게 외워지고 행동하게 됩니다.<br>교육생은 교육을 통해 배우고 이해가 되지만, 그것을 고객에게 이해시키고 설명하는 행동을 적게 합니다. 그래서 행동하라 말합니다.</p>\n<p><b>‘성과만을 위한 영업이 아닌 성장을 위한 영업’</b><br>그걸 위해 힘든 과정이 있더라도 씨를 뿌리고, 잡초를 뽑으며, 거름을 주고, 가지치기를 합니다.<br>결실만을 바라는 결론만 이야기하면 ‘왜?’라는 의문만 남습니다.</p>\n<div class=\"note\"><b>오늘부터 행동하세요.</b></div>\n<p>마크 트웨인이 한 이야기라 잘못 알고 있는 것을 제대로 알고 정정하는 용기처럼, 행동하지 않은 잘못을 정정하는 용기를 가지세요.</p>\n<div class=\"ok\"><b>“교육이란 사람들이 모르는 것을 알도록 가르치는 것이 아니라, 행동하지 않던 방식대로 행동하도록 가르치는 것을 의미합니다. - 존 러스킨(John Ruskin)”</b></div>",
+      "extraBoxes": [
+        {
+          "kind": "qrbox",
+          "html": "<div style=\"text-align:center;padding:8px 0\"><img src=\"assets/mechanism/preface-qr.png\" alt=\"QR 코드\" width=\"220\" height=\"220\" style=\"width:220px;max-width:70%;height:auto;image-rendering:pixelated;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.12)\"></div>"
+        }
+      ]
+    }
+  ],
+  "footer": "© 스스로 학습하기"
+}

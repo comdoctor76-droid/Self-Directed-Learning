@@ -393,6 +393,8 @@ footer b{color:#FFB37E}
 .mh h3{font-size:19px;font-weight:900;line-height:1.4}
 .mcl{flex:0 0 36px;height:36px;border:none;border-radius:50%;background:rgba(255,255,255,.25);color:#fff;font-size:19px;font-weight:900;cursor:pointer;line-height:36px;text-align:center;padding:0}
 .mb{padding:20px 22px 26px;font-size:16.5px}
+.mb.prose{padding:4px 2px 14px}
+.inline-photo{margin:0 0 18px}.inline-photo img{display:block;width:100%;height:auto;border-radius:14px;box-shadow:0 4px 18px rgba(26,39,68,.12)}
 .mb h4{color:#C94F0A;font-size:17.5px;font-weight:800;margin:20px 0 8px;padding-left:10px;border-left:4px solid #E8651A}
 .mb h4:first-child{margin-top:0}
 .mb p{margin-bottom:11px;color:#2E3238;line-height:1.75}
@@ -592,7 +594,7 @@ function renderGuide(orig){
     '<span class="badge">'+_t(h.badge)+'</span>'+
     '<h1>'+_t(h.title)+'<br><span>'+_t(h.titleSpan)+'</span></h1>'+
     '<p>'+_t(h.subtitle)+'</p>'+
-    '<div class="tip">'+_t(h.tip)+'</div>';
+    (h.tip?'<div class="tip">'+_t(h.tip)+'</div>':'');
   if(ig&&ig.src){
     window.IMGDATA['lung']={src:ig.src,name:ig.name||'infographic.png'};
     heroHtml+='<br><button class="hero-info-btn" onclick="OI(\'lung\')">'+_t(ig.buttonLabel||'📊 인포그래픽 보기')+'</button>';
@@ -621,6 +623,10 @@ function renderSection(sec,si){
   if(sec.hint)h+='<span class="hint">'+_t(sec.hint)+'</span>';
   h+='</div>';
   /* 섹션 대표 이미지 — 객체 하나 또는 배열(여러 장을 위에서 아래로 배치) */
+  /* 본문 사진 — 글의 일부로 바로 보이는 단순 사진(누르면 열리지 않고, 확대·다운로드 문구도 없음) */
+  if(sec.photo&&sec.photo.src){
+    h+='<figure class="inline-photo"><img src="'+_t(sec.photo.src)+'" alt="'+_t(sec.photo.alt||sec.title)+'"></figure>';
+  }
   if(sec.image){
     var secImgs=(Object.prototype.toString.call(sec.image)==='[object Array]')?sec.image:[sec.image];
     secImgs.forEach(function(sim,sn){
@@ -695,6 +701,8 @@ function renderSection(sec,si){
       h+='<div class="diagram"><img src="'+_t(sbi.src)+'" alt="'+_t(sbi.alt||sec.title)+'" onclick="OI(\''+sbKey+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
     });
   }
+  /* 본문 글 — 팝업이 아니라 페이지 본문에 바로 */
+  if(sec.prose)h+='<div class="mb prose">'+sec.prose+'</div>';
   if(sec.type!=='boxes'){
     (sec.extraBoxes||[]).forEach(function(b){h+='<div class="'+_t(b.kind||'note')+'">'+_t(b.html)+'</div>';});
   }
@@ -744,13 +752,14 @@ function renderSection(sec,si){
     syn.speak(u);
   };
   function decorate(){
-    var mc=document.getElementById('MC'); if(!mc)return;
-    mc.querySelectorAll('.en').forEach(function(b){
+    document.querySelectorAll('#MC .en, #wrap .en').forEach(function(b){
       if(b.querySelector('.tts'))return;
       var x=document.createElement('button'); x.type='button'; x.className='tts'; x.textContent='🔊'; x.setAttribute('aria-label','영어로 듣기');
       x.setAttribute('onclick','TTS(this)'); b.insertBefore(x,b.firstChild);
     });
   }
+  var rg=window.renderGuide;
+  if(rg)window.renderGuide=function(d){rg(d);decorate();};   // 본문에 바로 들어간 영문 블록에도 🔊 버튼
   var om=window.OM, cm=window.CM;
   window.OM=function(k){stop();om(k);decorate();};
   window.CM=function(){stop();cm();};
