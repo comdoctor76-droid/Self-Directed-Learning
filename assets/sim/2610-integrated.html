@@ -99,6 +99,13 @@
         .m-price small { font-size: 11px; font-weight: 800; color: #334155; margin-left: 1px; }
         .m-price i { display: block; font-style: normal; font-size: 10.5px; font-weight: 800; }
         .m-price i.dn { color: #ef4444; } .m-price i.up { color: #2563eb; }
+        .m-row.armed { outline: 2.5px dashed #ff6600; outline-offset: 2px; }
+        .m-row.pt.armed { outline-color: #c026d3; }
+        #mTip { display: none; }
+        html.mapp #mTip.on { display: block; position: fixed; left: 12px; right: 12px; z-index: 80; max-height: 45vh; overflow-y: auto; background: #1e293b; color: #f1f5f9; border-radius: 14px; padding: 12px 14px; font-size: 13.5px; line-height: 1.6; box-shadow: 0 10px 28px rgba(0,0,0,.35); animation: mUp .15s ease-out; }
+        #mTip .t { display: block; color: #fdba74; font-size: 14.5px; margin-bottom: 4px; }
+        #mTip .d b { color: #fff; }
+        #mTip .a { margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,.15); font-size: 12.5px; font-weight: 800; color: #fde68a; }
         .m-info { width: 26px; height: 26px; border-radius: 50%; border: 1px solid #e2e8f0; background: #f8fafc; color: #64748b; font-size: 13px; font-weight: 900; flex: 0 0 auto; }
         .m-switch { display: flex; align-items: center; justify-content: space-between; background: #fdf4ff; border: 1.5px solid #f0abfc; border-radius: 14px; padding: 12px; margin-bottom: 10px; }
         .m-switch b { font-size: 15px; font-weight: 900; color: #86198f; }
@@ -1699,12 +1706,12 @@
                 <div class="m-name"><b>주사제 외</b><span>(연간 1회한 · 연 1회)</span></div>${price}
                 <button type="button" class="m-info" data-info="pt_oral" aria-label="설명">i</button></div>`;
             h += `<div class="m-sec">항암방사선치료Ⅱ <small>${radOn ? '암 방사선 선택됨 → 자동 합산' : '암 탭에서 방사선 선택 시 자동 합산'}</small></div>`;
-            h += `<div class="m-row pt${radOn && perTxOn ? ' on' : ''}${dis}">
+            h += `<div class="m-row pt${radOn && perTxOn ? ' on' : ''}${dis}" data-tip="pt_rad">
                 <span class="m-chk">${radOn && perTxOn ? '✓' : ''}</span>
                 <div class="m-name"><b>방사선</b><span>(치료당)</span></div>${step('rad')}${price}
                 <button type="button" class="m-info" data-info="pt_rad" aria-label="설명">i</button></div>`;
             h += `<div class="m-sec">유사암(기/갑) <small>각각 20% · 유사암 약물·방사선 선택 시 자동</small></div>`;
-            h += `<div class="m-row pt${simOn && perTxOn ? ' on' : ''}${dis}">
+            h += `<div class="m-row pt${simOn && perTxOn ? ' on' : ''}${dis}" data-tip="pt_sim">
                 <span class="m-chk">${simOn && perTxOn ? '✓' : ''}</span>
                 <div class="m-name"><b>유사암 치료당</b><span>(같은 횟수 × 20% 단가)</span></div>
                 <div class="m-price"><b>${fmt(unit * PER_TX_SIM_RATE * (lv ? 10 : 1))}</b><small>만</small></div>
@@ -1722,7 +1729,7 @@
                 if (it.sec) h += `<div class="m-sec">${it.sec}${it.note ? ` <small>${it.note}</small>` : ''}</div>`;
                 else h += rowHtml(it);
             });
-            return h + `<div class="m-hint">항목을 누르면 선택 / 다시 누르면 취소 · ⓘ 설명</div>`;
+            return h + `<div class="m-hint">한 번 누르면 설명 · 한 번 더 누르면 선택/취소</div>`;
         }
 
         function render() {
@@ -1758,6 +1765,7 @@
             const ae = document.activeElement;
             if (!(ae && ae.matches && ae.matches('#mBody input[data-cnt]'))) {
                 const b = $('mBody'), st = b.scrollTop; b.innerHTML = bodyHtml(); b.scrollTop = st;
+                if (armed) { const ar = b.querySelector(`[data-id="${armed}"], [data-tip="${armed}"], [data-mode="${armed.replace('pt_', '')}"]`); if (ar) ar.classList.add('armed'); else disarm(); }
             }
             const ys = yClaims().reduce((a, it) => a + it.amount, 0);
             $('mSumLbl').textContent = `${yearLabels[currentYear].replace(/\(.*\)/, '')} 합계`;
@@ -1774,11 +1782,11 @@
         // ── 이벤트 ──
         $('mYears').addEventListener('click', e => {
             const b = e.target.closest('button[data-y]'); if (!b) return;
-            setYear(+b.getAttribute('data-y')); centerYear();
+            disarm(); setYear(+b.getAttribute('data-y')); centerYear();
         });
         $('mTabs').addEventListener('click', e => {
             const b = e.target.closest('button[data-tab]'); if (!b) return;
-            tab = b.getAttribute('data-tab'); $('mBody').scrollTop = 0; render();
+            disarm(); tab = b.getAttribute('data-tab'); $('mBody').scrollTop = 0; render();
         });
         $('mBody').addEventListener('click', e => {
             const info = e.target.closest('[data-info]');
@@ -1791,15 +1799,27 @@
                 return;
             }
             if (e.target.closest('.m-step') || e.target.closest('.m-switch')) return;
+            /* 그래프 막대처럼: 한 번 누르면 설명, 같은 줄을 한 번 더 누르면 선택/취소 */
             const m = e.target.closest('[data-mode]');
-            if (m) { setPerTxMode(m.getAttribute('data-mode')); return; }
+            if (m) {
+                const key = 'pt_' + m.getAttribute('data-mode');
+                if (armed === key || !perTxOn) { disarm(); setPerTxMode(m.getAttribute('data-mode')); }
+                else arm(key, m);
+                return;
+            }
+            const t = e.target.closest('[data-tip]');
+            if (t) { const key = t.getAttribute('data-tip'); if (armed === key) disarm(); else arm(key, t); return; }
             const r = e.target.closest('.m-row[data-id]');
             if (r) {
                 const id = r.getAttribute('data-id');
+                if (armed !== id) { arm(id, r); return; }
+                disarm();
                 const it = [].concat(...Object.values(ITEMS)).find(x => x.id === id);
                 toggleItem(id, it.tname, it.cat, it.red);
             }
         });
+        $('mBody').addEventListener('scroll', () => disarm(), { passive: true });
+        document.addEventListener('click', e => { if (armed && !e.target.closest('#mBody .m-row') && !e.target.closest('#mTip')) disarm(); }, true);
         $('mBody').addEventListener('change', e => {
             if (e.target.id === 'mPtChk') togglePerTx(e.target.checked);
         });
@@ -1848,21 +1868,55 @@
         $('mSheetBody').addEventListener('change', e => {
             if (e.target.id === 'mSetPt') { togglePerTx(e.target.checked); mOpenSheet('set'); }
         });
-        function showInfo(key) {
+        // ── 한 번 탭 설명 말풍선 ──
+        let armed = null;
+        const tip = document.createElement('div'); tip.id = 'mTip'; document.body.appendChild(tip);
+        function arm(key, row) {
+            armed = key;
+            document.querySelectorAll('#mBody .m-row.armed').forEach(x => x.classList.remove('armed'));
+            row.classList.add('armed');
+            const c = infoContent(key, true);
+            const isOn = row.classList.contains('on');
+            let act;
+            if (key === 'pt_rad') act = '암 탭의 항암 방사선치료를 선택하면 자동 선택됩니다.';
+            else if (key === 'pt_sim') act = '유사암 탭의 약물·방사선을 선택하면 자동 선택됩니다.';
+            else if (key.indexOf('pt_') === 0) act = isOn ? '현재 선택됨' : '👆 한 번 더 누르면 이것으로 선택';
+            else act = isOn ? '👆 한 번 더 누르면 선택 취소' : '👆 한 번 더 누르면 선택';
+            tip.innerHTML = `<b class="t">${c.title}</b><div class="d">${c.html}</div><div class="a">${act}</div>`;
+            tip.classList.add('on');
+            const r = row.getBoundingClientRect(), vh = window.innerHeight;
+            const h = Math.min(tip.offsetHeight, vh * 0.45);
+            let top = r.top - h - 8;
+            if (top < 70) top = Math.min(r.bottom + 8, vh - h - 8);
+            tip.style.top = Math.max(8, top) + 'px';
+        }
+        function disarm() {
+            armed = null; tip.classList.remove('on');
+            document.querySelectorAll('#mBody .m-row.armed').forEach(x => x.classList.remove('armed'));
+        }
+        window.mDisarm = disarm;
+        function infoContent(key, short) {
             let title = '설명', html = '';
             if (key.indexOf('pt_') === 0) {
                 const k = key.slice(3);
-                html = (lvNow() && k !== 'sim' ? PT_LV_TIP + '<hr style="margin:12px 0;border-color:#f1f5f9">' : '') + PT_TIPS[k];
+                html = PT_TIPS[k];
+                if (lvNow() && k !== 'sim') html = short ? html + '<p style="margin-top:6px;color:#2563eb;font-weight:800">⬆ 레벨업 적용 중 — 치료당 지급금액의 10배(1,000%)</p>' : PT_LV_TIP + '<hr style="margin:12px 0;border-color:#f1f5f9">' + html;
                 title = '암추가보장(치료당)';
+                html = html.replace(/^<b[^>]*>[^<]*<\/b><br>/, '');
             } else {
                 const it = [].concat(...Object.values(ITEMS)).find(x => x.id === key);
                 title = it.name;
                 html = PLAN_DATA[currentPlan].items[key].desc;
-                if (key === 'c5') html += '<p style="margin-top:8px"><b>4기 항암약물치료</b>를 선택하면 항암 약물치료가 함께 적용되며, 4기를 해제하기 전에는 항암 약물치료를 해제할 수 없습니다.</p>';
-                if (key === 'h3') html += '<p style="margin-top:8px">혈전용해제 사용 환자의 <b>98.9%</b>가 중환자실에 입원하므로, 선택하면 <b>중환자실 입원(A)</b>이 함께 적용됩니다.</p>';
-                if (lvNow()) html += '<p style="margin-top:8px;color:#2563eb;font-weight:700">⬆ 레벨업 적용 중 — 약정금액의 120%로 지급됩니다.</p>';
+                if (key === 'c5') html += '<p style="margin-top:6px"><b>4기 항암약물치료</b>를 선택하면 항암 약물치료가 함께 적용되며, 4기를 해제하기 전에는 항암 약물치료를 해제할 수 없습니다.</p>';
+                if (key === 'h3') html += '<p style="margin-top:6px">혈전용해제 사용 환자의 <b>98.9%</b>가 중환자실에 입원하므로, 선택하면 <b>중환자실 입원(A)</b>이 함께 적용됩니다.</p>';
+                if (lvNow()) html += '<p style="margin-top:6px;color:#2563eb;font-weight:800">⬆ 레벨업 적용 중 — 약정금액의 120%로 지급됩니다.</p>';
             }
-            openSheet('info1', title, html);
+            return { title, html };
+        }
+        function showInfo(key) {
+            disarm();
+            const c = infoContent(key, false);
+            openSheet('info1', c.title, c.html);
         }
         window.mReset = function () {
             if (getTotalClaimed() > 0 && !confirm('모든 연차의 입력 내용을 초기화할까요?')) return;
