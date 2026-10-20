@@ -258,14 +258,16 @@
                                 <span class="flex-shrink-0 bg-white border border-dashed border-fuchsia-300 rounded-md px-1.5 py-px text-[11px] font-black text-fuchsia-700 whitespace-nowrap">연 1회</span>
                                 <div class="flex items-center justify-end gap-0.5 flex-shrink-0 w-[4.7rem]"><span id="ptp-oral" class="text-fuchsia-700 font-black text-base leading-none">20</span>
                                 <div class="flex flex-col items-start leading-tight"><span class="text-[11px] font-bold text-slate-700">만 원</span><span id="ptn-oral" class="text-[10px] font-bold whitespace-nowrap"></span></div></div></li>
-                            <li class="flex items-center gap-1 pl-2.5 pr-2 py-2 rounded-xl border border-fuchsia-200 bg-fuchsia-50/40">
+                            <li id="ptrow-rad" class="flex items-center gap-1 pl-2 pr-2 py-2 rounded-xl border border-fuchsia-200 bg-fuchsia-50/40 transition-opacity">
+                                <span id="ptchk-rad" class="pt-auto w-4 h-4 flex-shrink-0 rounded border-2 border-fuchsia-300 bg-white text-white text-[11px] leading-none flex items-center justify-center font-black" title="암 보장에서 항암 방사선치료를 선택하면 자동으로 선택됩니다"></span>
                                 <div class="flex flex-col items-start leading-tight flex-1 min-w-0"><span class="text-slate-800 font-extrabold text-[14px]">항암방사선치료Ⅱ</span><span class="text-[11px] text-fuchsia-600 font-extrabold mt-0.5">(치료당)</span></div>
                                 <span class="flex items-baseline gap-px flex-shrink-0 bg-white border border-fuchsia-300 rounded-md px-1 py-px"><input id="cnt-rad" type="number" inputmode="numeric" min="0" max="365" value="30" oninput="setPerTxCount('rad', this.value)" aria-label="항암방사선치료Ⅱ 연간 횟수" class="w-8 text-center text-sm font-black text-fuchsia-700 focus:outline-none bg-transparent"><span class="text-[10px] font-bold text-slate-500">회</span></span>
                                 <div class="flex items-center justify-end gap-0.5 flex-shrink-0 w-[4.7rem]"><span id="ptp-rad" class="text-fuchsia-700 font-black text-base leading-none">20</span>
                                 <div class="flex flex-col items-start leading-tight"><span class="text-[11px] font-bold text-slate-700">만 원</span><span id="ptn-rad" class="text-[10px] font-bold whitespace-nowrap"></span></div></div></li>
-                            <li class="flex justify-between items-center p-2 rounded-xl border border-dashed border-fuchsia-200 bg-white">
-                                <span class="text-slate-600 font-bold text-[12px]">유사암(기/갑) <span class="text-[10px] font-normal text-slate-400">각각 20%</span></span>
-                                <span class="text-fuchsia-700 font-black text-[15px]"><span id="ptp-sim">4</span><span class="text-[10px] text-slate-700 font-bold ml-0.5">만 원</span></span></li>
+                            <li id="ptrow-sim" class="flex items-center gap-1 pl-2 pr-2 py-2 rounded-xl border border-dashed border-fuchsia-300 bg-white transition-opacity">
+                                <span id="ptchk-sim" class="pt-auto w-4 h-4 flex-shrink-0 rounded border-2 border-fuchsia-300 bg-white text-white text-[11px] leading-none flex items-center justify-center font-black" title="유사암 약물·방사선치료를 선택하면 자동으로 선택됩니다"></span>
+                                <div class="flex flex-col items-start leading-tight flex-1 min-w-0"><span class="text-slate-700 font-extrabold text-[13px]">유사암(기/갑) <span class="text-[10px] font-bold text-slate-400">각각 20%</span></span><span id="ptsim-detail" class="text-[10px] font-bold text-fuchsia-600 mt-0.5">유사암 약물·방사선 선택 시 자동 합산</span></div>
+                                <span class="text-fuchsia-700 font-black text-[15px] flex-shrink-0 whitespace-nowrap"><span id="ptp-sim">4</span><span class="text-[10px] text-slate-700 font-bold ml-0.5">만 원</span></span></li>
                         </ul>
                         <div class="mt-3 bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-3">
                             <div id="perTxSum" class="text-[12px] font-bold text-fuchsia-700 leading-relaxed"></div>
@@ -1274,6 +1276,25 @@
                 document.getElementById('ptn-' + kind).innerHTML = tag;
             });
             document.getElementById('ptp-sim').textContent = fmtMan(unit * PER_TX_SIM_RATE * simMult);
+
+            // 자동 선택 표시: 암 보장 방사선 → 추가보장 방사선 / 유사암 약물·방사선 → 추가보장 유사암(기/갑)
+            const hasId = ids => claims[y].some(it => ids.includes(it.id));
+            const setAuto = (id, on) => {
+                const e = document.getElementById('ptchk-' + id);
+                e.textContent = on ? '✓' : '';
+                e.style.background = on ? '#c026d3' : '#fff';
+                e.style.borderColor = on ? '#c026d3' : '#f0abfc';
+            };
+            const radOn = perTxOn && hasId(['c3']);
+            setAuto('rad', radOn);
+            document.getElementById('ptrow-rad').style.opacity = perTxOn && !radOn ? '.5' : '1';
+            const simMine = claims[y].filter(it => it.autoAddedBy === 'pertx' && it.sim);
+            const simOn = perTxOn && hasId(['c8_2', 'c8_3']);
+            setAuto('sim', simOn);
+            document.getElementById('ptrow-sim').style.opacity = perTxOn && !simOn ? '.5' : '1';
+            document.getElementById('ptsim-detail').innerHTML = (perTxOn && simMine.length)
+                ? simMine.map(it => it.name.replace('유사암 ', '').replace('암추가 ', '')).join(' + ') + ' = <b>' + fmtMan(simMine.reduce((a, it) => a + it.amount, 0)) + '만</b>'
+                : '유사암 약물·방사선 선택 시 자동 합산';
 
             const chk = document.getElementById('perTxChk');
             if (chk.checked !== perTxOn) chk.checked = perTxOn;
