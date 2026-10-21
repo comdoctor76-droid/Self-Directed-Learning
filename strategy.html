@@ -146,6 +146,7 @@ body:has(#PENBAR.open) .pv-scroll:not(.w){padding-right:132px}
 <!-- 시뮬레이터 전체 화면 -->
 <div class="tl" id="tl" role="dialog" aria-modal="true" aria-label="시뮬레이터" data-pen-skip>
   <div class="tl-top"><div class="tl-title" id="tlTitle"></div>
+    <button class="tl-b" id="tlLink" type="button" title="단독 실행 링크 복사" aria-label="링크 복사">🔗</button>
     <button class="tl-b tl-pr" id="tlPrint" type="button" title="인쇄 (가로)">🖨</button>
     <button class="tl-b" id="tlNew" type="button" title="새 창으로 열기">↗</button>
     <button class="tl-b" id="tlClose" type="button" aria-label="닫기">✕</button></div>
@@ -273,8 +274,19 @@ function load(){
 }
 
 /* ── 시뮬레이터(도구) 전체 화면 열기 ── */
+var curTool=null;
+/* 링크 복사: clipboard → execCommand → prompt 순서로 시도 */
+function copyText(txt){
+  function legacy(){
+    try{var ta=document.createElement('textarea');ta.value=txt;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;top:0;left:0;opacity:0';
+      document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,txt.length);var ok=document.execCommand('copy');ta.remove();return ok;}catch(e){return false;}
+  }
+  if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(txt).then(function(){return true;},function(){return legacy();});
+  return Promise.resolve(legacy());
+}
 function openTool(t){
   if(!t||!t.href)return;
+  curTool=t; $('tlLink').style.display=t.link?'':'none';
   $('tlTitle').textContent=t.title||'';
   /* iframe은 열 때마다 새로 만들고 닫을 때 지운다 — src를 바꾸면 브라우저 '뒤로가기' 기록이 한 칸 더 생겨 뒤로가기가 꼬인다 */
   var fr=document.createElement('iframe'); fr.id='tlFrame'; fr.title='시뮬레이터'; fr.setAttribute('data-src',t.href); fr.setAttribute('allow','web-share; clipboard-write'); fr.src=t.href;
@@ -288,6 +300,14 @@ function closeTool(fromPop){
   if(!fromPop){try{if(history.state&&history.state.tool)history.back();}catch(e){}}
 }
 $('tlClose').onclick=function(){closeTool(false);};
+$('tlLink').onclick=function(){
+  if(!curTool||!curTool.link)return;
+  var url=new URL(curTool.link,location.href).href, b=this;
+  copyText(url).then(function(ok){
+    if(ok){toast('링크를 복사했습니다 — '+url);b.textContent='✓';setTimeout(function(){b.textContent='🔗';},1500);}
+    else prompt('아래 링크를 복사하세요',url);
+  });
+};
 $('tlPrint').onclick=function(){var f=$('tlFrame');try{if(f&&f.contentWindow&&f.contentWindow.printReport)f.contentWindow.printReport();else toast('시뮬레이터를 불러오는 중입니다. 잠시 후 다시 눌러 주세요.',true);}catch(e){toast('인쇄를 시작할 수 없습니다.',true);}};
 $('tlNew').onclick=function(){var f=$('tlFrame')&&$('tlFrame').getAttribute('data-src');if(f)window.open(/2610-integrated/.test(f)?'sim2610.html':f,'_blank');};
 window.addEventListener('popstate',function(){
