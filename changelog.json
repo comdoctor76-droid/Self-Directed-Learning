@@ -911,5 +911,13 @@
   "page": "strategy.html",
   "sel": null,
   "note": "2610 시뮬레이터 앱 화면 사용 매뉴얼 추가(manual-sim2610.html, 화면 캡처 15장)"
+ },
+ {
+  "id": "c159-1",
+  "v": "v1.159",
+  "at": "2026-10-27 09:30",
+  "page": "strategy.html",
+  "sel": null,
+  "note": "2610 시뮬레이터 PC 버전 상세 매뉴얼 추가 — 웹(manual-sim2610-pc.html)과 수정 가능한 PPT(21장)"
  }
 ]
