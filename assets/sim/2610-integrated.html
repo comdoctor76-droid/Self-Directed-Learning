@@ -984,6 +984,11 @@
             showModal("중환자실은 함께 적용됩니다", "뇌/심장질환에서 혈전용해제를 사용하는 환자의 98.9%가 중환자실에 입원합니다.\n그래서 혈전 용해 치료(B)를 선택하면 중환자실 입원(A)이 함께 적용됩니다.\n중환자실을 빼려면 먼저 혈전 용해 치료(B)를 해제해 주세요.");
         }
 
+        // 혈전 제거술(B) ↔ 수술비(A) 연동 안내
+        function showSurgLinkModal() {
+            showModal("수술비(A)는 함께 적용됩니다", "혈전 제거술(B)은 카테터로 시행하는 수술이라 수술비(A)가 함께 적용됩니다.\n수술비(A)를 빼려면 먼저 혈전 제거술(B)을 해제해 주세요.");
+        }
+
         // 아이템 클릭(토글) 처리
         function toggleItem(id, name, category, reductionApplies) {
             let yearArr = claims[currentYear];
@@ -1001,6 +1006,11 @@
                 return;
             }
 
+            if (id === 'h1' && index > -1 && yearArr[index].autoAddedBy === 'h4' && yearArr.some(item => item.id === 'h4')) {
+                showSurgLinkModal();
+                return;
+            }
+
             if (index > -1) {
                 // 이미 있으면 제거 (차감 취소)
                 yearArr.splice(index, 1);
@@ -1011,15 +1021,21 @@
                     if (h2Idx > -1) yearArr.splice(h2Idx, 1);
                 }
 
+                // 혈전 제거술(h4) 취소 시 자동 선택되었던 수술비(A)(h1)도 함께 취소
+                if (id === 'h4') {
+                    let h1Idx = yearArr.findIndex(item => item.id === 'h1' && item.autoAddedBy === 'h4');
+                    if (h1Idx > -1) yearArr.splice(h1Idx, 1);
+                }
+
                 // 4기 항암약물(c5) 취소 시 자동 선택되었던 일반 항암약물(c2)도 함께 취소
                 if (id === 'c5') {
                     let c2Idx = yearArr.findIndex(item => item.id === 'c2' && item.autoAddedBy === 'c5');
                     if (c2Idx > -1) yearArr.splice(c2Idx, 1);
                 }
 
-                // 암 수술비(c1, c8_1)·뇌심 수술비(h1) 취소 시 남아있는 수술이 없다면 자동 선택되었던 비급여 수술(상급)(o3)도 함께 취소
-                if (id === 'c1' || id === 'c8_1' || id === 'h1') {
-                    let hasOtherCancerSurgery = yearArr.some(item => item.id === 'c1' || item.id === 'c8_1' || item.id === 'h1');
+                // 암 수술비(c1, c8_1) 취소 시 남아있는 수술이 없다면 자동 선택되었던 비급여 수술(상급)(o3)도 함께 취소
+                if (id === 'c1' || id === 'c8_1') {
+                    let hasOtherCancerSurgery = yearArr.some(item => item.id === 'c1' || item.id === 'c8_1');
                     if (!hasOtherCancerSurgery) {
                         let o3Idx = yearArr.findIndex(item => item.id === 'o3' && item.autoAddedBy === 'cancer_surgery');
                         if (o3Idx > -1) yearArr.splice(o3Idx, 1);
@@ -1035,13 +1051,18 @@
                     addSingleItem('h2', '중환자실 입원 (A)', 'other', true, 'h3');
                 }
 
+                // 0-2) 혈전 제거술(h4)은 카테터 수술이므로 수술비(A)(h1) 자동 선택
+                if (id === 'h4') {
+                    addSingleItem('h1', '수술비 (A)', 'heart_surgery', true, 'h4');
+                }
+
                 // 1) 4기 항암약물(c5) 선택 시 일반 항암약물(c2) 자동 선택 및 합산
                 if (id === 'c5') {
                     addSingleItem('c2', '항암 약물치료', 'drug', true, 'c5');
                 }
 
-                // 2) 암 수술비(c1, 유사암 c8_1)·뇌심 수술비(h1) 선택 시 비급여 수술(상급)(o3) 자동 선택 및 합산
-                if (id === 'c1' || id === 'c8_1' || id === 'h1') {
+                // 2) 암 수술비(c1, 유사암 c8_1) 선택 시 비급여 수술(상급)(o3) 자동 선택 및 합산
+                if (id === 'c1' || id === 'c8_1') {
                     addSingleItem('o3', '질병 비급여 수술 (상급)', 'other', false, 'cancer_surgery');
                 }
             }
@@ -1064,6 +1085,10 @@
                 showIcuLinkModal();
                 return;
             }
+            if (id === 'h1' && index > -1 && yearArr[index].autoAddedBy === 'h4' && yearArr.some(item => item.id === 'h4')) {
+                showSurgLinkModal();
+                return;
+            }
             if(index > -1) {
                 const removed = yearArr.splice(index, 1)[0];
                 // 그래프에서 치료당 막대를 지우면 그 연차의 해당 횟수를 0으로
@@ -1076,6 +1101,10 @@
                 if (id === 'c5') {
                     const c2i = yearArr.findIndex(item => item.id === 'c2' && item.autoAddedBy === 'c5');
                     if (c2i > -1) yearArr.splice(c2i, 1);
+                }
+                if (id === 'h4') {
+                    const h1i = yearArr.findIndex(item => item.id === 'h1' && item.autoAddedBy === 'h4');
+                    if (h1i > -1) yearArr.splice(h1i, 1);
                 }
                 if (id === 'h3') {
                     const h2i = yearArr.findIndex(item => item.id === 'h2' && item.autoAddedBy === 'h3');
@@ -1741,9 +1770,9 @@
                     steps.push({ tag: '응급', title: '응급 이송과 치료 경로', text: intro + (lys && ext ? '' : ' 혈전용해는 증상 발생 4.5시간 이내, 혈관 안 시술은 가능한 한 빨리 시행합니다.'), money: [] });
                     if (lys) steps.push({ tag: '혈전용해', title: '혈전 용해 치료', text: '막힌 혈관을 약으로 녹이는 <b>혈전용해제</b>를 투여합니다. 투여 후에는 뇌출혈 등 출혈 위험이 있어 보통 24시간 <b>중환자실(집중치료실)</b>에서 지켜보며, 혈전용해 환자의 <b>98.9%</b>가 중환자실에 입원합니다. 그래서 혈전 용해 치료 보험금과 함께 <b>중환자실 입원(A)</b> 보험금이 지급됩니다.', money: [take('h3', '혈전 용해 치료 (B) · 연 1회'), take('h2', '중환자실 입원 (A) · 연 1회')].filter(Boolean) });
                     if (lys && ext) steps.push({ tag: '전원·제거', title: '혈전 용해 후 혈전 제거', text: '두 가지 경우가 있습니다. ① 첫 병원에서 혈전용해제를 투여하고 <b>시술 가능한 큰 병원으로 이송</b>한 뒤, 좋아지지 않으면 카테터로 <b>혈전을 직접 빼내는 혈전제거술</b>을 추가로 합니다(drip-and-ship). ② 한 병원에서 혈전용해 후 중환자실에서 경과를 보다가 호전이 없거나, 카테터 검사와 동시에 용해·제거를 함께 시행합니다. 심근경색도 2시간 안에 관상동맥 시술이 어려우면 혈전용해제를 먼저 쓰고 시술 병원으로 옮기는 방식이 쓰입니다.', money: [take('h4', '특정 혈전 제거술 (B) · 연 1회')] });
-                    else if (ext) steps.push({ tag: '혈전제거', title: '특정 혈전 제거술', text: '시술 가능한 병원에서 카테터로 막힌 혈관의 <b>혈전을 직접 빼내는 혈전제거술</b>을 시행하면 특정 혈전 제거술 보험금이 지급됩니다.', money: [take('h4', '특정 혈전 제거술 (B) · 연 1회')] });
+                    else if (ext) steps.push({ tag: '혈전제거', title: '특정 혈전 제거술', text: '시술 가능한 병원에서 카테터로 막힌 혈관의 <b>혈전을 직접 빼내는 혈전제거술</b>을 시행하면 특정 혈전 제거술 보험금이 지급되고, 카테터 수술이라 <b>수술비(A)</b>도 함께 적용됩니다.', money: [take('h4', '특정 혈전 제거술 (B) · 연 1회')] });
                     if (icu && !lys) steps.push({ tag: '입원', title: '중환자실 입원', text: '상태가 위중해 종합병원 이상 <b>중환자실</b>에 입원하면 중환자실 입원(A) 보험금이 연 1회 지급됩니다.', money: [take('h2', '중환자실 입원 (A) · 연 1회')] });
-                    if (op) steps.push({ tag: '수술', title: '뇌·심장 수술 (A)', text: '급여·비급여를 가리지 않고 <b>카테터(혈관 내) 수술</b>이든 <b>개두·개흉 수술</b>이든 수술할 때마다 수술비(A)가 회당 지급됩니다. 종합병원 이상에서 비급여 수술을 받으면 <b>질병 비급여 수술비</b>도 함께 지급됩니다.', money: [take('h1', '수술비 (A) · 회당'), take('o3', '질병 비급여 수술(상급) · 회당')].filter(Boolean) });
+                    if (op) steps.push({ tag: '수술', title: '뇌·심장 수술 (A)', text: '급여·비급여를 가리지 않고 <b>카테터(혈관 내) 수술</b>이든 <b>개두·개흉 수술</b>이든 수술할 때마다 수술비(A)가 회당 지급됩니다. 비급여 수술을 받아 <b>질병 비급여 수술비(상급)</b>를 따로 선택하면 함께 지급됩니다.', money: [take('h1', '수술비 (A) · 회당'), take('o3', '질병 비급여 수술(상급) · 회당')].filter(Boolean) });
                 }
                 // ── 그 밖에 선택한 항목
                 const rest = a.filter(i => !used.has(i.id));
@@ -1838,7 +1867,7 @@
                 { sec: '기타 질병', note: '감액 없음' },
                 { id: 'o1', name: '급여 특정중증(4종)', cond: '', red: false, cat: 'other', tname: '급여 특정중증치료(4종)' },
                 { id: 'o2', name: '비급여 수술(종합)', cond: '회당', red: false, cat: 'other', tname: '질병 비급여 수술 (종합)' },
-                { id: 'o3', name: '비급여 수술(상급)', cond: '회당 · 암·뇌심 수술 시 자동', red: false, cat: 'other', tname: '질병 비급여 수술 (상급)' }
+                { id: 'o3', name: '비급여 수술(상급)', cond: '회당 · 암 수술 시 자동', red: false, cat: 'other', tname: '질병 비급여 수술 (상급)' }
             ],
             heart: [
                 { sec: 'A 뇌/심장 수술·입원', note: '신체를 절개하는 수술 등' },
