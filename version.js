@@ -3,7 +3,7 @@
    · 배포 때 아래 v(버전)와 at(수정 연월일시, 한국시간) 두 값만 올린다.
    · 메인(#verTag)과 각 학습 페이지 히어로(.hero) 우측 하단에 같은 값을 표시한다.
    ═══════════════════════════════════════════════════════════════ */
-window.SITE_VERSION = { v: 'v1.164', at: '2026-10-28 14:00' };
+window.SITE_VERSION = { v: 'v1.165', at: '2026-10-28 17:00' };
 (function () {
   'use strict';
   var V = window.SITE_VERSION, text = V.v + ' \u00b7 ' + V.at;

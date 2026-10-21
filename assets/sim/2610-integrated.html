@@ -105,7 +105,7 @@
         .m-years::-webkit-scrollbar { display: none; }
         .m-years button { flex: 0 0 auto; border: 1.5px solid #cbd5e1; background: #fff; color: #475569; font-family: inherit; font-size: 13px; font-weight: 700; padding: 5px 11px; border-radius: 999px; white-space: nowrap; }
         .m-years button.on { border-color: #ff6600; background: #ff6600; color: #fff; }
-        .m-years button.has { border-color: #fdba74; }
+        .m-years button.has { border-color: #fb923c; border-width: 2px; background: #fff7ed; color: #c2410c; }
         .m-years button.has:not(.on)::after { content: '•'; color: #ff6600; margin-left: 3px; }
         .m-years button .s { font-size: 10px; margin-left: 2px; }
         .m-tabs { display: flex; background: #fff; border-bottom: 1px solid #e2e8f0; }
@@ -187,6 +187,8 @@
         .ydock > div:first-child span#yearRangeLabel { font-size: 13px; }
         .ydock > div:first-child button { padding: 3px 10px !important; }
         .ydock #yearSelector { margin-bottom: 0 !important; gap: 4px !important; }
+        .year-btn.has-claim:not(.border-hd-500) { border-color: #fb923c !important; border-width: 2px !important; background: #fff7ed !important; color: #c2410c !important; font-weight: 700 !important; }
+        .year-btn.has-claim.border-hd-500 { background: #fff7ed !important; }
         .ydock .year-btn { padding-top: 2px !important; padding-bottom: 2px !important; font-size: 12.5px !important; line-height: 1.25 !important; }
         /* 암추가보장(치료당) — 그래프에서 한눈에 구분되도록 강렬한 자홍색 + 사선 줄무늬 */
         .pertx-stripe { background-image: repeating-linear-gradient(45deg, rgba(255,255,255,.35) 0 5px, transparent 5px 10px); }
@@ -1235,6 +1237,7 @@
             renderPerTxBox();
             if (window.mRender) window.mRender();   // 휴대폰 앱 화면 갱신
             if (window.renderNarrPC) window.renderNarrPC();   // PC 부연설명 갱신
+            for (let i = 1; i <= TERM; i++) { const yb = document.getElementById('btn-yr-' + i); if (yb) yb.classList.toggle('has-claim', (claims[i] || []).length > 0); }   // 보험금이 들어간 연차 = 질병 발병 표시(주황 박스)
         }
 
         function updateButtonPrices() {
@@ -1714,6 +1717,25 @@
                 if (!firstCancer && a.some(i => CANCER.includes(i.id))) firstCancer = y;
                 if (!firstHeart && a.some(i => HEART.includes(i.id))) firstHeart = y;
             }
+            // 암 발병 구분: 처음부터 4기(c5)면 '4기 전이암', 원발암 뒤에 4기가 나오면 '4기 재발암'(그 해가 재발 1년차)
+            let firstMeta = 0, firstSim = 0;
+            for (let y = 1; y <= 20; y++) {
+                const a = claims[y] || [];
+                if (!firstMeta && a.some(i => i.id === 'c5')) firstMeta = y;
+                if (!firstSim && a.some(i => SIM.includes(i.id))) firstSim = y;
+            }
+            const baseYear = y => y === 1 ? '1년 미만' : y + '년차';
+            function yearTitle(y) {
+                let s = '가입 후 ' + baseYear(y);
+                if (firstCancer && y >= firstCancer) {
+                    const n = y - firstCancer + 1;
+                    if (firstMeta && y >= firstMeta) {
+                        s += firstMeta === firstCancer ? `(4기 전이암 발병 ${n}년차)` : `(4기 재발암 발병 ${y - firstMeta + 1}년차)`;
+                    } else s += `(암발병 ${n}년차, 원발암)`;
+                } else if (firstSim && y >= firstSim) s += `(유사암 발병 ${y - firstSim + 1}년차)`;
+                else if (firstHeart && y >= firstHeart) s += `(뇌·심장질환 발병 ${y - firstHeart + 1}년차)`;
+                return s;
+            }
             const unit = PER_TX_UNIT[currentPlan];
             for (let y = 1; y <= 20; y++) {
                 const a = claims[y] || [];
@@ -1722,7 +1744,7 @@
                 const used = new Set();
                 const take = (id, label) => { const it = g(id); if (it) used.add(id); return money(it, label); };
                 const steps = [];
-                const label = yearLabels[y].replace(/\(.*\)/, '');
+                const label = yearTitle(y);
 
                 // ── 암 (폐암 표준치료 흐름)
                 if (a.some(i => CANCER.includes(i.id))) {
@@ -1767,6 +1789,7 @@
                 if (a.some(i => HEART.includes(i.id))) {
                     const lys = g('h3'), ext = g('h4'), op = g('h1'), icu = g('h2');
                     let intro = '뇌졸중·심근경색으로 <b>응급 이송</b>되면, 도착한 병원에서 바로 시술·수술이 가능한지에 따라 치료 경로가 달라집니다.';
+                    if (firstCancer && y >= firstCancer) steps.push({ tag: '암환자 참고', title: '암 환자는 뇌·심장질환 위험이 더 높습니다', text: '암 진단 뒤에는 암 자체의 <b>혈액 과응고·염증</b>과 수술·항암치료의 영향으로 혈전이 생기기 쉬워, 같은 나이의 암이 없는 사람보다 뇌졸중·심근경색 위험이 높다고 보고됩니다. 위험은 <b>진단 직후 첫 3~6개월에 가장 높고</b> 1년쯤 지나며 줄어드는 경향입니다. ① 미국 SEER-Medicare 대규모 연구(2017): 암 환자의 진단 6개월 내 뇌졸중·심근경색 발생 4.7%로 암이 없는 사람(2.2%)의 약 2.2배였고, 폐암은 8.3% 대 2.4%로 가장 높았습니다. ② 국내 건강보험 빅데이터(삼성서울병원, 2026): 유방암 수술 환자는 진단 1년 안에 허혈성 뇌졸중 위험이 암이 없는 여성보다 59% 높았고 3개월 이내가 가장 높았습니다. ③ 대만 폐암 코호트: 폐암 환자의 뇌졸중 위험이 약 1.5배(HR 1.47)였습니다. 암 환자에게 뇌·심장 보장(2대질병)이 함께 필요한 이유입니다.', money: [] });
                     steps.push({ tag: '응급', title: '응급 이송과 치료 경로', text: intro + (lys && ext ? '' : ' 혈전용해는 증상 발생 4.5시간 이내, 혈관 안 시술은 가능한 한 빨리 시행합니다.'), money: [] });
                     if (lys) steps.push({ tag: '혈전용해', title: '혈전 용해 치료', text: '막힌 혈관을 약으로 녹이는 <b>혈전용해제</b>를 투여합니다. 투여 후에는 뇌출혈 등 출혈 위험이 있어 보통 24시간 <b>중환자실(집중치료실)</b>에서 지켜보며, 혈전용해 환자의 <b>98.9%</b>가 중환자실에 입원합니다. 그래서 혈전 용해 치료 보험금과 함께 <b>중환자실 입원(A)</b> 보험금이 지급됩니다.', money: [take('h3', '혈전 용해 치료 (B) · 연 1회'), take('h2', '중환자실 입원 (A) · 연 1회')].filter(Boolean) });
                     if (lys && ext) steps.push({ tag: '전원·제거', title: '혈전 용해 후 혈전 제거', text: '두 가지 경우가 있습니다. ① 첫 병원에서 혈전용해제를 투여하고 <b>시술 가능한 큰 병원으로 이송</b>한 뒤, 좋아지지 않으면 카테터로 <b>혈전을 직접 빼내는 혈전제거술</b>을 추가로 합니다(drip-and-ship). ② 한 병원에서 혈전용해 후 중환자실에서 경과를 보다가 호전이 없거나, 카테터 검사와 동시에 용해·제거를 함께 시행합니다. 심근경색도 2시간 안에 관상동맥 시술이 어려우면 혈전용해제를 먼저 쓰고 시술 병원으로 옮기는 방식이 쓰입니다.', money: [take('h4', '특정 혈전 제거술 (B) · 연 1회')] });
@@ -1783,7 +1806,7 @@
         }
         window.buildNarrative = build;
 
-        const NOTE = '※ 폐암 표준치료와 뇌·심장 응급치료 흐름을 바탕으로 한 교육용 예시이며, 실제 치료와 보험금 지급은 진단·약관·심사 기준에 따릅니다.';
+        const NOTE = '※ 폐암 표준치료와 뇌·심장 응급치료 흐름을 바탕으로 한 교육용 예시이며, 암 환자의 뇌·심장 위험 수치는 연구마다 대상·기간이 달라 참고용이고, 실제 치료와 보험금 지급은 진단·약관·심사 기준에 따릅니다.';
         window.NARR_NOTE = NOTE;
         function moneyHtml(m) {
             return `<li><span>${m.label}</span><b>${fmt(m.amount)}만 원</b>${m.note ? `<em>${m.note}</em>` : ''}</li>`;
@@ -1803,7 +1826,7 @@
             const add = (kind, text, font, color, lh, extra) => { ops.push({ kind, text, font, color, y: h, ...extra }); h += lh; };
             add('title', '📝 연도별 부연설명', F(900, 32), '#1A2744', 56);
             build().forEach(card => {
-                add('card', `${card.label}  ·  합계 ${fmt(card.total)}만 원`, F(900, 26), '#ffffff', 52);
+                add('card', card.label, F(900, 22), '#ffffff', 52, { right: `합계 ${fmt(card.total)}만 원` });
                 card.steps.forEach((s, k) => {
                     add('step', `${k + 1}. [${s.tag}] ${s.title}`, F(800, 22), '#C94F0A', 36);
                     wrap(strip(s.text), F(500, 20), W - 30).forEach(l => add('text', l, F(500, 20), '#334155', 31, { indent: 14 }));
@@ -1830,6 +1853,7 @@
                 if (o.kind === 'card') { c.fillStyle = '#1A2744'; c.beginPath(); c.roundRect ? c.roundRect(X, Y + o.y, W, 42, 10) : c.rect(X, Y + o.y, W, 42); c.fill(); }
                 c.font = o.font; c.fillStyle = o.color;
                 c.fillText(o.text, X + (o.indent || 0) + (o.kind === 'card' ? 16 : 0), Y + o.y + (o.kind === 'card' ? 29 : 24));
+                if (o.right) { c.save(); c.textAlign = 'right'; c.fillStyle = '#FFB27A'; c.fillText(o.right, X + W - 16, Y + o.y + 29); c.restore(); }
             });
         };
     })();
