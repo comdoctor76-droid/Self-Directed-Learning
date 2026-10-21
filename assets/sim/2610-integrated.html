@@ -207,7 +207,7 @@
                 <button id="planBtn-5억" onclick="changePlan('5억')" class="px-3 py-1.5 rounded-full font-extrabold text-[13px] md:text-sm leading-tight text-center transition-all bg-white text-slate-600 border-2 border-slate-200 hover:bg-slate-50">📘 표준형 5억 통장<span class="pt-tag hidden w-max mx-auto mt-0.5 whitespace-nowrap text-[10px] leading-tight font-extrabold bg-fuchsia-600 text-white px-2 py-0.5 rounded-full" title="암추가보장 특약 가입">＋암추가 10만</span></button>
             </div>
             <div class="flex items-center gap-2 ml-auto">
-                <button id="termBtn-10" onclick="changeTerm(10)" class="px-3 py-1.5 rounded-full font-extrabold text-[13px] md:text-sm transition-all bg-white text-slate-600 border-2 border-slate-200 hover:bg-slate-50 whitespace-nowrap">10년 갱신</button>
+                <button id="termBtn-10" onclick="changeTerm(10)" hidden style="display:none" class="px-3 py-1.5 rounded-full font-extrabold text-[13px] md:text-sm transition-all bg-white text-slate-600 border-2 border-slate-200 hover:bg-slate-50 whitespace-nowrap">10년 갱신</button>
                 <button id="termBtn-20" onclick="changeTerm(20)" class="px-3 py-1.5 rounded-full font-extrabold text-[13px] md:text-sm transition-all bg-hd-500 text-white shadow-md border-2 border-hd-500 whitespace-nowrap">20년 갱신</button>
             </div>
         </div>
@@ -740,6 +740,7 @@
         
         let INITIAL_BALANCE = PLAN_DATA[currentPlan].balance;
         let currentYear = 1;
+        const SHOW_TERM10 = window.SHOW_TERM10 = false;   // true 로 바꾸면 10년 갱신 선택이 다시 나타난다
         let TERM = 20;   // 갱신 기간: 20(1~20년 차, 레벨업 있음) | 10(1~10년 차, 레벨업 없음)
         
         // 데이터 구조: 1~20년차 데이터를 각각의 배열로 보관
@@ -1864,9 +1865,9 @@
                 const seg = (cur, opts) => '<div class="m-seg">' + opts.map(o => `<button type="button" data-set="${o[0]}" data-v="${o[1]}" class="${cur === o[1] ? 'on' : ''}">${o[2]}<small>${o[3]}</small></button>`).join('') + '</div>';
                 openSheet('set', '⚙ 시뮬레이션 설정',
                     '<div class="m-opt-t">통장 한도</div>' + seg(currentPlan, [['plan', '10억', '💎 프리미엄 10억', '치료당 20만'], ['plan', '5억', '📘 표준형 5억', '치료당 10만']]) +
-                    '<div class="m-opt-t">갱신 기간</div>' + seg(String(TERM), [['term', '10', '10년 갱신', '1~10년 · 레벨업 없음'], ['term', '20', '20년 갱신', '1~20년 · 레벨업 있음']]) +
+                    (SHOW_TERM10 ? ('<div class="m-opt-t">갱신 기간</div>' + seg(String(TERM), [['term', '10', '10년 갱신', '1~10년 · 레벨업 없음'], ['term', '20', '20년 갱신', '1~20년 · 레벨업 있음']])) : '') +
                     `<label class="m-switch"><div><b>암추가보장 특약 가입</b><small>치료당 담보 (주사제·방사선 횟수 합산)</small></div><span class="m-tg"><input type="checkbox" id="mSetPt"${perTxOn ? ' checked' : ''}><span></span></span></label>` +
-                    '<div class="m-hint">한도·갱신 기간을 바꾸면 입력한 내용이 초기화됩니다.</div>');
+                    '<div class="m-hint">한도를 바꾸면 입력한 내용이 초기화됩니다.</div>');
             }
         };
         window.mCloseSheet = function () { sheet = null; $('mSheetBg').classList.remove('on'); $('mSheet').classList.remove('on'); };
