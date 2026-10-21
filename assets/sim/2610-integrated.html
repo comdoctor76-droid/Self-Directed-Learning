@@ -740,7 +740,7 @@
         
         let INITIAL_BALANCE = PLAN_DATA[currentPlan].balance;
         let currentYear = 1;
-        const SHOW_TERM10 = window.SHOW_TERM10 = false;   // true 로 바꾸면 10년 갱신 선택이 다시 나타난다
+        const SHOW_TERM10 = window.SHOW_TERM10 = (function () { try { return sessionStorage.getItem('ad_pw_ok') === '1' && !!localStorage.getItem('gh_admin_token'); } catch (e) { return false; } })();   // 관리자 모드일 때만 10년 갱신 선택이 나타난다
         let TERM = 20;   // 갱신 기간: 20(1~20년 차, 레벨업 있음) | 10(1~10년 차, 레벨업 없음)
         
         // 데이터 구조: 1~20년차 데이터를 각각의 배열로 보관
@@ -1618,6 +1618,7 @@
 
         // 초기화
         window.onload = function() {
+            if (SHOW_TERM10) { const t10 = document.getElementById('termBtn-10'); if (t10) { t10.hidden = false; t10.style.display = ''; } }
             window.__placeYearBlock();
             new Image().src = 'levelup-table.webp';   // 설명 툴팁 이미지 미리 받아 두기
             initYearSelector();
