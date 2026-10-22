@@ -22,8 +22,11 @@ body{font-family:'Noto Sans KR',sans-serif;background:#FBF8F5;color:#26282C;font
 /* HERO */
 .hero{background:linear-gradient(135deg,#1A2744 0%,#2C3F6E 60%,#3d5390 100%);color:#fff;padding:56px 20px 68px;position:relative}
 .hero-in{max-width:1060px;margin:0 auto}
-.refresh-btn{position:absolute;top:18px;right:18px;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);color:#fff;font-family:inherit;font-size:13px;font-weight:700;padding:8px 14px;border-radius:999px;cursor:pointer}
+.hero-tools{position:absolute;top:18px;right:18px;display:flex;gap:8px;z-index:2}
+.refresh-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);color:#fff;font-family:inherit;font-size:13px;font-weight:700;padding:8px 14px;border-radius:999px;cursor:pointer}
 .refresh-btn:hover{background:rgba(255,255,255,.22)}
+.refresh-btn.ok{background:#E8651A;border-color:#E8651A}
+#copyToast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:rgba(26,39,68,.95);color:#fff;font-size:13.5px;font-weight:700;padding:10px 18px;border-radius:999px;z-index:9999;max-width:90vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;box-shadow:0 6px 20px rgba(0,0,0,.25)}
 .refresh-btn:active{transform:scale(.95)}
 .refresh-btn .ic{font-size:15px;line-height:1}
 .badge{display:inline-block;background:#E8651A;color:#fff;font-weight:700;font-size:14px;padding:7px 16px;border-radius:999px}
@@ -80,6 +83,7 @@ footer a{color:#FFB37E;font-weight:800;text-decoration:underline;text-underline-
   .hero h1{font-size:26px}
   .deck-h h2{font-size:19px}
   .refresh-btn .label{display:none}
+  .hero-tools{gap:6px}
   .refresh-btn{padding:8px 10px}
   .hero-qr{display:none}
 }
@@ -88,15 +92,20 @@ footer a{color:#FFB37E;font-weight:800;text-decoration:underline;text-underline-
 <body>
 
 <div class="hero">
-  <button class="refresh-btn" onclick="location.href=location.pathname+'?_='+Date.now()" aria-label="새로고침">
-    <span class="ic">🔄</span><span class="label">새로고침</span>
-  </button>
+  <div class="hero-tools">
+    <button class="refresh-btn" id="copyLinkBtn" type="button" aria-label="사이트 링크 복사">
+      <span class="ic">🔗</span><span class="label">링크 복사</span>
+    </button>
+    <button class="refresh-btn" onclick="location.href=location.pathname+'?_='+Date.now()" aria-label="새로고침">
+      <span class="ic">🔄</span><span class="label">새로고침</span>
+    </button>
+  </div>
   <div class="hero-in">
     <div class="badge-row"><span class="badge">스스로 학습하기</span><span class="credit">제작 - 현대해상 호남지역단 이승학 전임강사</span></div>
     <h1>플래너를 위한 니즈환기 자료<br><span>인터랙티브 가이드</span></h1>
     <p>가입설계서로 담보설명에 집중하는 프리젠테이션은 이제그만! 니즈환기로 승부하자!!</p>
     <div class="hero-actions">
-      <div class="version-tag" id="verTag"><span class="dot"></span>v1.165</div>
+      <div class="version-tag" id="verTag"><span class="dot"></span>v1.166</div>
       <a class="hiscan-cta" href="hiscan.html" hidden style="display:none" aria-label="하이스캔 사용해보기 — 제작 이경석 전임강사">
         <span class="hc-main">🔎 하이스캔 사용해보기</span>
         <span class="hc-sub">* 제작 이경석 전임강사</span>
@@ -303,6 +312,35 @@ footer a{color:#FFB37E;font-weight:800;text-decoration:underline;text-underline-
 <script src="install.js"></script>
 <script src="audiobook.js"></script>
 <script>AudioBook.mount(document.getElementById('abMount'),{});</script>
+<script>
+/* 링크 복사 — 새로고침용 ?_= 와 # 는 빼고 깨끗한 주소만 복사 (clipboard → execCommand → prompt 순) */
+(function(){
+  var btn=document.getElementById('copyLinkBtn'); if(!btn)return;
+  function copyText(txt){
+    function legacy(){
+      try{var ta=document.createElement('textarea');ta.value=txt;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;top:0;left:0;opacity:0';
+        document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,txt.length);var ok=document.execCommand('copy');ta.remove();return ok;}catch(e){return false;}
+    }
+    if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(txt).then(function(){return true;},function(){return legacy();});
+    return Promise.resolve(legacy());
+  }
+  function toast(m){
+    var t=document.getElementById('copyToast');
+    if(!t){t=document.createElement('div');t.id='copyToast';document.body.appendChild(t);}
+    t.textContent=m;t.style.display='';clearTimeout(toast.h);toast.h=setTimeout(function(){t.style.display='none';},2200);
+  }
+  btn.addEventListener('click',function(){
+    var url=location.origin+location.pathname, lbl=btn.querySelector('.label'), ic=btn.querySelector('.ic'), old=lbl.textContent;
+    copyText(url).then(function(ok){
+      if(ok){
+        toast('링크를 복사했습니다 — '+url);
+        btn.classList.add('ok');ic.textContent='✓';lbl.textContent='복사됨';
+        setTimeout(function(){btn.classList.remove('ok');ic.textContent='🔗';lbl.textContent=old;},1500);
+      }else prompt('아래 링크를 복사하세요',url);
+    });
+  });
+})();
+</script>
 <script>
 /* 관리자 모드일 때만: 관리자 전용 자료 카드 + 숨겨 둔 하이스캔 버튼 표시 */
 (function(){
