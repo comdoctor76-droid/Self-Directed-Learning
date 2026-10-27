@@ -350,6 +350,11 @@ body{font-family:'Noto Sans KR',sans-serif;background:#FBF8F5;color:#26282C;font
 .hero p{font-size:17px;opacity:.9;max-width:680px}
 .tip{margin-top:22px;display:inline-block;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:11px 16px;font-size:14.5px}
 .tip b{color:#FFC79B}
+.tip-row{margin-top:22px;display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.tip-row .tip{margin-top:0}
+.deck-btn{display:inline-flex;align-items:center;gap:6px;background:#E8651A;border:1px solid #E8651A;color:#fff;font-size:14.5px;font-weight:800;padding:11px 16px;border-radius:10px;text-decoration:none;white-space:nowrap}
+.deck-btn:hover{background:#C94F0A}
+.deck-btn:active{transform:scale(.97)}
 
 /* NAV */
 .nav{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.1);display:flex;align-items:center;gap:6px;padding:0 8px}
@@ -598,7 +603,8 @@ function renderGuide(data){
     '<span class="badge">'+_t(h.badge)+'</span>'+
     '<h1>'+_t(h.title)+'<br><span>'+_t(h.titleSpan)+'</span></h1>'+
     '<p>'+_t(h.subtitle)+'</p>'+
-    '<div class="tip">'+_t(h.tip)+'</div>';
+    '<div class="tip-row"><div class="tip">'+_t(h.tip)+'</div>'+
+    '<a class="deck-btn" href="deck.html?d=priority">🎞 강사용 프리젠테이션</a></div>';
   if(ig&&ig.src){
     window.IMGDATA['hero']={src:ig.src,name:ig.name||'infographic.png'};
     heroHtml+='<br><button class="hero-info-btn" onclick="OI(\'hero\')">'+_t(ig.buttonLabel||'📊 인포그래픽 보기')+'</button>';
