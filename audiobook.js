@@ -9,7 +9,7 @@
   'use strict';
   var DATA = 'data/audiobook.json';
   var CSS =
-    '.ab{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);border-radius:16px;padding:10px 12px 8px;color:#fff;max-width:620px;font-family:inherit;-webkit-user-select:none;user-select:none}' +
+    '.ab{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);border-radius:16px;padding:8px 12px 4px;color:#fff;max-width:620px;font-family:inherit;-webkit-user-select:none;user-select:none}' +
     '.ab *{box-sizing:border-box}' +
     '.ab-top{display:flex;align-items:center;gap:10px}' +
     '.ab-pl{flex:0 0 auto;width:46px;height:46px;border-radius:50%;border:0;background:linear-gradient(135deg,#E8651A,#C94F0A);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 14px rgba(0,0,0,.3);-webkit-tap-highlight-color:transparent;padding:0}' +
@@ -25,7 +25,7 @@
     '.ab-s[disabled]{opacity:.35;cursor:default}' +
     '.ab-s.ic{width:28px;min-width:28px;padding:0;font-size:14px}' +
     '@media(max-width:520px){.ab-cl{display:grid;grid-template-columns:repeat(2,40px);gap:4px}.ab-s{min-width:0;width:40px;padding:0}.ab-s.ic{width:40px}}' +
-    '.ab-row{display:flex;align-items:center;gap:8px;margin-top:6px}' +
+    '.ab-row{display:flex;align-items:center;gap:8px;margin-top:0}' +
     '.ab-time{flex:0 0 auto;font-size:12px;font-weight:700;min-width:38px;text-align:center;opacity:.9;font-variant-numeric:tabular-nums}' +
     '.ab-seek{flex:1 1 auto;min-width:0;height:24px;margin:0;-webkit-appearance:none;appearance:none;background:transparent;touch-action:none}' +
     '.ab-seek::-webkit-slider-runnable-track{height:5px;border-radius:3px;background:linear-gradient(to right,#FFB37E var(--p,0%),rgba(255,255,255,.28) var(--p,0%))}' +

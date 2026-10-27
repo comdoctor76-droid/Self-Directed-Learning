@@ -46,14 +46,15 @@ body{font-family:'Noto Sans KR',sans-serif;background:#FBF8F5;color:#26282C;font
 .hiscan-cta .hc-sub{font-size:11.5px;font-weight:600;opacity:.88;line-height:1.3}
 .hero-row{margin-top:10px;display:flex;align-items:stretch;gap:10px;max-width:900px}
 .hero-row #abMount{flex:1 1 0;min-width:0;max-width:620px;margin-top:0!important}
-.ext-card{flex:0 0 232px;display:flex;flex-direction:column;justify-content:center;gap:4px;text-align:left;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.28);border-radius:16px;padding:10px 14px;color:#fff;font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ext-card{flex:0 0 240px;display:flex;flex-direction:row;align-items:center;gap:10px;text-align:left;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.28);border-radius:16px;padding:10px 14px;color:#fff;font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .ext-card:hover{background:rgba(255,255,255,.17)}
 .ext-card:active{transform:scale(.97)}
 .ext-card .ec-ic{font-size:26px;line-height:1}
 .ext-card .ec-t{font-size:16px;font-weight:900;line-height:1.3;word-break:keep-all}
 .ext-card .ec-s{font-size:12.5px;font-weight:800;color:#FFB37E}
-.ext-card .ec-go{font-size:12.5px;font-weight:800;color:#FFD9BF}
-@media(max-width:1180px){.hero-row{flex-direction:column;max-width:620px}.ext-card{flex:0 0 auto;flex-direction:row;align-items:center;flex-wrap:wrap;gap:4px 12px}.ext-card .ec-ic{font-size:24px}.ext-card .ec-tx{flex:1 1 0;min-width:0}}
+.ext-card .ec-go{display:none;font-size:12.5px;font-weight:800;color:#FFD9BF}
+.ext-card .ec-tx{flex:1 1 0;min-width:0;line-height:1.3}
+@media(max-width:1180px){.hero-row{flex-direction:column;max-width:620px}.ext-card{flex:0 0 auto;padding:8px 14px}.ext-card .ec-go{display:block}}
 /* 외부 도구를 앱처럼 여는 전체 화면 */
 #extApp{position:fixed;inset:0;z-index:5000;background:#0f1524;display:none;flex-direction:column;color:#fff}
 #extApp.on{display:flex}
@@ -131,7 +132,7 @@ footer a{color:#FFB37E;font-weight:800;text-decoration:underline;text-underline-
     <h1>플래너를 위한 니즈환기 자료<br><span>인터랙티브 가이드</span></h1>
     <p>가입설계서로 담보설명에 집중하는 프리젠테이션은 이제그만! 니즈환기로 승부하자!!</p>
     <div class="hero-actions">
-      <div class="version-tag" id="verTag"><span class="dot"></span>v1.174</div>
+      <div class="version-tag" id="verTag"><span class="dot"></span>v1.175</div>
       <a class="hiscan-cta" href="hiscan.html" hidden style="display:none" aria-label="하이스캔 사용해보기 — 제작 이경석 전임강사">
         <span class="hc-main">🔎 하이스캔 사용해보기</span>
         <span class="hc-sub">* 제작 이경석 전임강사</span>
