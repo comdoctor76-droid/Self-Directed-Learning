@@ -76,6 +76,13 @@
     'html.pen-touch #MB *,html.pen-touch #IMB *,html.pen-touch #PDFB *,html.pen-touch #PVS *{touch-action:pinch-zoom !important}' +
     'html.pen-touch-none,html.pen-touch-none #MB,html.pen-touch-none #IMB,html.pen-touch-none #PDFB,html.pen-touch-none #PVS,' +
     'html.pen-touch-none #MB *,html.pen-touch-none #IMB *,html.pen-touch-none #PDFB *,html.pen-touch-none #PVS *{touch-action:none !important}' +
+    /* 프레젠테이션 뷰어 안에서는 ✏️ 버튼을 상단 제목 옆(#pvPenSlot)에 두고, 도구는 그 아래로 가로로 펼친다 */
+    '#PENBAR.docked{position:static;display:block;transform:none !important;right:auto !important;bottom:auto !important}' +
+    '#PENBAR.docked #PEN_T{width:38px;height:38px;font-size:17px;box-shadow:none}' +
+    '#PENBAR.docked #PEN_X{position:fixed;top:66px;right:8px;flex-direction:row;flex-wrap:wrap;justify-content:center;' +
+      'align-items:center;gap:7px;padding:8px 10px;border-radius:14px;max-width:calc(100vw - 16px)}' +
+    '#PENBAR.docked .pen-hr{width:1px;height:26px}' +
+    '#PENBAR.docked #PEN_SW{flex-direction:row !important}' +
     '.pen-b.tool{font-size:16px}' +
     '.pen-b.hl.on{background:#FFE600;border-color:#FFE600;color:#1A2744}';
 
@@ -284,7 +291,7 @@
      transform 을 지운 상태의 실제 위치를 재서 맞추므로 iOS 의 fixed 요소 어긋남에도 맞는다 */
   function followBar() {
     var bar = document.getElementById('PENBAR'), vv = window.visualViewport;
-    if (!bar) return;
+    if (!bar || bar.classList.contains('docked')) return;
     var z = zoomNow();
     bar.style.transform = '';
     bar.style.right = BAR_M + 'px'; bar.style.bottom = BAR_M + 'px';
@@ -302,6 +309,7 @@
   function dragBar(bar, tog) {
     var d = null, moved = false;
     tog.addEventListener('pointerdown', function (e) {
+      if (bar.classList.contains('docked')) return;   /* 제목줄에 붙어 있을 때는 끌어 옮기지 않는다 */
       d = { x: e.clientX, y: e.clientY, r: barPos.r, b: barPos.b, id: e.pointerId };
       moved = false;
       try { tog.setPointerCapture(e.pointerId); } catch (_) {}
@@ -422,6 +430,19 @@
   }
 
   /* ── 창이 닫히거나 내용이 바뀌면 그 레이어의 필기를 비운다 ── */
+  /* 프레젠테이션 뷰어가 열려 있으면 도구 막대를 제목줄 슬롯으로 옮기고, 닫히면 원래 자리(화면 구석)로 되돌린다 */
+  function dockSync() {
+    var bar = document.getElementById('PENBAR'), slot = document.getElementById('pvPenSlot'), pv = document.getElementById('pv');
+    if (!bar) return;
+    var want = !!(slot && pv && pv.classList.contains('on'));
+    if (want && bar.parentNode !== slot) {
+      slot.appendChild(bar); bar.classList.add('docked');
+      bar.style.right = ''; bar.style.bottom = ''; bar.style.transform = '';
+    } else if (!want && slot && bar.parentNode === slot) {
+      document.body.appendChild(bar); bar.classList.remove('docked'); followBar();
+    }
+  }
+
   function watch() {
     OVERLAYS.forEach(function (id) {
       var el = document.getElementById(id);
@@ -429,6 +450,7 @@
       var was = shown(el);
       var host = id === 'PVS' ? (document.getElementById('pv') || el) : el;   /* 뷰어는 바깥 창(#pv)의 열림/닫힘을 본다 */
       new MutationObserver(function () {
+        dockSync();
         var now = shown(el);
         if (was && !now) {
           if (id === 'PVS') { Object.keys(ink).forEach(function (k) { if (k.indexOf('PVS') === 0) delete ink[k]; }); }
@@ -455,6 +477,7 @@
   function start() {
     build();
     watch();
+    dockSync();
     followBar();            /* 저장해 둔 도구 막대 위치 적용 */
     document.addEventListener('pointerdown', onDown, true);
     window.addEventListener('pointermove', onMove, { passive: false });

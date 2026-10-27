@@ -65,8 +65,9 @@ footer{background:#1A2744;color:rgba(255,255,255,.75);text-align:center;padding:
 .pv{position:fixed;inset:0;z-index:3000;background:#0f1524;display:none;flex-direction:column;color:#fff;touch-action:pan-y}
 .pv.on{display:flex}
 .pv-top{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(0,0,0,.25)}
-.pv-title{flex:1 1 auto;min-width:0;font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pv-count{flex:0 0 auto;font-weight:800;font-size:14px;color:#FFB37E}
+.pv-title{flex:0 1 auto;min-width:0;font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pv-pen{flex:0 0 auto;display:flex}
+.pv-count{margin-left:auto;flex:0 0 auto;font-weight:800;font-size:14px;color:#FFB37E}
 .pv-ic{flex:0 0 auto;width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .pv-stage{flex:1 1 auto;min-height:0;position:relative}
 .pv-scroll{position:absolute;inset:0;overflow-x:hidden;overflow-y:auto;display:flex;align-items:center;justify-content:center;padding:8px 64px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-x pan-y}
@@ -85,11 +86,9 @@ footer{background:#1A2744;color:rgba(255,255,255,.75);text-align:center;padding:
 .pv-nav:disabled{opacity:.2;cursor:default}
 .pv-nav.l{left:8px}.pv-nav.r{right:8px}
 /* 필기 도구 막대가 열려 있으면 오른쪽 화살표를 그 왼쪽으로 비켜 둔다 */
-body:has(#PENBAR.open) .pv-nav.r{right:84px}
-body:has(#PENBAR.open) .pv-scroll:not(.w){padding-right:132px}
 .pv-prog{height:4px;background:rgba(255,255,255,.12)}
 .pv-prog i{display:block;height:100%;background:#E8651A;width:0;transition:width .2s}
-@media(max-width:640px){.pv-scroll{padding:6px 6px 62px}.pv-scroll.w{padding:0 0 62px}.pv-nav{top:auto;bottom:8px;transform:none;width:46px;height:46px}.pv-nav.l{left:calc(50% - 60px)}.pv-nav.r{right:calc(50% - 60px)}.pv-hint{bottom:66px}body:has(#PENBAR.open) .pv-nav.r{right:calc(50% - 60px)}body:has(#PENBAR.open) .pv-scroll:not(.w){padding-right:6px}.pv-md{padding:0 10px}}
+@media(max-width:640px){.pv-top{gap:6px}.pv-title{display:none}.pv-zm,#pvFs{display:none!important}.pv-scroll{padding:6px 6px 62px}.pv-scroll.w{padding:0 0 62px}.pv-nav{top:auto;bottom:8px;transform:none;width:46px;height:46px}.pv-nav.l{left:calc(50% - 60px)}.pv-nav.r{right:calc(50% - 60px)}.pv-hint{bottom:66px}.pv-md{padding:0 10px}}
 
 /* ── 업로드 팝업 ── */
 .up{position:fixed;inset:0;z-index:3100;background:rgba(10,16,30,.6);display:none;align-items:center;justify-content:center;padding:16px}
@@ -157,6 +156,7 @@ body:has(#PENBAR.open) .pv-scroll:not(.w){padding-right:132px}
 <div class="pv" id="pv" role="dialog" aria-modal="true" aria-label="프레젠테이션">
   <div class="pv-top" data-pen-skip>
     <div class="pv-title" id="pvTitle"></div>
+    <span class="pv-pen" id="pvPenSlot" data-pen-skip></span>
     <div class="pv-count" id="pvCount"></div>
     <button class="pv-md" id="pvMode" type="button" title="가로를 꽉 채우고 위아래로 스크롤하는 보기 ↔ 한 화면에 전체가 보이는 보기"></button>
     <div class="pv-zm" id="pvZm" title="확대 / 축소"><button id="pvZo" type="button" aria-label="축소">−</button><span id="pvZv">100%</span><button id="pvZi" type="button" aria-label="확대">＋</button></div>
