@@ -16,7 +16,8 @@ button{font-family:inherit}
 .pv.on{display:flex}
 .pv-top{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(0,0,0,.25)}
 .pv-title{flex:0 1 auto;min-width:0;font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pv-pen{flex:0 0 auto;display:flex}
+.pv-top{flex-wrap:wrap}.pv-top>*{order:5}.pv-title{order:1}
+.pv-pen{display:contents}
 .pv-count{margin-left:auto;flex:0 0 auto;font-weight:800;font-size:14px;color:#FFB37E}
 .pv-ic{flex:0 0 auto;width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .pv-stage{flex:1 1 auto;min-height:0;position:relative}
@@ -73,11 +74,17 @@ var cur=null, idx=0;
 var $=function(id){return document.getElementById(id);};
 
 /* ── 프레젠테이션 뷰어 ── */
-function openViewer(m,i){cur=m;idx=i||0;zoom=1;$('pv').classList.add('on');show();}
+/* 쪽을 넘길 때마다 브라우저 기록을 한 칸씩 쌓아, 뒤로 가기·앞으로 가기 버튼(마우스 옆 버튼, 프리젠터의 뒤로/앞으로 키, Alt+←/→)으로도 쪽이 넘어간다 */
+var depth=0;   /* 처음 연 쪽 이후로 쌓은 기록 칸 수 */
+function openViewer(m,i){cur=m;idx=i||0;zoom=1;$('pv').classList.add('on');depth=0;try{history.replaceState({pv:1,i:idx,n:0},'');}catch(e){}show();}
 function closeViewer(){
   if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(function(){});
-  if(history.length>1&&document.referrer){history.back();}else{location.href=BACK;}
+  if(document.referrer){try{history.go(-(depth+1));return;}catch(e){}}   /* 쌓은 기록과 이 페이지 자체를 되감아 들어온 페이지로 */
+  location.href=BACK;
 }
+window.addEventListener('popstate',function(e){
+  var st=e.state; if(st&&st.pv&&cur){idx=Math.max(0,Math.min(cur.slides.length-1,st.i|0));depth=st.n|0;show();}
+});
 var modePref=null, hintT=0, zoom=1;   /* modePref: 'width'(기본: 가로 채우기) | 'fit'(한 화면에) — 버튼으로 고른 보기 방식 */
 var ZMIN=1, ZMAX=3, ZSTEP=0.25;
 try{var mp=localStorage.getItem('deck_view_mode');modePref=(mp==='fit'||mp==='width')?mp:null;}catch(e){}
@@ -106,6 +113,7 @@ function applyMode(resetScroll){
 }
 $('pvImg').addEventListener('load',function(){applyMode();});
 window.addEventListener('resize',function(){if($('pv').classList.contains('on'))applyMode(false);});
+if(window.ResizeObserver)new ResizeObserver(function(){if($('pv').classList.contains('on'))applyMode(false);}).observe($('pvStage'));   /* 판서 도구 줄이 열리고 닫혀 슬라이드 영역 높이가 바뀌면 다시 맞춘다 */
 $('pvMode').onclick=function(){
   modePref=isW()?'fit':'width'; zoom=1;
   try{localStorage.setItem('deck_view_mode',modePref);}catch(e){}
@@ -152,7 +160,7 @@ function show(){
   $('pvPrev').disabled=idx<=0; $('pvNext').disabled=idx>=n-1;
   [idx+1,idx-1].forEach(function(k){if(k>=0&&k<n){var pi=new Image();pi.src=s[k];}});
 }
-function go(d){if(!cur)return;var n=cur.slides.length,k=idx+d;if(k<0||k>=n)return;idx=k;show();}
+function go(d){if(!cur)return;var n=cur.slides.length,k=idx+d;if(k<0||k>=n)return;idx=k;depth++;try{history.pushState({pv:1,i:idx,n:depth},'');}catch(e){depth--;}show();}
 $('pvPrev').onclick=function(){go(-1);}; $('pvNext').onclick=function(){go(1);};
 $('pvClose').onclick=closeViewer;
 var fsOk=!!(document.documentElement.requestFullscreen);
@@ -171,6 +179,8 @@ document.addEventListener('keydown',function(e){
   else if(e.key==='-'||e.key==='_'){e.preventDefault();setZoom(zoom-ZSTEP);}
   else if(e.key==='ArrowRight'){e.preventDefault();go(1);}
   else if(e.key==='ArrowLeft'){e.preventDefault();go(-1);}
+  else if(e.key==='Home'){e.preventDefault();go(-idx);}
+  else if(e.key==='End'){e.preventDefault();go(cur.slides.length-1-idx);}
   else if(e.key==='Escape'&&!document.fullscreenElement)closeViewer();
 });
 (function(){var x0=null,y0=0;var st=$('pvStage');

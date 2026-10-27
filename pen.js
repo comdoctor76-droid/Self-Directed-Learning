@@ -76,13 +76,18 @@
     'html.pen-touch #MB *,html.pen-touch #IMB *,html.pen-touch #PDFB *,html.pen-touch #PVS *{touch-action:pinch-zoom !important}' +
     'html.pen-touch-none,html.pen-touch-none #MB,html.pen-touch-none #IMB,html.pen-touch-none #PDFB,html.pen-touch-none #PVS,' +
     'html.pen-touch-none #MB *,html.pen-touch-none #IMB *,html.pen-touch-none #PDFB *,html.pen-touch-none #PVS *{touch-action:none !important}' +
-    /* 프레젠테이션 뷰어 안에서는 ✏️ 버튼을 상단 제목 옆(#pvPenSlot)에 두고, 도구는 그 아래로 가로로 펼친다 */
-    '#PENBAR.docked{position:static;display:block;transform:none !important;right:auto !important;bottom:auto !important}' +
-    '#PENBAR.docked #PEN_T{width:38px;height:38px;font-size:17px;box-shadow:none}' +
-    '#PENBAR.docked #PEN_X{position:fixed;top:66px;right:8px;flex-direction:row;flex-wrap:wrap;justify-content:center;' +
-      'align-items:center;gap:7px;padding:8px 10px;border-radius:14px;max-width:calc(100vw - 16px)}' +
-    '#PENBAR.docked .pen-hr{width:1px;height:26px}' +
-    '#PENBAR.docked #PEN_SW{flex-direction:row !important}' +
+    /* 프레젠테이션 뷰어 안에서는 ✏️ 버튼을 상단 제목 옆(#pvPenSlot)에 두고, 도구는 그 버튼 바로 오른쪽에 가로로 펼친다.
+       슬롯·막대를 display:contents 로 풀어 버튼과 도구 줄이 제목줄(.pv-top)의 형제처럼 배치되게 한다(슬라이드 위에 뜨지 않는다).
+       폭이 좁으면 도구 줄이 제목줄 아래 둘째 줄이 되고, 슬라이드 영역이 그만큼 줄어든다 */
+    '#PENBAR.docked{display:contents}' +
+    '#PENBAR.docked #PEN_T{order:2;width:38px;height:38px;font-size:17px;box-shadow:none;flex:0 0 auto}' +
+    '#PENBAR.docked #PEN_X{order:3;flex-direction:row;flex-wrap:wrap;justify-content:center;align-items:center;' +
+      'gap:6px;padding:4px 10px;border-radius:999px;box-shadow:none}' +
+    '#PENBAR.docked .pen-b{width:30px;height:30px;border-radius:9px;font-size:14px}' +
+    '#PENBAR.docked .pen-sw{width:26px;height:26px}' +
+    '#PENBAR.docked .pen-hr{width:1px;height:22px}' +
+    '#PENBAR.docked #PEN_SW{flex-direction:row !important;gap:6px !important}' +
+    '@media(max-width:999px){#PENBAR.docked #PEN_X{order:9;flex:1 0 100%;border-radius:12px;margin:2px 0}}' +
     '.pen-b.tool{font-size:16px}' +
     '.pen-b.hl.on{background:#FFE600;border-color:#FFE600;color:#1A2744}';
 
