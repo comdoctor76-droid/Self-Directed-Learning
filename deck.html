@@ -40,6 +40,26 @@ button{font-family:inherit}
 .pv-prog{height:4px;background:rgba(255,255,255,.12)}
 .pv-prog i{display:block;height:100%;background:#E8651A;width:0;transition:width .2s}
 @media(max-width:640px){.pv-top{gap:6px}.pv-title{display:none}.pv-zm,#pvFs{display:none!important}.pv-scroll{padding:6px 6px 62px}.pv-scroll.w{padding:0 0 62px}.pv-nav{top:auto;bottom:8px;transform:none;width:46px;height:46px}.pv-nav.l{left:calc(50% - 60px)}.pv-nav.r{right:calc(50% - 60px)}.pv-hint{bottom:66px}.pv-md{padding:0 10px}}
+/* 내보내기(인쇄·전송·다운로드) 팝업 — 다른 안내 페이지의 '이미지 내보내기' 팝업과 같은 모양 */
+.pp-ov{display:none;position:fixed;inset:0;z-index:10010;background:rgba(20,25,38,.55);align-items:center;justify-content:center;padding:16px}
+.pp-box{background:#fff;border-radius:16px;max-width:320px;width:100%;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.35);color:#1A2744}
+.pp-head{background:linear-gradient(120deg,#1A2744,#2C3F6E);color:#fff;padding:16px 20px;font-size:15.5px;font-weight:800}
+.pp-body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:10px}
+.pp-btn{font-family:inherit;font-size:14.5px;font-weight:800;border:none;border-radius:10px;padding:12px 16px;cursor:pointer;line-height:1}
+.pp-btn:active{transform:scale(.97)}
+.pp-primary{background:#E8651A;color:#fff}.pp-primary:hover{background:#C94F0A}
+.pp-ghost{background:#F2EEE8;color:#1A2744}.pp-ghost:hover{background:#E9E3D9}
+.pp-msg{font-size:12.5px;color:#6B7078;background:#FFF9E8;border-left:3px solid #E5A00D;border-radius:0 8px 8px 0;padding:8px 10px;margin:0 0 4px;display:none;line-height:1.5}
+.pv-ex[hidden]{display:none}
+#PRINTAREA{display:none}
+@media print{
+  @page{size:A4 landscape;margin:0}
+  html,body{height:auto!important;overflow:visible!important;background:#fff!important}
+  body>*:not(#PRINTAREA){display:none!important}
+  #PRINTAREA{display:block!important}
+  #PRINTAREA img{display:block;width:100%;height:auto;page-break-after:always;break-after:page}
+  #PRINTAREA img:last-child{page-break-after:auto;break-after:auto}
+}
 </style>
 </head>
 <body>
@@ -52,6 +72,8 @@ button{font-family:inherit}
     <div class="pv-count" id="pvCount"></div>
     <button class="pv-md" id="pvMode" type="button" title="가로를 꽉 채우고 위아래로 스크롤하는 보기 ↔ 한 화면에 전체가 보이는 보기"></button>
     <div class="pv-zm" id="pvZm" title="확대 / 축소"><button id="pvZo" type="button" aria-label="축소">−</button><span id="pvZv">100%</span><button id="pvZi" type="button" aria-label="확대">＋</button></div>
+    <button class="pv-ic pv-ex" id="pvDl" type="button" title="PDF 다운로드" aria-label="PDF 다운로드" hidden>⬇</button>
+    <button class="pv-ic pv-ex" id="pvEx" type="button" title="인쇄·전송·다운로드" aria-label="인쇄·전송·다운로드" hidden>📤</button>
     <button class="pv-ic" id="pvFs" type="button" aria-label="전체 화면">⛶</button>
     <button class="pv-ic" id="pvClose" type="button" aria-label="닫기">✕</button>
   </div>
@@ -64,13 +86,27 @@ button{font-family:inherit}
   </div>
 </div>
 
+<div id="PRPOP" class="pp-ov" onclick="if(event.target===this)this.style.display='none'">
+  <div class="pp-box" role="dialog" aria-modal="true" aria-label="내보내기">
+    <div class="pp-head">매뉴얼 내보내기</div>
+    <div class="pp-body">
+      <p class="pp-msg" id="SV_MSG"></p>
+      <button class="pp-btn pp-primary" id="PR_GO" type="button">🖨 인쇄</button>
+      <button class="pp-btn pp-primary" id="SV_SEND_BTN" type="button">📤 전송하기</button>
+      <button class="pp-btn pp-primary" id="SV_SAVE" type="button">⬇ 다운로드 (PDF)</button>
+      <button class="pp-btn pp-ghost" id="PR_CANCEL" type="button">취소</button>
+    </div>
+  </div>
+</div>
+<div id="PRINTAREA" aria-hidden="true"></div>
+
 <script src="pen.js"></script>
 <script>
 (function(){
 "use strict";
 var Q=new URLSearchParams(location.search), DECK=(Q.get('d')||'priority').replace(/[^a-z0-9_-]/gi,'');
 var DATA_PATH='data/'+DECK+'-deck.json', BACK='index.html';
-var cur=null, idx=0;
+var cur=null, idx=0, EMBED=/[?&]embed=1/.test(location.search), PDF='', PDFNAME='manual.pdf';
 var $=function(id){return document.getElementById(id);};
 
 /* ── 프레젠테이션 뷰어 ── */
@@ -79,6 +115,7 @@ var depth=0;   /* 처음 연 쪽 이후로 쌓은 기록 칸 수 */
 function openViewer(m,i){cur=m;idx=i||0;zoom=1;$('pv').classList.add('on');depth=0;try{history.replaceState({pv:1,i:idx,n:0},'');}catch(e){}show();}
 function closeViewer(){
   if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(function(){});
+  if(EMBED){try{parent.postMessage({deckClose:1},'*');}catch(e){}return;}   /* 시뮬레이터 안에 끼워 열었을 때: 바깥 창이 닫는다 */
   if(document.referrer){try{history.go(-(depth+1));return;}catch(e){}}   /* 쌓은 기록과 이 페이지 자체를 되감아 들어온 페이지로 */
   location.href=BACK;
 }
@@ -160,7 +197,7 @@ function show(){
   $('pvPrev').disabled=idx<=0; $('pvNext').disabled=idx>=n-1;
   [idx+1,idx-1].forEach(function(k){if(k>=0&&k<n){var pi=new Image();pi.src=s[k];}});
 }
-function go(d){if(!cur)return;var n=cur.slides.length,k=idx+d;if(k<0||k>=n)return;idx=k;depth++;try{history.pushState({pv:1,i:idx,n:depth},'');}catch(e){depth--;}show();}
+function go(d){if(!cur)return;var n=cur.slides.length,k=idx+d;if(k<0||k>=n)return;idx=k;if(!EMBED){depth++;try{history.pushState({pv:1,i:idx,n:depth},'');}catch(e){depth--;}}show();}
 $('pvPrev').onclick=function(){go(-1);}; $('pvNext').onclick=function(){go(1);};
 $('pvClose').onclick=closeViewer;
 var fsOk=!!(document.documentElement.requestFullscreen);
@@ -190,7 +227,7 @@ document.addEventListener('keydown',function(e){
   else if(e.key==='ArrowLeft'){e.preventDefault();go(-1);}
   else if(e.key==='Home'){e.preventDefault();go(-idx);}
   else if(e.key==='End'){e.preventDefault();go(cur.slides.length-1-idx);}
-  else if(e.key==='Escape'&&!document.fullscreenElement)closeViewer();
+  else if(e.key==='Escape'&&!document.fullscreenElement){if(pop().style.display==='flex')closeExport();else closeViewer();}
 });
 (function(){var x0=null,y0=0;var st=$('pvStage');
   st.addEventListener('touchstart',function(e){if(e.touches.length!==1){x0=null;return;}x0=e.touches[0].clientX;y0=e.touches[0].clientY;},{passive:true});
@@ -198,6 +235,35 @@ document.addEventListener('keydown',function(e){
     if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.3)go(dx<0?1:-1);},{passive:true});
 })();
 
+
+/* ── 내보내기: 인쇄 · 전송 · 다운로드(PDF) ── */
+function pop(){return $('PRPOP');}
+function say(t){var m=$('SV_MSG');m.textContent=t||'';m.style.display=t?'block':'none';}
+function absUrl(u){try{return new URL(u,location.href).href;}catch(e){return u;}}
+var UA=navigator.userAgent||'', KAKAO=/KAKAOTALK/i.test(UA), INAPP=KAKAO||/NAVER\(inapp|FB_IAB|FBAN|FBAV|Instagram|Line\//i.test(UA);
+function openExport(){say('');$('SV_SEND_BTN').style.display=navigator.share?'block':'none';pop().style.display='flex';}
+function closeExport(){pop().style.display='none';}
+function doDownload(){
+  if(!PDF)return;
+  if(KAKAO){say('카카오톡 안에서는 저장이 제한됩니다. 외부 브라우저로 열어 저장해 주세요.');pop().style.display='flex';location.href='kakaotalk://web/openExternal?url='+encodeURIComponent(absUrl(PDF));return;}
+  var a=document.createElement('a');a.href=PDF;a.download=PDFNAME;a.rel='noopener';document.body.appendChild(a);a.click();a.remove();
+  if(INAPP){say('앱 안 브라우저에서는 저장이 막힐 수 있습니다. 안 되면 오른쪽 위 메뉴에서 기본 브라우저로 열어 주세요.');pop().style.display='flex';}
+  else closeExport();
+}
+function doShare(){
+  if(!navigator.share){say('이 기기에서는 전송을 쓸 수 없습니다. 다운로드를 이용해 주세요.');return;}
+  navigator.share({title:PDFNAME.replace(/\.pdf$/i,''),url:absUrl(PDF)}).then(closeExport).catch(function(err){if(err&&err.name==='AbortError')return;say('전송을 시작할 수 없습니다. 다운로드를 이용해 주세요.');});
+}
+function doPrint(){
+  if(!cur)return;
+  say('인쇄 준비 중… (쪽이 많으면 잠시 걸립니다)');
+  var pa=$('PRINTAREA');pa.innerHTML='';
+  var loads=cur.slides.map(function(src){return new Promise(function(res){var im=new Image();im.onload=im.onerror=function(){res();};im.src=src;im.alt='';pa.appendChild(im);});});
+  Promise.all(loads).then(function(){closeExport();setTimeout(function(){window.print();},150);});
+}
+window.addEventListener('afterprint',function(){var pa=$('PRINTAREA');if(pa)pa.innerHTML='';});
+$('pvEx').onclick=openExport;$('pvDl').onclick=doDownload;
+$('PR_GO').onclick=doPrint;$('SV_SAVE').onclick=doDownload;$('SV_SEND_BTN').onclick=doShare;$('PR_CANCEL').onclick=closeExport;
 
 /* ── 불러오기 ── */
 fetch(DATA_PATH+'?_='+Date.now()).then(function(r){if(!r.ok)throw new Error(r.status);return r.json();}).then(function(d){
@@ -207,6 +273,7 @@ fetch(DATA_PATH+'?_='+Date.now()).then(function(r){if(!r.ok)throw new Error(r.st
   $('loading').style.display='none';
   var p=parseInt(Q.get('p'),10);
   openViewer({title:d.title,slides:d.slides},(p>=1&&p<=d.slides.length)?p-1:0);
+  if(d.pdf){PDF=d.pdf;PDFNAME=d.pdfName||'manual.pdf';$('pvDl').hidden=false;$('pvEx').hidden=false;}
 }).catch(function(){$('loading').textContent='프리젠테이션을 불러오지 못했습니다.';});
 })();
 </script>

@@ -238,6 +238,7 @@
                 <button id="planBtn-5억" onclick="changePlan('5억')" class="px-3 py-1.5 rounded-full font-extrabold text-[13px] md:text-sm leading-tight text-center transition-all bg-white text-slate-600 border-2 border-slate-200 hover:bg-slate-50">📘 표준형 5억 통장<span class="pt-tag hidden w-max mx-auto mt-0.5 whitespace-nowrap text-[10px] leading-tight font-extrabold bg-fuchsia-600 text-white px-2 py-0.5 rounded-full" title="암추가보장 특약 가입">＋암추가 10만</span></button>
             </div>
             <div class="flex items-center gap-2 ml-auto">
+                <button type="button" id="manualBtn" onclick="openManual()" class="px-3 py-1.5 rounded-full font-extrabold text-[13px] md:text-sm transition-all bg-white text-slate-700 border-2 border-slate-200 hover:bg-slate-50 whitespace-nowrap">📖 매뉴얼 보기</button>
                 <button id="termBtn-20" onclick="changeTerm(20)" class="px-3 py-1.5 rounded-full font-extrabold text-[13px] md:text-sm transition-all bg-hd-500 text-white shadow-md border-2 border-hd-500 whitespace-nowrap">20년 갱신</button>
             </div>
         </div>
@@ -669,7 +670,10 @@
     <div id="mApp" aria-label="휴대폰 시뮬레이터">
         <div class="m-top">
             <div class="m-title">2610 통합보장 시뮬<span id="mPlanTag" class="m-plantag"></span></div>
-            <button type="button" class="m-icon" onclick="mOpenSheet('set')" aria-label="설정">⚙</button>
+            <div style="display:flex;gap:8px;align-items:center">
+                <button type="button" class="m-icon" onclick="openManual()" aria-label="매뉴얼 보기" title="매뉴얼 보기" style="width:auto;padding:0 12px;border-radius:999px;font-size:13px;font-weight:800">📖 매뉴얼</button>
+                <button type="button" class="m-icon" onclick="mOpenSheet('set')" aria-label="설정">⚙</button>
+            </div>
         </div>
         <div class="m-bal">
             <div class="m-bal-row"><span class="m-bal-amt" id="mBal">100,000</span><span class="m-bal-unit">만원</span><span class="m-bal-ratio" id="mRatio"></span></div>
@@ -2380,5 +2384,24 @@
         window.__mMakeImage = makeImage;   // 확인용
     })();
     </script>
+<!-- 매뉴얼 보기: 시뮬레이터 상태는 그대로 두고 그 위에 전체 화면으로 연다 -->
+<div id="manOv" style="display:none;position:fixed;inset:0;z-index:2147483000;background:#0f1524"></div>
+<script>
+(function(){
+  var ov=document.getElementById('manOv');
+  window.openManual=function(){
+    if(ov.style.display==='block')return;
+    ov.innerHTML='';
+    var f=document.createElement('iframe');
+    f.title='2610 주요치료통합보장 시뮬레이터 매뉴얼'; f.setAttribute('allow','fullscreen');
+    f.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;background:#0f1524';
+    f.src='../../deck.html?d=manual2610&embed=1';
+    ov.appendChild(f); ov.style.display='block';
+  };
+  function close(){ov.style.display='none';ov.innerHTML='';}
+  window.addEventListener('message',function(e){ if(e.data&&e.data.deckClose&&ov.style.display==='block')close(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&ov.style.display==='block')close(); });
+})();
+</script>
 </body>
 </html>
