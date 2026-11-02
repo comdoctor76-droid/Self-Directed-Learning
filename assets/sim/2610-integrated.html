@@ -232,7 +232,7 @@
 
     <header class="bg-white shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center gap-x-3 gap-y-2">
-            <h1 class="text-lg md:text-xl font-extrabold text-slate-800 tracking-tight">2610 주요치료비통합보장 특약 보험금시뮬레이션</h1>
+            <h1 class="text-lg md:text-xl font-extrabold text-slate-800 tracking-tight">2610 주요치료통합보장 특약 보험금시뮬레이션</h1>
             <div class="flex items-center gap-2 flex-wrap">
                 <button id="planBtn-10억" onclick="changePlan('10억')" class="px-3 py-1.5 rounded-full font-extrabold text-[13px] md:text-sm leading-tight text-center transition-all bg-hd-500 text-white shadow-md border-2 border-hd-500">💎 프리미엄 10억 통장<span class="pt-tag hidden w-max mx-auto mt-0.5 whitespace-nowrap text-[10px] leading-tight font-extrabold bg-fuchsia-600 text-white px-2 py-0.5 rounded-full" title="암추가보장 특약 가입">＋암추가 20만</span></button>
                 <button id="planBtn-5억" onclick="changePlan('5억')" class="px-3 py-1.5 rounded-full font-extrabold text-[13px] md:text-sm leading-tight text-center transition-all bg-white text-slate-600 border-2 border-slate-200 hover:bg-slate-50">📘 표준형 5억 통장<span class="pt-tag hidden w-max mx-auto mt-0.5 whitespace-nowrap text-[10px] leading-tight font-extrabold bg-fuchsia-600 text-white px-2 py-0.5 rounded-full" title="암추가보장 특약 가입">＋암추가 10만</span></button>
@@ -2247,7 +2247,7 @@
             c.fillStyle = '#f8fafc'; c.fillRect(0, 0, W, H);
             // ── 머리
             c.fillStyle = '#1A2744'; c.fillRect(0, 0, W, 140);
-            c.fillStyle = '#fff'; c.font = F(900, 42); c.fillText('2610 주요치료비통합보장 시뮬레이션', PAD, 70);
+            c.fillStyle = '#fff'; c.font = F(900, 42); c.fillText('2610 주요치료통합보장 시뮬레이션', PAD, 70);
             c.font = F(700, 25); c.fillStyle = '#FFB37E';
             const d = new Date(), ds = `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
             c.fillText(`${currentPlan} 한도 · ${TERM}년 갱신${perTxOn ? ' · 암추가보장(치료당) 가입' : ''}  |  ${ds}`, PAD, 115);
@@ -2277,7 +2277,7 @@
             // ── 꼬리
             c.fillStyle = '#94a3b8'; c.font = F(700, 21);
             c.fillText('※ 교육용 시뮬레이션 결과이며, 실제 보험금 지급은 약관 및 심사 기준에 따릅니다.', PAD, H - 62);
-            c.fillText('스스로 학습하기 · 2610 주요치료비통합보장 시뮬레이터', PAD, H - 30);
+            c.fillText('스스로 학습하기 · 2610 주요치료통합보장 시뮬레이터', PAD, H - 30);
             return new Promise(res => cv.toBlob(b => res({ blob: b, url: cv.toDataURL('image/png') }), 'image/png'));
         }
 
@@ -2297,7 +2297,7 @@
             c.fillStyle = '#f8fafc'; c.fillRect(0, 0, W, H);
             // 머리
             c.fillStyle = '#1A2744'; c.fillRect(0, 0, W, 120);
-            c.fillStyle = '#fff'; c.font = F(900, 44); c.fillText('2610 주요치료비통합보장 특약 보험금시뮬레이션', PAD, 64);
+            c.fillStyle = '#fff'; c.font = F(900, 44); c.fillText('2610 주요치료통합보장 특약 보험금시뮬레이션', PAD, 64);
             const d = new Date(), ds = `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
             c.fillStyle = '#FFB37E'; c.font = F(700, 24);
             c.fillText(`${currentPlan} 한도 · ${TERM}년 갱신${perTxOn ? ' · 암추가보장(치료당) 가입' : ''}  |  출력일 ${ds}`, PAD, 101);
@@ -2369,7 +2369,7 @@
             document.getElementById('mSheetBg').classList.add('on'); document.getElementById('mSheet').classList.add('on');
             const go = document.getElementById('mShareGo');
             if (go) go.onclick = async () => {
-                try { await navigator.share({ files: [last.file], title: '2610 주요치료비통합보장 시뮬레이션 결과', text: '2610 주요치료비통합보장 시뮬레이션 결과입니다.' }); }
+                try { await navigator.share({ files: [last.file], title: '2610 주요치료통합보장 시뮬레이션 결과', text: '2610 주요치료통합보장 시뮬레이션 결과입니다.' }); }
                 catch (e) { if (e && e.name !== 'AbortError') showModal('보내기 실패', '공유창을 열 수 없습니다. [사진으로 저장]을 이용해 주세요.'); }
             };
             document.getElementById('mSaveGo').onclick = () => {

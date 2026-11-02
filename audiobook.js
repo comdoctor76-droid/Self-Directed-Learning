@@ -42,7 +42,23 @@
     '.ab-li.on{background:rgba(255,255,255,.16);color:#FFD9BF}' +
     '.ab-li span{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
     '.ab-li button{flex:0 0 auto;border:0;background:rgba(255,255,255,.14);color:#FFD9BF;border-radius:8px;font-size:12px;font-weight:800;padding:4px 8px;cursor:pointer;font-family:inherit}' +
-    '.ab-empty{font-size:13.5px;opacity:.9;margin-top:6px}';
+    '.ab-empty{font-size:13.5px;opacity:.9;margin-top:6px}' +
+    /* 메인 화면용 컴팩트 모드: ▶ + (라벨·제목) 아래에 버튼들과 짧은 재생 위치 바를 한 줄로 */
+    '.ab.ab-c{padding:8px 12px}' +
+    '.ab-c .ab-pl{width:38px;height:38px;align-self:flex-start;margin-top:2px}' +
+    '.ab-c .ab-pl svg{width:18px;height:18px}' +
+    '.ab-c .ab-top{align-items:flex-start;gap:10px}' +
+    '.ab-c .ab-tt{flex:1 1 auto}' +
+    '.ab-c .ab-tt b{display:inline;font-size:15px}' +
+    '.ab-c .ab-tt small{display:inline;margin-left:8px;font-size:11.5px}' +
+    '.ab-c .ab-c2{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;margin-top:5px}' +
+    '.ab-c .ab-cl{display:flex;grid-template-columns:none;gap:4px}' +
+    '.ab-c .ab-s{min-width:0;height:24px;padding:0 8px;font-size:11.5px}' +
+    '.ab-c .ab-s.ic{width:26px;min-width:26px;padding:0;font-size:12px}' +
+    '.ab-c .ab-row{flex:0 1 190px;min-width:120px;margin-top:0;gap:5px}' +
+    '.ab-c .ab-time{min-width:0;font-size:11px}' +
+    '.ab-c .ab-seek{height:18px}' +
+    '.ab-c .ab-msg{font-size:11.5px;margin-top:2px}';
 
   var A = null, root = null, data = null, tracks = [], cur = -1, saveAt = 0, opts = {};
   function $(sel) { return root.querySelector(sel); }
@@ -76,18 +92,20 @@
 
   function render() {
     var n = tracks.length, title = (data && data.title) || '농부의 마음으로 고객을 짓다', author = (data && data.author) || '이승학';
-    root.className = 'ab';
+    root.className = 'ab' + (opts.compact ? ' ab-c' : '');
     var cl = n ?
       '<div class="ab-cl"><button class="ab-s ab-b15" type="button" aria-label="15초 뒤로" title="15초 뒤로">−15</button>' +
       '<button class="ab-s ab-f15" type="button" aria-label="15초 앞으로" title="15초 앞으로">+15</button>' +
       '<button class="ab-s ab-sp-b" type="button" aria-label="재생 속도" title="재생 속도">1.0×</button>' +
       '<button class="ab-s ic ab-cp" type="button" aria-label="링크 복사" title="링크 복사">🔗</button></div>' :
       '<div class="ab-cl"><button class="ab-s ic ab-cp" type="button" aria-label="링크 복사" title="링크 복사">🔗</button></div>';
+    var rowHtml = n ? '<div class="ab-row"><span class="ab-time ab-cur">0:00</span><input class="ab-seek" type="range" min="0" max="1000" value="0" aria-label="재생 위치"><span class="ab-time ab-dur">--:--</span></div>' : '';
     root.innerHTML =
       '<div class="ab-top"><button class="ab-pl" type="button" aria-label="재생"' + (n ? '' : ' disabled') + '>' + ICON_PLAY + '</button>' +
-        '<div class="ab-tt"><small>🎧 오디오북 · ' + esc(author) + ' 저' + (n > 1 ? ' · 총 ' + n + '개' : '') + '</small><b>' + esc(title) + '</b></div>' + cl + '</div>' +
+        '<div class="ab-tt">' + (opts.compact ? '<b>' + esc(title) + '</b><small>🎧 ' + esc(author) + ' 저' + (n > 1 ? ' · 총 ' + n + '개' : '') + '</small>' : '<small>🎧 오디오북 · ' + esc(author) + ' 저' + (n > 1 ? ' · 총 ' + n + '개' : '') + '</small><b>' + esc(title) + '</b>') +
+        (opts.compact ? '<div class="ab-c2">' + cl + rowHtml + '</div>' : '') + '</div>' + (opts.compact ? '' : cl) + '</div>' +
       (n ?
-        '<div class="ab-row"><span class="ab-time ab-cur">0:00</span><input class="ab-seek" type="range" min="0" max="1000" value="0" aria-label="재생 위치"><span class="ab-time ab-dur">--:--</span></div>' +
+        (opts.compact ? '' : rowHtml) +
         (n > 1 ? '<div class="ab-pn"><button class="ab-s ab-pv" type="button">⏮ 이전</button><button class="ab-s ab-nx" type="button">다음 ⏭</button></div>' : '') +
         '<div class="ab-msg"></div>' +
         (n > 1 ? '<div class="ab-list">' + tracks.map(function (t, i) { return '<div class="ab-li" data-i="' + i + '"><i>' + (i + 1) + '</i><span>' + esc(t.title || ('파트 ' + (i + 1))) + '</span>' + (opts.admin ? '<button type="button" data-del="' + i + '">삭제</button>' : '') + '</div>'; }).join('') + '</div>' : '') +

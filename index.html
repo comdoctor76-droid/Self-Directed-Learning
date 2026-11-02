@@ -45,8 +45,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:#FBF8F5;color:#26282C;font
 .hiscan-cta .hc-main{font-size:15px;font-weight:900;letter-spacing:.2px;line-height:1.3}
 .hiscan-cta .hc-sub{font-size:11.5px;font-weight:600;opacity:.88;line-height:1.3}
 .hero-row{margin-top:10px;display:flex;align-items:stretch;gap:10px;max-width:900px}
-.hero-row #abMount{flex:1 1 0;min-width:0;max-width:620px;margin-top:0!important}
-.ext-card{flex:0 0 240px;display:flex;flex-direction:row;align-items:center;gap:10px;text-align:left;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.28);border-radius:16px;padding:10px 14px;color:#fff;font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hero-row #abMount{flex:1 1 0;min-width:0;max-width:460px;margin-top:0!important}
+.ext-card{flex:0 0 206px;display:flex;flex-direction:row;align-items:center;gap:10px;text-align:left;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.28);border-radius:16px;padding:10px 14px;color:#fff;font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .ext-card:hover{background:rgba(255,255,255,.17)}
 .ext-card:active{transform:scale(.97)}
 .ext-card .ec-ic{font-size:26px;line-height:1}
@@ -61,12 +61,14 @@ body{font-family:'Noto Sans KR',sans-serif;background:#FBF8F5;color:#26282C;font
 .ea-top{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:8px 10px;padding-top:max(8px,env(safe-area-inset-top));background:#1A2744;border-bottom:1px solid rgba(255,255,255,.15)}
 .ea-b{flex:0 0 auto;height:38px;border-radius:999px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.1);color:#fff;font-family:inherit;font-size:14px;font-weight:800;padding:0 14px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:4px;text-decoration:none;white-space:nowrap}
 .ea-b.ic{width:38px;padding:0;font-size:17px}
+.ea-b[hidden]{display:none}
 .ea-b:active{transform:scale(.95)}
 .ea-t{flex:1 1 auto;min-width:0;text-align:center;font-weight:900;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ea-body{flex:1 1 auto;min-height:0;position:relative;background:#fff}
 .ea-body iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}
 .ea-msg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;color:#6B7078;font-size:15px;font-weight:700;line-height:1.6;padding:0 20px;pointer-events:none;width:min(420px,90%)}
 .ea-msg b{color:#C94F0A}
+@media(max-width:767px){.ea-pc{display:none!important}}
 body:has(#extApp.on) #PENBAR,body:has(#extApp.on) #PEN_CV{display:none!important}   /* 외부 화면 위에는 판서 도구를 띄우지 않는다 */
 .ea-b:first-child{font-size:16px}
 @media(max-width:520px){.ea-b span{display:none}.ea-t{font-size:14px}}
@@ -132,7 +134,7 @@ footer a{color:#FFB37E;font-weight:800;text-decoration:underline;text-underline-
     <h1>플래너를 위한 니즈환기 자료<br><span>인터랙티브 가이드</span></h1>
     <p>가입설계서로 담보설명에 집중하는 프리젠테이션은 이제그만! 니즈환기로 승부하자!!</p>
     <div class="hero-actions">
-      <div class="version-tag" id="verTag"><span class="dot"></span>v1.176</div>
+      <div class="version-tag" id="verTag"><span class="dot"></span>v1.177</div>
       <a class="hiscan-cta" href="hiscan.html" hidden style="display:none" aria-label="하이스캔 사용해보기 — 제작 이경석 전임강사">
         <span class="hc-main">🔎 하이스캔 사용해보기</span>
         <span class="hc-sub">* 제작 이경석 전임강사</span>
@@ -143,6 +145,11 @@ footer a{color:#FFB37E;font-weight:800;text-decoration:underline;text-underline-
       <button type="button" class="ext-card" id="extOpen" aria-label="2610 퍼플약관 검색기 열기 — 김우진 전임강사 제작">
         <span class="ec-ic">🔎</span>
         <span class="ec-tx"><span class="ec-t">2610 퍼플약관 검색기</span><br><span class="ec-s">- 김우진 전임강사 제작</span></span>
+        <span class="ec-go">눌러서 열기 ›</span>
+      </button>
+      <button type="button" class="ext-card" id="simOpen" aria-label="주요치료통합보장 시뮬레이터 열기">
+        <span class="ec-ic">🧮</span>
+        <span class="ec-tx"><span class="ec-t">주요치료통합보장<br>시뮬레이터</span></span>
         <span class="ec-go">눌러서 열기 ›</span>
       </button>
     </div>
@@ -345,38 +352,51 @@ footer a{color:#FFB37E;font-weight:800;text-decoration:underline;text-underline-
 <script src="changes.js"></script>
 <script src="install.js"></script>
 <script src="audiobook.js"></script>
-<script>AudioBook.mount(document.getElementById('abMount'),{});</script>
+<script>AudioBook.mount(document.getElementById('abMount'),{compact:true});</script>
 <div id="extApp" role="dialog" aria-modal="true" aria-label="2610 퍼플약관 검색기">
   <div class="ea-top">
     <button type="button" class="ea-b" id="eaBack" aria-label="돌아가기">←<span> 돌아가기</span></button>
-    <div class="ea-t">2610 퍼플약관 검색기</div>
+    <div class="ea-t" id="eaTitle">2610 퍼플약관 검색기</div>
+    <button type="button" class="ea-b ic ea-sim" id="eaLink" title="링크 복사" aria-label="링크 복사" hidden>🔗</button>
+    <button type="button" class="ea-b ic ea-sim ea-pc" id="eaPrint" title="인쇄" aria-label="인쇄" hidden>🖨</button>
     <a class="ea-b ic" id="eaNew" target="_blank" rel="noopener" title="새 창으로 열기" aria-label="새 창으로 열기">↗</a>
     <button type="button" class="ea-b ic" id="eaClose" aria-label="닫기">✕</button>
   </div>
   <div class="ea-body" id="eaBody"></div>
 </div>
 <script>
-/* 외부 도구(2610 퍼플약관 검색기)를 앱처럼 전체 화면으로 연다 — ← 돌아가기 · ✕ · Esc · 브라우저 뒤로가기 모두 같은 닫기 */
+/* 외부 도구·시뮬레이터를 앱처럼 전체 화면으로 연다 — ← 돌아가기 · ✕ · Esc · 브라우저 뒤로가기 모두 같은 닫기 */
 (function(){
-  var URL_='https://hiwoojin.mycafe24.com/yk.php', $=function(id){return document.getElementById(id);};
-  var app=$('extApp'), body=$('eaBody'), pushed=false, tm=0, y0=0;
-  $('eaNew').href=URL_;
-  function open(){
+  var APPS={
+    ext:{title:'2610 퍼플약관 검색기',url:'https://hiwoojin.mycafe24.com/yk.php',sim:false},
+    sim:{title:'주요치료통합보장 시뮬레이터',url:'assets/sim/2610-integrated.html',sim:true,page:'sim2610.html'}
+  };
+  var $=function(id){return document.getElementById(id);};
+  var app=$('extApp'), body=$('eaBody'), pushed=false, tm=0, y0=0, curApp=null;
+  function copyText(txt){
+    function legacy(){try{var ta=document.createElement('textarea');ta.value=txt;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;top:0;left:0;opacity:0';document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,txt.length);var ok=document.execCommand('copy');ta.remove();return ok;}catch(e){return false;}}
+    if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(txt).then(function(){return true;},function(){return legacy();});
+    return Promise.resolve(legacy());
+  }
+  function open(key){
     if(app.classList.contains('on'))return;
-    y0=window.pageYOffset;
-    body.innerHTML='<div class="ea-msg" id="eaMsg">불러오는 중…</div>';
+    var c=APPS[key]; curApp=c; y0=window.pageYOffset;
+    $('eaTitle').textContent=c.title; app.setAttribute('aria-label',c.title);
+    $('eaNew').href=c.page||c.url;
+    [].forEach.call(document.querySelectorAll('.ea-sim'),function(b){b.hidden=!c.sim;});
+    body.innerHTML=c.sim?'':'<div class="ea-msg" id="eaMsg">불러오는 중…</div>';
     var f=document.createElement('iframe');
-    f.title='2610 퍼플약관 검색기'; f.setAttribute('allow','clipboard-write; fullscreen'); f.setAttribute('referrerpolicy','no-referrer');
+    f.title=c.title; f.setAttribute('allow','clipboard-write; fullscreen'); if(!c.sim)f.setAttribute('referrerpolicy','no-referrer');
     f.onload=function(){clearTimeout(tm);var m=$('eaMsg');if(m)m.remove();};
-    f.src=URL_; body.appendChild(f);
+    f.src=c.url; body.appendChild(f);
     app.classList.add('on'); document.documentElement.style.overflow='hidden';
     try{history.pushState({ext:1},'');pushed=true;}catch(e){pushed=false;}
     clearTimeout(tm);
-    tm=setTimeout(function(){var m=$('eaMsg');if(m)m.innerHTML='화면이 열리지 않으면<br>오른쪽 위 <b>↗</b> 를 눌러 <b>새 창</b>으로 열어 주세요.';},8000);
+    if(!c.sim)tm=setTimeout(function(){var m=$('eaMsg');if(m)m.innerHTML='화면이 열리지 않으면<br>오른쪽 위 <b>↗</b> 를 눌러 <b>새 창</b>으로 열어 주세요.';},8000);
   }
   function hide(){
     clearTimeout(tm); app.classList.remove('on'); document.documentElement.style.overflow=''; body.innerHTML='';   /* iframe 을 지워 다음에 새로 연다 */
-    window.scrollTo(0,y0);
+    curApp=null; window.scrollTo(0,y0);
   }
   function close(){
     if(!app.classList.contains('on'))return;
@@ -385,9 +405,17 @@ footer a{color:#FFB37E;font-weight:800;text-decoration:underline;text-underline-
   }
   window.addEventListener('popstate',function(){ if(app.classList.contains('on')){pushed=false;hide();} });
   document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&app.classList.contains('on'))close(); });
-  $('extOpen').addEventListener('click',open);
+  $('extOpen').addEventListener('click',function(){open('ext');});
+  $('simOpen').addEventListener('click',function(){open('sim');});
   $('eaBack').addEventListener('click',close);
   $('eaClose').addEventListener('click',close);
+  $('eaLink').addEventListener('click',function(){
+    if(!curApp||!curApp.page)return; var url=new URL(curApp.page,location.href).href, b=this;
+    copyText(url).then(function(ok){ if(ok){b.textContent='✓';setTimeout(function(){b.textContent='🔗';},1500);} else prompt('아래 링크를 복사하세요',url); });
+  });
+  $('eaPrint').addEventListener('click',function(){
+    var f=body.querySelector('iframe'); try{ if(f&&f.contentWindow&&f.contentWindow.printReport)f.contentWindow.printReport(); else alert('시뮬레이터를 불러오는 중입니다. 잠시 후 다시 눌러 주세요.'); }catch(e){alert('인쇄를 시작할 수 없습니다.');}
+  });
 })();
 </script>
 <script>
