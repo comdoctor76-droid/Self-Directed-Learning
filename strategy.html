@@ -221,6 +221,15 @@ function render(){
   if(viewMonth&&!vm)viewMonth=null;
   if(vm){ /* ── 월 안: 시뮬레이터 카드(상단) → 이달의 매거진 카드 ── */
     var mi=state.months.indexOf(vm), n2=(vm.slides||[]).length, f2=n2?vm.slides[0]:null;
+    /* 한 달에 매거진이 여러 개인 경우(mags): 매거진마다 카드 하나 */
+    var mg=(vm.mags||[]).map(function(g,gi){
+      var gn=(g.slides||[]).length, gf=gn?g.slides[0]:null;
+      return '<button type="button" class="mcard mag" data-i="'+mi+'" data-g="'+gi+'">'+
+        '<div class="thumb"'+(gf?' style="background-image:url(\''+esc(gf)+'\')"':'')+'>'+(gf?'':'<span class="ico">📊</span>')+
+        '<span class="menu">'+vm.year+'년 '+vm.month+'월</span></div>'+
+        '<div class="info"><h3>'+esc(g.title)+'</h3><p>'+(gn?'슬라이드 '+gn+'장':'자료 준비 중')+'</p>'+
+        '<div class="go">'+(gn?'프레젠테이션 보기 →':'곧 올라옵니다')+'</div></div></button>';
+    }).join('');
     var tl=(vm.tools||[]).map(function(t,ti){
       return '<button type="button" class="mcard tool" data-i="'+mi+'" data-t="'+ti+'">'+
         '<div class="thumb"'+(t.thumb?' style="background-image:url(\''+esc(t.thumb)+'\')"':'')+'>'+(t.thumb?'':'<span class="ico">🧮</span>')+
@@ -228,23 +237,23 @@ function render(){
         '<div class="info"><h3>'+esc(t.title)+'</h3><p>'+esc(t.desc||'')+'</p><div class="go">시뮬레이터 열기 →</div></div></button>';
     }).join('');
     box.innerHTML='<button type="button" class="mg-back" id="mgBack">← 월별 영업전략</button>'+
-      '<section class="mgroup"><h3 class="mg-h">'+esc(vm.title||(vm.month+'월 영업전략'))+'</h3><div class="g">'+tl+
-      '<button type="button" class="mcard mag'+(n2?'':' empty')+'" data-i="'+mi+'">'+
+      '<section class="mgroup"><h3 class="mg-h">'+esc(vm.title||(vm.month+'월 영업전략'))+'</h3><div class="g">'+tl+mg+
+      (n2||!(vm.mags||[]).length?'<button type="button" class="mcard mag'+(n2?'':' empty')+'" data-i="'+mi+'">'+
       '<div class="thumb"'+(f2?' style="background-image:url(\''+esc(f2)+'\')"':'')+'>'+(f2?'':'<span class="ico">📊</span>')+
       '<span class="menu">'+vm.year+'년 '+vm.month+'월</span></div>'+
       '<div class="info"><h3>이달의 매거진</h3><p>'+(n2?'슬라이드 '+n2+'장':'자료 준비 중')+'</p>'+
-      '<div class="go">'+(n2?'프레젠테이션 보기 →':'곧 올라옵니다')+'</div></div></button></div></section>';
+      '<div class="go">'+(n2?'프레젠테이션 보기 →':'곧 올라옵니다')+'</div></div></button>':'')+'</div></section>';
     return;
   }
   /* ── 월 목록: 월마다 카드 하나 (누르면 안으로) ── */
   box.innerHTML='<div class="g">'+state.months.map(function(m,i){
-    var n=(m.slides||[]).length, first=n?m.slides[0]:null, cnt=(m.tools||[]).length+(n?1:0);
+    var n=(m.slides||[]).length, mgs=(m.mags||[]), first=n?m.slides[0]:((mgs[0]&&(mgs[0].slides||[])[0])||null), cnt=(m.tools||[]).length+(n?1:0)+mgs.length;
     return '<button type="button" class="mcard month'+(cnt?'':' empty')+'" data-i="'+i+'">'+
       (isAdmin()?'<span class="adm"><span class="add" data-a="add">＋ 올리기</span>'+(n?'<span class="del" data-a="del">삭제</span>':'')+'</span>':'')+
       '<div class="thumb"'+(first?' style="background-image:url(\''+esc(first)+'\')"':'')+'>'+(first?'':'<span class="ico">📊</span>')+
       '<span class="menu">'+m.year+'년 '+m.month+'월</span></div>'+
       '<div class="info"><h3>'+esc(m.title||(m.month+'월 영업전략'))+'</h3>'+
-      '<p>'+(cnt?'카드 '+cnt+'개 (시뮬레이터·이달의 매거진)':'자료 준비 중')+'</p>'+
+      '<p>'+(cnt?'카드 '+cnt+'개'+(mgs.length?' ('+mgs.map(function(g){return g.title;}).join('·')+')':' (시뮬레이터·이달의 매거진)'):'자료 준비 중')+'</p>'+
       '<div class="go">'+(cnt?'열어 보기 →':(isAdmin()?'눌러서 자료 올리기':'곧 올라옵니다'))+'</div></div></button>';
   }).join('')+'</div>';
 }
@@ -262,9 +271,12 @@ $('months').addEventListener('click',function(e){
   var c=e.target.closest('.mcard'); if(!c)return;
   var m=state.months[+c.getAttribute('data-i')], a=e.target.closest('[data-a]');
   if(c.hasAttribute('data-t')){openTool(m.tools[+c.getAttribute('data-t')]);return;}
-  if(c.classList.contains('mag')){ if((m.slides||[]).length)openViewer(m,0); return; }
+  if(c.classList.contains('mag')){
+    if(c.hasAttribute('data-g')){var g=(m.mags||[])[+c.getAttribute('data-g')]; if(g&&(g.slides||[]).length)openViewer({title:(m.month+'월 영업전략 · '+g.title),slides:g.slides},0); return;}
+    if((m.slides||[]).length)openViewer(m,0); return;
+  }
   if(a&&a.getAttribute('data-a')==='del'){delMonth(m);return;}
-  var cnt=(m.tools||[]).length+((m.slides||[]).length?1:0);
+  var cnt=(m.tools||[]).length+((m.slides||[]).length?1:0)+(m.mags||[]).length;
   if((a&&a.getAttribute('data-a')==='add')||!cnt){ if(isAdmin())openUp(m); return; }
   openMonth(m.id);
 });
