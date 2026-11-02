@@ -119,6 +119,11 @@
               "image": {
                 "src": "assets/mechanism/priority-s2-2.webp",
                 "alt": "실손 면부책 변천사 (1~5세대 비교)"
+              },
+              "bottomImage": {
+                "heading": "5세대 실손 — 보장하지 않는 대표 항목",
+                "src": "assets/infographics/bias-s1-gen5-exclusions.webp",
+                "alt": "5세대 실손의료비 보장하지 않는 대표 항목 (도수치료·체외충격파·영양제·비급여 치과·미용·건강검진)"
               }
             },
             {
