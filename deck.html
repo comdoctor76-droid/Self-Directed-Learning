@@ -269,6 +269,8 @@ $('PR_GO').onclick=doPrint;$('SV_SAVE').onclick=doDownload;$('SV_SEND_BTN').oncl
 fetch(DATA_PATH+'?_='+Date.now()).then(function(r){if(!r.ok)throw new Error(r.status);return r.json();}).then(function(d){
   if(d.back)BACK=d.back;
   if(!d.slides||!d.slides.length)throw new Error('empty');
+  /* 같은 이름으로 파일을 바꿔 올려도 예전 그림이 남지 않도록 자료 버전(ver)을 주소 끝에 붙인다 */
+  if(d.ver){d.slides=d.slides.map(function(u){return u+'?v='+d.ver;});if(d.pdf)d.pdf=d.pdf+'?v='+d.ver;}
   document.title=d.title||document.title;
   $('loading').style.display='none';
   var p=parseInt(Q.get('p'),10);
