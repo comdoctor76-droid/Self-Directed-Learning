@@ -42,6 +42,7 @@
   var ink = {};        /* 레이어id -> [{c,w,p:[[x,y],…]}] */
   var cur = null, curSurf = null, swallow = false;
   var cv, ctx, dpr = 1, pending = 0;
+  var lastStrokeAt = 0;   /* 마지막으로 획(펜·형광펜·지우개)을 시작한 시각 — 뷰어가 '펜으로 긋다가 쪽이 넘어가는' 것을 막는 데 쓴다 */
   var touches = 0, multi = false;   /* 눌린 손가락 수 / 두 손가락 제스처(확대·이동) 진행 중 */
 
   /* ── 스타일 ───────────────────────────────────────────────── */
@@ -238,7 +239,7 @@
     }
     if (multi || !drawable(e) || inBar(e.target)) return;
     e.preventDefault(); e.stopPropagation();
-    swallow = true;
+    swallow = true; lastStrokeAt = Date.now();
     curSurf = surface();
     var p = toContent(curSurf, e.clientX, e.clientY);
     if (erasing) { cur = 'E'; eraseAt(curSurf, p); }
@@ -522,7 +523,7 @@
   }
 
   /* 다른 스크립트가 알아야 하는 상태 — 손가락 모드로 그리는 중이면 좌우 스와이프로 슬라이드를 넘기지 않는다 */
-  window.PenState = { drawingWithTouch: function () { return penOn && inputMode === 'touch'; } };
+  window.PenState = { drawingWithTouch: function () { return penOn && inputMode === 'touch'; }, lastStrokeAt: function () { return lastStrokeAt; } };
 
   if (!window.PointerEvent) return;   /* 포인터 이벤트 미지원 환경은 조용히 비활성화 */
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
