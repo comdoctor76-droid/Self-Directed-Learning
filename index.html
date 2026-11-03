@@ -134,7 +134,7 @@ footer a{color:#FFB37E;font-weight:800;text-decoration:underline;text-underline-
     <h1>플래너를 위한 니즈환기 자료<br><span>인터랙티브 가이드</span></h1>
     <p>가입설계서로 담보설명에 집중하는 프리젠테이션은 이제그만! 니즈환기로 승부하자!!</p>
     <div class="hero-actions">
-      <div class="version-tag" id="verTag"><span class="dot"></span>v1.184</div>
+      <div class="version-tag" id="verTag"><span class="dot"></span>v1.185</div>
       <a class="hiscan-cta" href="hiscan.html" hidden style="display:none" aria-label="하이스캔 사용해보기 — 제작 이경석 전임강사">
         <span class="hc-main">🔎 하이스캔 사용해보기</span>
         <span class="hc-sub">* 제작 이경석 전임강사</span>
@@ -368,7 +368,7 @@ footer a{color:#FFB37E;font-weight:800;text-decoration:underline;text-underline-
 /* 외부 도구·시뮬레이터를 앱처럼 전체 화면으로 연다 — ← 돌아가기 · ✕ · Esc · 브라우저 뒤로가기 모두 같은 닫기 */
 (function(){
   var APPS={
-    ext:{title:'2610 퍼플약관 검색기',url:'https://hiwoojin.mycafe24.com/yk.php',sim:false},
+    ext:{title:'2610 퍼플약관 검색기',url:'https://hiwoojin.mycafe24.com/yk.php',link:'https://hiwoojin.mycafe24.com/yk.php',sim:false},
     sim:{title:'주요치료통합보장 시뮬레이터',url:'assets/sim/2610-integrated.html',sim:true,page:'sim2610.html'}
   };
   var $=function(id){return document.getElementById(id);};
@@ -383,7 +383,8 @@ footer a{color:#FFB37E;font-weight:800;text-decoration:underline;text-underline-
     var c=APPS[key]; curApp=c; y0=window.pageYOffset;
     $('eaTitle').textContent=c.title; app.setAttribute('aria-label',c.title);
     $('eaNew').href=c.page||c.url;
-    [].forEach.call(document.querySelectorAll('.ea-sim'),function(b){b.hidden=!c.sim;});
+    $('eaLink').hidden=!(c.sim||c.link);   /* 🔗 는 시뮬레이터·검색기 모두, 🖨 는 시뮬레이터만 */
+    $('eaPrint').hidden=!c.sim;
     body.innerHTML=c.sim?'':'<div class="ea-msg" id="eaMsg">불러오는 중…</div>';
     var f=document.createElement('iframe');
     f.title=c.title; f.setAttribute('allow','clipboard-write; fullscreen'); if(!c.sim)f.setAttribute('referrerpolicy','no-referrer');
@@ -410,7 +411,7 @@ footer a{color:#FFB37E;font-weight:800;text-decoration:underline;text-underline-
   $('eaBack').addEventListener('click',close);
   $('eaClose').addEventListener('click',close);
   $('eaLink').addEventListener('click',function(){
-    if(!curApp||!curApp.page)return; var url=new URL(curApp.page,location.href).href, b=this;
+    if(!curApp||!(curApp.page||curApp.link))return; var url=curApp.page?new URL(curApp.page,location.href).href:curApp.link, b=this;
     copyText(url).then(function(ok){ if(ok){b.textContent='✓';setTimeout(function(){b.textContent='🔗';},1500);} else prompt('아래 링크를 복사하세요',url); });
   });
   $('eaPrint').addEventListener('click',function(){
