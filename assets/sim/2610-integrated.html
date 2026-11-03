@@ -1753,13 +1753,22 @@
                     const first = y === firstCancer;
                     const drug = g('c2') || g('c5'), inj = g('pt_c_inj'), oral = g('pt_c_oral');
                     if (first) {
+                        /* 암추가보장(치료당) 주사제: 선항암 4회 + 후항암 나머지로 나눠 보여 준다(금액은 실제 합산을 비율로 나눔) */
+                        let injPre = null, injPost = null, injN = 0, injPreN = 0, injPostN = 0;
+                        if (inj) {
+                            injN = ptCount(inj) || 1; injPreN = Math.min(4, injN); injPostN = injN - injPreN;
+                            const u = inj.baseAmount / injN;
+                            const mk = (c, tg) => ({ label: `암추가 약물(주사제) ${tg} · ${fmt(u)}만×${c}회`, amount: inj.amount * c / injN, note: inj.note || '' });
+                            injPre = mk(injPreN, '선항암'); if (injPostN > 0) injPost = mk(injPostN, '후항암');
+                            used.add('pt_c_inj');
+                        }
                         if (drug || inj || oral || g('c3')) {
-                            const m = [take('c5', '항암 약물치료(4기) · 연 1회'), take('c2', '항암 약물치료 · 연 1회'), take('pt_c_inj'), take('pt_c_oral'), take('c3', '항암 방사선치료 · 연 1회'), take('pt_c_rad')].filter(Boolean);
+                            const m = [take('c5', '항암 약물치료(4기) · 연 1회'), take('c2', '항암 약물치료 · 연 1회'), injPre, take('c3', '항암 방사선치료 · 연 1회'), take('pt_c_rad')].filter(Boolean);
                             let t = '암 진단 후 수술 전에 암 크기를 줄이고 눈에 보이지 않는 미세전이를 없애기 위해 <b>선항암 치료</b>를 시작합니다(3주에 1번, 3~4회). 기본 세포독성 항암제는 산정특례(본인 5%) 급여이고, 면역항암제(키트루다·옵디보)를 함께 쓰면 회당 300만~400만 원 수준을 <b>전액 본인부담</b>합니다.';
                             if (drug) t += ' 항암 약물치료 보험금은 <b>연 1회</b> 지급됩니다.';
                             if (g('c5')) t += ' 4기(전이)로 진단되어 <b>4기 항암약물치료</b> 보험금이 함께 지급되며, 일반 항암 약물치료도 자동 포함됩니다.';
-                            if (inj) t += ` 표적·면역항암 <b>주사제</b>를 3주에 1번씩 선항암과 후항암을 합쳐 <b>${ptCount(inj)}회</b> 맞는 것으로 보면, 암추가보장(치료당) ${fmt(inj.baseAmount / ptCount(inj))}만 원 × ${ptCount(inj)}회가 지급됩니다.`;
-                            if (oral) t += ' 주사가 아닌 <b>경구 표적항암제(주사제 외)</b>로 치료하면 치료당 담보는 <b>연간 1회</b>만 지급됩니다.';
+                            if (inj) t += ` 표적·면역항암 <b>주사제</b>를 3주에 1번씩 맞는 것으로 보면, 선항암 <b>${injPreN}회</b>${injPostN > 0 ? ` + 후항암 <b>${injPostN}회</b> = 합계 <b>${injN}회</b>` : ''}이고, 암추가보장(치료당)은 회당 ${fmt(inj.baseAmount / injN)}만 원입니다. 선항암 ${injPreN}회분이 이 단계에 표시됩니다${injPostN > 0 ? '(나머지는 후항암 단계)' : ''}.`;
+                            if (oral) t += ' 주사가 아닌 <b>경구 표적항암제(주사제 외)</b>로 치료하면 치료당 담보는 <b>연간 1회</b>만 지급되며, 후항암 단계에 표시합니다.';
                             if (g('c3')) t += ` 수술 전 종양을 줄이기 위해 항암과 방사선을 함께 시행(동시 항암방사선)하며, 건강보험이 되지 않는 <b>비급여 양성자·중입자 치료</b>를 받으면 항암 방사선치료 보험금(연 1회)${g('pt_c_rad') ? `과 치료당 방사선 ${ptCount(g('pt_c_rad'))}회분(주 5회 기준 약 6주)` : ''}이 지급됩니다.`;
                             steps.push({ tag: '선항암', title: '수술 전 항암 치료' + (g('c3') ? ' · 방사선' : ''), text: t, money: m });
                         }
@@ -1768,7 +1777,7 @@
                         }
                         if (g('c4')) steps.push({ tag: '입원', title: '수술 후 중환자실', text: '큰 수술 직후 상태를 지켜보기 위해 종합병원 <b>중환자실</b>에 입원하면 중환자실 보험금(연 1회)이 지급됩니다.', money: [take('c4', '종합병원 중환자실 · 연 1회')] });
                         if (drug || inj || oral) {
-                            steps.push({ tag: '후항암', title: '수술 후 보조 항암 (재발 방지)', text: '수술 후 떼어낸 조직을 검사해 맞는 약을 고르고, 숨어 있는 암세포를 없애기 위해 <b>후항암</b>을 이어갑니다. 기본 세포독성 항암제 4회(급여) 후 ' + (oral ? '<b>EGFR 변이</b>가 있으면 표적항암제 <b>타그리소를 매일 3년</b> 복용합니다(월 600만~680만 원, 비급여).' : '<b>PD-L1 양성</b>이면 면역항암제(티센트릭·키트루다)를 <b>3주에 1번, 1년간 16~17회</b> 맞습니다(1년 5,000만~9,500만 원, 비급여).') + ' 같은 해의 항암 약물치료 보험금은 연 1회이므로 위 금액에 포함됩니다.', money: [] });
+                            steps.push({ tag: '후항암', title: '수술 후 보조 항암 (재발 방지)', text: '수술 후 떼어낸 조직을 검사해 맞는 약을 고르고, 숨어 있는 암세포를 없애기 위해 <b>후항암</b>을 이어갑니다. 기본 세포독성 항암제 4회(급여) 후 ' + (oral ? '<b>EGFR 변이</b>가 있으면 표적항암제 <b>타그리소를 매일 3년</b> 복용합니다(월 600만~680만 원, 비급여).' : '<b>PD-L1 양성</b>이면 면역항암제(티센트릭·키트루다)를 <b>3주에 1번, 1년간 16~17회</b> 맞습니다(1년 5,000만~9,500만 원, 비급여).') + ' 같은 해의 항암 약물치료 보험금은 연 1회이므로 위 금액에 포함됩니다.' + (injPost ? ` 암추가보장(치료당)은 후항암 주사제 <b>${injPostN}회</b>분이 지급됩니다(선항암 ${injPreN}회 + 후항암 ${injPostN}회 = 합계 ${injN}회).` : '') + (oral && g('pt_c_oral') ? ' 암추가보장(치료당)은 주사제 외라 <b>연간 1회</b>만 지급됩니다.' : ''), money: [injPost, take('pt_c_oral', '암추가 약물(주사제 외) · 연 1회')].filter(Boolean) });
                         }
                     } else {
                         if (drug || inj || oral) {
