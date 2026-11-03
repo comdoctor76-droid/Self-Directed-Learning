@@ -1728,14 +1728,19 @@
             }
             const baseYear = y => y === 1 ? '1년 미만' : y + '년차';
             function yearTitle(y) {
-                let s = '가입 후 ' + baseYear(y);
-                if (firstCancer && y >= firstCancer) {
+                const ya = claims[y] || [];
+                const hasC = ya.some(i => CANCER.includes(i.id)), hasS = ya.some(i => SIM.includes(i.id)), hasH = ya.some(i => HEART.includes(i.id));
+                const parts = [];
+                /* 그 해에 실제로 선택한 질병마다 따로 표시 — 뇌·심장은 암 발병 연차에 묻지 않고 '뇌·심장질환 N년차'로 따로 센다 */
+                if (hasC && firstCancer) {
                     const n = y - firstCancer + 1;
-                    if (firstMeta && y >= firstMeta) {
-                        s += firstMeta === firstCancer ? `(4기 전이암 발병 ${n}년차)` : `(4기 재발암 발병 ${y - firstMeta + 1}년차)`;
-                    } else s += `(암발병 ${n}년차, 원발암)`;
-                } else if (firstSim && y >= firstSim) s += `(유사암 발병 ${y - firstSim + 1}년차)`;
-                else if (firstHeart && y >= firstHeart) s += `(뇌·심장질환 발병 ${y - firstHeart + 1}년차)`;
+                    if (firstMeta && y >= firstMeta) parts.push(firstMeta === firstCancer ? `4기 전이암 발병 ${n}년차` : `4기 재발암 발병 ${y - firstMeta + 1}년차`);
+                    else parts.push(`암발병 ${n}년차, 원발암`);
+                }
+                if (hasS && firstSim) parts.push(`유사암 발병 ${y - firstSim + 1}년차`);
+                if (hasH && firstHeart) parts.push(`뇌·심장질환 발병 ${y - firstHeart + 1}년차`);
+                let s = '가입 후 ' + baseYear(y);
+                if (parts.length) s += '(' + parts.join(' · ') + ')';
                 return s;
             }
             const unit = PER_TX_UNIT[currentPlan];
