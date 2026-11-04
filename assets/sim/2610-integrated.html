@@ -647,6 +647,10 @@
                     <span class="text-slate-500">예) 비급여 항암방사선 5천만 원 → 레벨업 후 6천만 원 (120%)</span>
                 </div>
                 <div>
+                    <strong class="text-blue-700 bg-white border border-blue-200 px-1.5 py-0.5 rounded mr-1">통장 한도 상향</strong>
+                    레벨업이 적용되면 <b>10년 차 이후 통장 총 한도도 10억 → 12억</b>(5억 → 6억)으로 늘어납니다.
+                </div>
+                <div>
                     <strong class="text-fuchsia-700 bg-white border border-fuchsia-200 px-1.5 py-0.5 rounded mr-1">암추가보장(치료당) 1,000%</strong>
                     <b>치료당</b> 담보(암추가보장 특약)는 레벨업 후 <b>1,000%(10배)</b>로 상향됩니다.
                     <span class="text-slate-500">예) 치료당 20만 원 → 레벨업 후 200만 원(10억 기준) / 10만 원 → 100만 원(5억 기준). 주사제 17회 청구 시 200만 × 17회 = 3,400만 원</span>
@@ -925,20 +929,32 @@
             return (INITIAL_BALANCE - totalUpTo9) >= (INITIAL_BALANCE * 0.9);
         }
 
+        // 통장 총 한도: 레벨업이 적용된 10년 차 이후에는 10억→12억(5억→6억). 레벨업 판정(checkLevelUp)은 기존 한도 기준 그대로
+        function getLimit(y) {
+            if (y == null) y = currentYear;
+            return (y >= 10 && TERM === 20 && checkLevelUp()) ? INITIAL_BALANCE * 1.2 : INITIAL_BALANCE;
+        }
+
         function recalculateLevelUpYears() {
             const isLevelUp = checkLevelUp();
-            // 10~20년차에 담긴 항목들의 금액을 레벨업 여부에 따라 재조정
-            for(let i=10; i<=20; i++) {
+            // 1~9년차 사용액부터 누적하면서, 10~20년차 항목은 레벨업 여부에 따라 금액을 다시 계산하고 통장 한도(레벨업이면 12억) 안으로 맞춘다
+            let running = 0;
+            for (let i = 1; i <= 9; i++) claims[i].forEach(item => running += item.amount);
+            for (let i = 10; i <= 20; i++) {
+                const lim = getLimit(i);
                 claims[i].forEach(item => {
                     let amt = item.baseAmount;
                     let nt = "";
-                    if(isLevelUp) {
+                    if (isLevelUp) {
                         const m = item.levelMult || 1.2;   // 치료당(암추가보장)은 1,000%
                         amt = item.baseAmount * m;
                         nt = m === 10 ? "레벨업 1,000% 적용" : "120% 상향적용";
                     }
+                    const room = Math.max(0, lim - running);
+                    if (amt > room) { amt = room; nt += (nt ? ", " : "") + "잔고 부족으로 남은 전액 차감"; }
                     item.amount = amt;
                     item.note = nt;
+                    running += amt;
                 });
             }
         }
@@ -969,13 +985,14 @@
             }
 
             let currentTotal = getTotalClaimed();
-            if (currentTotal >= INITIAL_BALANCE) {
+            const LIM = getLimit(currentYear);
+            if (currentTotal >= LIM) {
                 showModal("잔고 부족", "통장 잔고가 0원입니다. 더 이상 보장을 추가할 수 없습니다.");
                 return false;
             }
 
-            if (currentTotal + amount > INITIAL_BALANCE) {
-                amount = INITIAL_BALANCE - currentTotal; // 남은 전액
+            if (currentTotal + amount > LIM) {
+                amount = LIM - currentTotal; // 남은 전액
                 note += (note ? ", " : "") + "잔고 부족으로 남은 전액 차감";
             }
 
@@ -1122,7 +1139,8 @@
         // 전체 렌더링 컨트롤러
         function renderAll() {
             const totalClaimed = getTotalClaimed();
-            const currentBalance = Math.max(0, INITIAL_BALANCE - totalClaimed);
+            const LIMIT = getLimit(), levelLimit = LIMIT > INITIAL_BALANCE;
+            const currentBalance = Math.max(0, LIMIT - totalClaimed);
             
             // 1. 잔고 및 프로그레스 바 업데이트
             const display = document.getElementById('balanceDisplay');
@@ -1135,12 +1153,13 @@
             
             display.innerText = currentBalance.toLocaleString();
             
-            const percentage = (currentBalance / INITIAL_BALANCE) * 100;
+            const percentage = (currentBalance / LIMIT) * 100;
             const usedPct = 100 - percentage;
             bar.style.width = percentage + '%';
             progressText.innerText = percentage >= 8 ? percentage.toFixed(1) + '%' : '';
             document.getElementById('balanceRatio').innerHTML =
-                `(<span class="text-hd-600">잔여 ${percentage.toFixed(1)}%</span> / <span class="text-slate-500">사용 ${usedPct.toFixed(1)}%</span>)`;
+                `(<span class="text-hd-600">잔여 ${percentage.toFixed(1)}%</span> / <span class="text-slate-500">사용 ${usedPct.toFixed(1)}%</span>)` +
+                (levelLimit ? ` <span class="text-blue-600">· 레벨업 한도 ${LIMIT.toLocaleString()}만 원</span>` : '');
             
             if(percentage > 50) {
                 bar.className = "bg-gradient-to-r from-hd-500 to-orange-400 h-8 progress-bar-fill flex items-center justify-end px-2 whitespace-nowrap";
@@ -1179,7 +1198,7 @@
             if (usedTotal > 0) {
                 const wrap = document.createElement('div');
                 wrap.className = 'h-full flex relative used-block transition-all';
-                wrap.style.width = Math.min(100, (usedTotal / INITIAL_BALANCE) * 100) + '%';
+                wrap.style.width = Math.min(100, (usedTotal / LIMIT) * 100) + '%';
                 for (const [cat, amt] of Object.entries(usedByCategory)) {
                     if (amt > 0) {
                         const block = document.createElement('div');
@@ -1550,8 +1569,9 @@
                     if (y === 1 && !sim) { amount = baseAmount * 0.5; note = '1년 미만 50% 감액'; }
                     else if (levelUp) { amount = baseAmount * 10; note = '레벨업 1,000% 적용'; }
                     const total = getTotalClaimed();
-                    if (total >= INITIAL_BALANCE) return;
-                    if (total + amount > INITIAL_BALANCE) { amount = INITIAL_BALANCE - total; note += (note ? ', ' : '') + '잔고 부족으로 남은 전액 차감'; }
+                    const LIM = getLimit(y);
+                    if (total >= LIM) return;
+                    if (total + amount > LIM) { amount = LIM - total; note += (note ? ', ' : '') + '잔고 부족으로 남은 전액 차감'; }
                     arr.push({ id: 'pt_' + (sim ? 's_' : 'c_') + kind, name: (sim ? '유사암 ' : '') + '암추가 ' + k.label + ' ' + fmtMan(u) + '만×' + n + '회',
                                baseAmount, amount, category: 'pertx', note, autoAddedBy: 'pertx', kind, sim, levelMult: 10 });
                 });
@@ -1995,15 +2015,15 @@
         }
 
         function render() {
-            const total = getTotalClaimed(), bal = Math.max(0, INITIAL_BALANCE - total);
-            const pct = bal / INITIAL_BALANCE * 100;
+            const total = getTotalClaimed(), LIM = getLimit(), bal = Math.max(0, LIM - total);
+            const pct = bal / LIM * 100;
             $('mBal').textContent = bal.toLocaleString();
             $('mRatio').textContent = `(잔여 ${pct.toFixed(1)}% / 사용 ${(100 - pct).toFixed(1)}%)`;
             $('mBarFill').style.width = pct + '%';
             $('mPlanTag').textContent = `${currentPlan} · ${TERM}년${perTxOn ? ' · 암추가' : ''}`;
             const lvEl = $('mLv');
             lvEl.classList.toggle('on', lvNow());
-            lvEl.textContent = lvNow() ? '⬆ 레벨업 적용 중 — 일반 보장 120%, 치료당 1,000%' : '';
+            lvEl.textContent = lvNow() ? '⬆ 레벨업 적용 중 — 일반 보장 120%, 치료당 1,000%' + (LIM > INITIAL_BALANCE ? ', 통장 한도 ' + (LIM / 10000).toLocaleString() + '억' : '') : '';
 
             // 연차 칩
             let yh = '';
@@ -2100,7 +2120,7 @@
         }
         function fillChart() {
             const src = $('yearlySummaryBox');
-            $('mSheetBody').innerHTML = `<button type="button" class="nv-btn" style="width:100%;padding:10px;margin-bottom:10px;font-size:14px" onclick="mOpenSheet('narr')">📝 부연설명 필요</button><div class="m-opt-t">연도별 보장금액 합산 · 현재 잔고 ${Math.max(0, INITIAL_BALANCE - getTotalClaimed()).toLocaleString()}만</div>` + src.innerHTML +
+            $('mSheetBody').innerHTML = `<button type="button" class="nv-btn" style="width:100%;padding:10px;margin-bottom:10px;font-size:14px" onclick="mOpenSheet('narr')">📝 부연설명 필요</button><div class="m-opt-t">연도별 보장금액 합산 · 현재 잔고 ${Math.max(0, getLimit() - getTotalClaimed()).toLocaleString()}만</div>` + src.innerHTML +
                 '<div class="m-hint">막대를 한 번 누르면 내용, 한 번 더 누르면 삭제</div>';
         }
         window.mOpenSheet = function (kind) {
@@ -2269,7 +2289,7 @@
             c.font = F(700, 25); c.fillStyle = '#FFB37E';
             const d = new Date(), ds = `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
             c.fillText(`${currentPlan} 한도 · ${TERM}년 갱신${perTxOn ? ' · 암추가보장(치료당) 가입' : ''}  |  ${ds}`, PAD, 115);
-            const used = getTotalClaimed(), bal = Math.max(0, INITIAL_BALANCE - used), pct = bal / INITIAL_BALANCE * 100;
+            const used = getTotalClaimed(), LIM = getLimit(), bal = Math.max(0, LIM - used), pct = bal / LIM * 100;
             c.fillStyle = '#fff'; rr(c, PAD, 166, W - PAD * 2, 210, 22); c.fill();
             c.fillStyle = '#64748b'; c.font = F(700, 25); c.fillText('현재 통장 잔고', PAD + 28, 212);
             c.fillStyle = '#e65c00'; c.font = F(900, 62); c.fillText(bal.toLocaleString(), PAD + 28, 282);
@@ -2319,7 +2339,7 @@
             const d = new Date(), ds = `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
             c.fillStyle = '#FFB37E'; c.font = F(700, 24);
             c.fillText(`${currentPlan} 한도 · ${TERM}년 갱신${perTxOn ? ' · 암추가보장(치료당) 가입' : ''}  |  출력일 ${ds}`, PAD, 101);
-            const used = getTotalClaimed(), bal = Math.max(0, INITIAL_BALANCE - used), pct = bal / INITIAL_BALANCE * 100;
+            const used = getTotalClaimed(), LIM = getLimit(), bal = Math.max(0, LIM - used), pct = bal / LIM * 100;
             c.font = F(900, 50); const bs = `잔고 ${bal.toLocaleString()}만원`; c.fillStyle = '#fff'; c.fillText(bs, W - PAD - c.measureText(bs).width, 64);
             c.font = F(700, 23); const us = `총 사용 ${fmt(used)}만 원 · 잔여 ${pct.toFixed(1)}% / 사용 ${(100 - pct).toFixed(1)}%`;
             c.fillStyle = '#cbd5e1'; c.fillText(us, W - PAD - c.measureText(us).width, 101);
