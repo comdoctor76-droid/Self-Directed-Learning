@@ -1139,7 +1139,7 @@
         // 전체 렌더링 컨트롤러
         function renderAll() {
             const totalClaimed = getTotalClaimed();
-            const LIMIT = getLimit(), levelLimit = LIMIT > INITIAL_BALANCE;
+            const LIMIT = getLimit();
             const currentBalance = Math.max(0, LIMIT - totalClaimed);
             
             // 1. 잔고 및 프로그레스 바 업데이트
@@ -1158,8 +1158,7 @@
             bar.style.width = percentage + '%';
             progressText.innerText = percentage >= 8 ? percentage.toFixed(1) + '%' : '';
             document.getElementById('balanceRatio').innerHTML =
-                `(<span class="text-hd-600">잔여 ${percentage.toFixed(1)}%</span> / <span class="text-slate-500">사용 ${usedPct.toFixed(1)}%</span>)` +
-                (levelLimit ? ` <span class="text-blue-600">· 레벨업 한도 ${LIMIT.toLocaleString()}만 원</span>` : '');
+                `(<span class="text-hd-600">잔여 ${percentage.toFixed(1)}%</span> / <span class="text-slate-500">사용 ${usedPct.toFixed(1)}%</span>)`;
             
             if(percentage > 50) {
                 bar.className = "bg-gradient-to-r from-hd-500 to-orange-400 h-8 progress-bar-fill flex items-center justify-end px-2 whitespace-nowrap";
