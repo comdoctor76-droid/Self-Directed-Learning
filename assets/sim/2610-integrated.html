@@ -72,16 +72,18 @@
         #PRINTAREA { display: none; }
         @media print {
             @page { size: A4 landscape; margin: 8mm; }
+            @page graph { size: A4 landscape; margin: 8mm; }   /* 그래프 쪽: 가로 */
+            @page narr { size: A4 portrait; margin: 12mm; }    /* 부연설명 쪽: 세로 */
             body > *:not(#PRINTAREA) { display: none !important; }
             body { background: #fff !important; padding: 0 !important; overflow: visible !important; }
             #PRINTAREA { display: block !important; }
-            #PRINTAREA img { display: block; width: auto; height: auto; max-width: 100%; max-height: 190mm; margin: 0 auto; }
+            #PRINTAREA img { page: graph; display: block; width: auto; height: auto; max-width: 100%; max-height: 190mm; margin: 0 auto; }
             #PRINTAREA img:not(:last-of-type) { break-after: page; page-break-after: always; }
-            #PRINT_NARR { break-before: page; columns: 2; column-gap: 8mm; font-family: 'Noto Sans KR', sans-serif; }
-            #PRINT_NARR .nv-tt { column-span: all; font-size: 15pt; margin-bottom: 4mm; }
+            #PRINT_NARR { page: narr; break-before: page; font-family: 'Noto Sans KR', sans-serif; }
+            #PRINT_NARR .nv-tt { font-size: 15pt; margin-bottom: 4mm; }
             #PRINT_NARR .nv-card { margin-bottom: 4mm; }
             #PRINT_NARR .nv-h { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            #PRINT_NARR .nv-step p, #PRINT_NARR .nv-step li { font-size: 9pt; }
+            #PRINT_NARR .nv-step p, #PRINT_NARR .nv-step li { font-size: 9.5pt; }
             #PRINT_NARR .nv-step ul { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
         /* ═══════ 휴대폰 전용 앱 화면 ═══════ */
@@ -2264,19 +2266,22 @@
         /* ═══ A4 가로 출력 쪽 (PC 인쇄 · 휴대폰 보내기/사진 저장 공통) ═══
            한 장짜리 긴 그림 대신 A4 가로 용지 한 장 크기(2339×1654, 200dpi)의 그림 여러 장으로 만든다:
            그래프(연차 카드) 쪽 → 부연설명 쪽(휴대폰 보내기에만. PC 인쇄는 부연설명을 글자로 따로 인쇄) */
-        const PG = { W: 2339, H: 1654 };
+        const PG = { W: 2339, H: 1654 };      // 그래프 쪽: A4 가로
+        const PGP = { W: 1654, H: 2339 };     // 부연설명 쪽: A4 세로
         const FNT = (w, sz) => `${w} ${sz}px 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif`;
         const todayStr = () => { const d = new Date(); return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`; };
         const NOTE_TXT = '※ 교육용 시뮬레이션 결과이며, 실제 보험금 지급은 약관 및 심사 기준에 따릅니다.';
-        function pageCanvas(bg) { const cv = document.createElement('canvas'); cv.width = PG.W; cv.height = PG.H; const c = cv.getContext('2d'); c.fillStyle = bg || '#f8fafc'; c.fillRect(0, 0, PG.W, PG.H); return { cv, c }; }
+        function pageCanvas(bg, dim) { dim = dim || PG; const cv = document.createElement('canvas'); cv.width = dim.W; cv.height = dim.H; const c = cv.getContext('2d'); c.fillStyle = bg || '#f8fafc'; c.fillRect(0, 0, dim.W, dim.H); c.__dim = dim; return { cv, c }; }
         function drawFoot(c, no, total, label) {
-            c.fillStyle = '#94a3b8'; c.font = FNT(700, 20); c.fillText(NOTE_TXT, 50, PG.H - 26);
-            c.fillStyle = '#64748b'; c.font = FNT(800, 22); const t = `${label ? label + '  ·  ' : ''}${no} / ${total}`; c.fillText(t, PG.W - 50 - c.measureText(t).width, PG.H - 26);
+            const D = c.__dim || PG;
+            c.fillStyle = '#94a3b8'; c.font = FNT(700, D.W < D.H ? 17 : 20); c.fillText(NOTE_TXT, 50, D.H - 26);
+            c.fillStyle = '#64748b'; c.font = FNT(800, 22); const t = `${label ? label + '  ·  ' : ''}${no} / ${total}`; c.fillText(t, D.W - 50 - c.measureText(t).width, D.H - 26);
         }
         function drawMiniHead(c, title) {
-            c.fillStyle = '#1A2744'; c.fillRect(0, 0, PG.W, 86);
+            const D = c.__dim || PG;
+            c.fillStyle = '#1A2744'; c.fillRect(0, 0, D.W, 86);
             c.fillStyle = '#fff'; c.font = FNT(900, 36); c.fillText(title, 50, 56);
-            c.fillStyle = '#FFB37E'; c.font = FNT(700, 22); const t = `${currentPlan} 한도 · ${TERM}년 갱신${perTxOn ? ' · 암추가보장(치료당)' : ''}  |  ${todayStr()}`; c.fillText(t, PG.W - 50 - c.measureText(t).width, 54);
+            c.fillStyle = '#FFB37E'; c.font = FNT(700, D.W < D.H ? 19 : 22); const t = `${currentPlan} 한도 · ${TERM}년 갱신${perTxOn ? ' · 암추가보장(치료당)' : ''}  |  ${todayStr()}`; c.fillText(t, D.W - 50 - c.measureText(t).width, 54);
         }
         // 첫 쪽 머리: 제목, 잔고, 잔고 막대, 가입 후 경과 기간 띠
         function drawReportHead(c) {
@@ -2324,8 +2329,8 @@
         // 부연설명 쪽: 2단으로 흘려 쓰고, 단·쪽이 바뀌면 연차 제목을 '(계속)'으로 다시 붙인다
         function narrativePlan() {
             if (!window.narrativeLayout) return [];
-            const PAD = 50, GAPC = 44, TOP = 118, BOT = 70, K = 1.18;
-            const colW = (PG.W - PAD * 2 - GAPC) / 2;
+            const PAD = 56, GAPC = 0, TOP = 118, BOT = 70, K = 1.12;
+            const colW = PGP.W - PAD * 2;
             const NL = narrativeLayout(document.createElement('canvas').getContext('2d'), FNT, colW, K);
             const ops = NL.ops.filter(o => o.kind !== 'title');
             if (!ops.length || !(window.buildNarrative && buildNarrative().length)) return [];
@@ -2339,12 +2344,12 @@
                 else cur.ops.push(o);
             });
             blocks.forEach((b, i) => { b.y1 = i + 1 < blocks.length ? blocks[i + 1].y0 : NL.height - 10 * K; b.h = b.y1 - b.y0; });
-            const pages = []; let pg = { items: [] }, col = 0, y = TOP; const limit = PG.H - BOT, headH = 52 * K;
-            const next = () => { if (col === 0) { col = 1; y = TOP; } else { pages.push(pg); pg = { items: [] }; col = 0; y = TOP; } };
+            const pages = []; let pg = { items: [] }, col = 0, y = TOP; const limit = PGP.H - BOT, headH = 52 * K;
+            const next = () => { pages.push(pg); pg = { items: [] }; col = 0; y = TOP; };   // 세로 쪽은 1단 — 넘치면 다음 쪽
             blocks.forEach(b => {
                 if (y > TOP && y + b.h > limit) next();
                 let cont = null;
-                if (y === TOP && b.parent && pages.length + col > 0) { cont = b.parent; }
+                if (y === TOP && b.parent && pages.length > 0) { cont = b.parent; }
                 if (cont && y + headH + b.h > limit && y > TOP) next();
                 pg.items.push({ b, col, y, cont });
                 y += (cont ? headH : 0) + b.h;
@@ -2387,7 +2392,7 @@
             const rp = reportPlan(), np = narrativePlan(), nr = rp.pages.length, nn = np.pages ? np.pages.length : 0, total = nr + nn, out = [];
             const toBlob = cv => new Promise(res => cv.toBlob(b => res({ blob: b, url: URL.createObjectURL(b), w: cv.width, h: cv.height }), 'image/jpeg', 0.93));
             for (let i = 0; i < nr; i++) { const { cv, c } = pageCanvas(); drawReportPage(c, rp, rp.pages[i], i, total); out.push(await toBlob(cv)); cv.width = cv.height = 1; }
-            for (let i = 0; i < nn; i++) { const { cv, c } = pageCanvas('#ffffff'); drawNarrativePage(c, np, np.pages[i], nr + i + 1, total); out.push(await toBlob(cv)); cv.width = cv.height = 1; }
+            for (let i = 0; i < nn; i++) { const { cv, c } = pageCanvas('#ffffff', PGP); drawNarrativePage(c, np, np.pages[i], nr + i + 1, total); out.push(await toBlob(cv)); cv.width = cv.height = 1; }
             out.counts = { report: nr, narr: nn };
             return out;
         }
@@ -2396,7 +2401,7 @@
             const enc = new TextEncoder(), parts = [], off = [];
             let len = 0;
             const push = x => { const b = typeof x === 'string' ? enc.encode(x) : x; parts.push(b); len += b.length; };
-            const PW = 841.89, PH = 595.28, n = pages.length;
+            const n = pages.length;
             push(new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2D, 0x31, 0x2E, 0x34, 0x0A, 0x25, 0xE2, 0xE3, 0xCF, 0xD3, 0x0A]));   // %PDF-1.4 + 바이너리 표시
             const obj = (id, body) => { off[id] = len; push(`${id} 0 obj\n`); body(); push('\nendobj\n'); };
             const kids = pages.map((_, i) => `${3 + 3 * i} 0 R`).join(' ');
@@ -2405,6 +2410,7 @@
             for (let i = 0; i < n; i++) {
                 const pid = 3 + 3 * i, cid = pid + 1, iid = pid + 2;
                 const bytes = new Uint8Array(await pages[i].blob.arrayBuffer());
+                const PW = +(pages[i].w * 72 / 200).toFixed(2), PH = +(pages[i].h * 72 / 200).toFixed(2);   // 200dpi 그림 → 포인트(그래프 가로, 부연설명 세로)
                 const cs = `q ${PW} 0 0 ${PH} 0 0 cm /Im0 Do Q`;
                 obj(pid, () => push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PW} ${PH}] /Resources << /XObject << /Im0 ${iid} 0 R >> >> /Contents ${cid} 0 R >>`));
                 obj(cid, () => push(`<< /Length ${cs.length} >>\nstream\n${cs}\nendstream`));
@@ -2452,7 +2458,7 @@
             const canShare = !!(navigator.canShare && navigator.canShare({ files: [pdf] }));
             const cnt = pages.counts, mb = (pdfBlob.size / 1048576).toFixed(1);
             document.getElementById('mSheetBody').innerHTML =
-                `<div class="m-hint" style="text-align:left;line-height:1.6;margin-bottom:8px"><b>PDF 1개</b> · A4 가로 ${pages.length}쪽 (그래프 ${cnt.report}쪽 + 부연설명 ${cnt.narr}쪽) · ${mb}MB<br>PC 출력물과 같은 모양이며 그대로 A4에 인쇄할 수 있는 고해상도입니다.</div>` +
+                `<div class="m-hint" style="text-align:left;line-height:1.6;margin-bottom:8px"><b>PDF 1개</b> · A4 ${pages.length}쪽 (그래프 가로 ${cnt.report}쪽 + 부연설명 세로 ${cnt.narr}쪽) · ${mb}MB<br>PC 출력물과 같은 모양이며 그대로 A4에 인쇄할 수 있는 고해상도입니다.</div>` +
                 `<div class="m-seg" style="margin-bottom:8px">` +
                 (canShare ? `<button type="button" class="on" id="mShareGo">💬 카톡으로 보내기<small>PDF 파일 · 공유창에서 카카오톡 선택</small></button>` : '') +
                 `<button type="button" id="mSaveGo"${canShare ? '' : ' class="on"'}>📄 PDF로 저장<small>내 휴대폰·파일 앱에 저장</small></button></div>` +
