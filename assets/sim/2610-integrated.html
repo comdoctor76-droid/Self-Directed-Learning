@@ -76,6 +76,7 @@
             body { background: #fff !important; padding: 0 !important; overflow: visible !important; }
             #PRINTAREA { display: block !important; }
             #PRINTAREA img { display: block; width: auto; height: auto; max-width: 100%; max-height: 190mm; margin: 0 auto; }
+            #PRINTAREA img:not(:last-of-type) { break-after: page; page-break-after: always; }
             #PRINT_NARR { break-before: page; columns: 2; column-gap: 8mm; font-family: 'Noto Sans KR', sans-serif; }
             #PRINT_NARR .nv-tt { column-span: all; font-size: 15pt; margin-bottom: 4mm; }
             #PRINT_NARR .nv-card { margin-bottom: 4mm; }
@@ -1854,41 +1855,34 @@
                 '</div>').join('') + `<div class="nv-note">${NOTE}</div>`;
         };
         // 캔버스용(결과 그림): 줄바꿈 처리된 텍스트 배치
-        window.narrativeLayout = function (c, F, W) {
+        window.narrativeLayout = function (c, F0, W, K) {
+            K = K || 1;
+            const F = (w, sz) => F0(w, Math.round(sz * K));
             const strip = h => h.replace(/<[^>]+>/g, '');
             const wrap = (t, font, maxW) => { c.font = font; const lines = []; let cur = ''; for (const ch of t) { const tr = cur + ch; if (c.measureText(tr).width > maxW && cur) { const sp = cur.lastIndexOf(' '); if (sp > cur.length - 8 && sp > 0) { lines.push(cur.slice(0, sp)); cur = cur.slice(sp + 1) + ch; } else { lines.push(cur); cur = ch; } } else cur = tr; } if (cur) lines.push(cur); return lines; };
             const ops = []; let h = 0;
-            const add = (kind, text, font, color, lh, extra) => { ops.push({ kind, text, font, color, y: h, ...extra }); h += lh; };
+            const add = (kind, text, font, color, lh, extra) => { ops.push({ kind, text, font, color, y: h, ...extra }); h += lh * K; };
             add('title', '📝 연도별 부연설명', F(900, 32), '#1A2744', 56);
             build().forEach(card => {
                 add('card', card.label, F(900, 22), '#ffffff', 52, { right: `합계 ${fmt(card.total)}만 원` });
                 card.steps.forEach((s, k) => {
                     add('step', `${k + 1}. [${s.tag}] ${s.title}`, F(800, 22), '#C94F0A', 36);
-                    wrap(strip(s.text), F(500, 20), W - 30).forEach(l => add('text', l, F(500, 20), '#334155', 31, { indent: 14 }));
-                    s.money.forEach(m => add('money', `· ${m.label}  ${fmt(m.amount)}만 원${m.note ? ' (' + m.note + ')' : ''}`, F(800, 20), '#e65c00', 31, { indent: 14 }));
-                    h += 8;
+                    wrap(strip(s.text), F(500, 20), W - 30 * K).forEach(l => add('text', l, F(500, 20), '#334155', 31, { indent: 14 * K }));
+                    s.money.forEach(m => add('money', `· ${m.label}  ${fmt(m.amount)}만 원${m.note ? ' (' + m.note + ')' : ''}`, F(800, 20), '#e65c00', 31, { indent: 14 * K }));
+                    h += 8 * K;
                 });
-                h += 14;
+                h += 14 * K;
             });
-            wrap(NOTE, F(600, 17), W).forEach(l => add('text', l, F(600, 17), '#94a3b8', 26));
-            return { ops, height: h + 10 };
+            wrap(NOTE, F(600, 17), W).forEach(l => add('text', l, F(600, 17), '#94a3b8', 26, { note: true }));
+            return { ops, height: h + 10 * K, K };
         };
-        // PC: 버튼을 켜 두면 계속 표시 (상태 기억)
-        let pcOn = false; try { pcOn = localStorage.getItem('sim_narr_on') === '1'; } catch (e) {}
-        window.renderNarrPC = function () {
-            const box = document.getElementById('narrativeBox'), b = document.getElementById('narrBtn');
-            if (!box || !b) return;
-            box.classList.toggle('hidden', !pcOn); b.classList.toggle('on', pcOn);
-            b.textContent = pcOn ? '📝 부연설명 닫기' : '📝 부연설명 필요';
-            if (pcOn) box.innerHTML = '<h3 class="nv-tt">📝 연도별 부연설명 <small>선택한 담보를 치료 흐름 순서로 풀어 쓴 설명입니다</small></h3>' + narrativeHtml();
-        };
-        window.toggleNarrPC = function () { pcOn = !pcOn; try { localStorage.setItem('sim_narr_on', pcOn ? '1' : '0'); } catch (e) {} renderNarrPC(); if (pcOn) document.getElementById('narrativeBox').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
         window.narrativeDraw = function (c, L, X, Y, W) {
+            const K = L.K || 1;
             L.ops.forEach(o => {
-                if (o.kind === 'card') { c.fillStyle = '#1A2744'; c.beginPath(); c.roundRect ? c.roundRect(X, Y + o.y, W, 42, 10) : c.rect(X, Y + o.y, W, 42); c.fill(); }
+                if (o.kind === 'card') { c.fillStyle = '#1A2744'; c.beginPath(); c.roundRect ? c.roundRect(X, Y + o.y, W, 42 * K, 10) : c.rect(X, Y + o.y, W, 42 * K); c.fill(); }
                 c.font = o.font; c.fillStyle = o.color;
-                c.fillText(o.text, X + (o.indent || 0) + (o.kind === 'card' ? 16 : 0), Y + o.y + (o.kind === 'card' ? 29 : 24));
-                if (o.right) { c.save(); c.textAlign = 'right'; c.fillStyle = '#FFB27A'; c.fillText(o.right, X + W - 16, Y + o.y + 29); c.restore(); }
+                c.fillText(o.text, X + (o.indent || 0) + (o.kind === 'card' ? 16 : 0), Y + o.y + (o.kind === 'card' ? 29 : 24) * K);
+                if (o.right) { c.save(); c.textAlign = 'right'; c.fillStyle = '#FFB27A'; c.fillText(o.right, X + W - 16, Y + o.y + 29 * K); c.restore(); }
             });
         };
     })();
@@ -2267,85 +2261,36 @@
             });
         }
 
-        async function makeImage() {
-            try { await document.fonts.ready; } catch (e) {}
-            const W = 1080, PAD = 40, HEAD = 410, FOOT = 110, COLGAP = 16, CARD_HEAD = 62, CARD_PAD = 22, ROWGAP = 16;
-            const CW = (W - PAD * 2 - COLGAP) / 2;
-            const L = layout(CW);
-            const rows = []; for (let i = 0; i < L.length; i += 2) rows.push(L.slice(i, i + 2));
-            const rowH = r => CARD_HEAD + Math.max(...r.map(s => s.bodyH)) + CARD_PAD;
-            const F = (w, s) => `${w} ${s}px 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif`;
-            // 부연설명(결과 그림에는 항상 포함): 높이를 먼저 잰다
-            const NL = window.narrativeLayout ? narrativeLayout(document.createElement('canvas').getContext('2d'), F, W - PAD * 2 - 40) : { ops: [], height: 0 };
-            const NARR_H = NL.height ? NL.height + 60 : 0;
-            const H = HEAD + rows.reduce((a, r) => a + rowH(r) + ROWGAP, 0) + NARR_H + FOOT;
-            const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
-            const c = cv.getContext('2d');
-            c.fillStyle = '#f8fafc'; c.fillRect(0, 0, W, H);
-            // ── 머리
-            c.fillStyle = '#1A2744'; c.fillRect(0, 0, W, 140);
-            c.fillStyle = '#fff'; c.font = F(900, 42); c.fillText('2610 주요치료통합보장 시뮬레이션', PAD, 70);
-            c.font = F(700, 25); c.fillStyle = '#FFB37E';
-            const d = new Date(), ds = `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
-            c.fillText(`${currentPlan} 한도 · ${TERM}년 갱신${perTxOn ? ' · 암추가보장(치료당) 가입' : ''}  |  ${ds}`, PAD, 115);
-            const used = getTotalClaimed(), LIM = getLimit(), bal = Math.max(0, LIM - used), pct = bal / LIM * 100;
-            c.fillStyle = '#fff'; rr(c, PAD, 166, W - PAD * 2, 210, 22); c.fill();
-            c.fillStyle = '#64748b'; c.font = F(700, 25); c.fillText('현재 통장 잔고', PAD + 28, 212);
-            c.fillStyle = '#e65c00'; c.font = F(900, 62); c.fillText(bal.toLocaleString(), PAD + 28, 282);
-            const bw = c.measureText(bal.toLocaleString()).width;
-            c.font = F(800, 29); c.fillText('만원', PAD + 38 + bw, 282);
-            c.fillStyle = '#475569'; c.font = F(700, 24);
-            c.fillText(`총 사용 ${fmt(used)}만 원 · 잔여 ${pct.toFixed(1)}% / 사용 ${(100 - pct).toFixed(1)}%`, PAD + 28, 326);
-            c.fillStyle = '#334155'; rr(c, PAD + 28, 344, W - PAD * 2 - 56, 14, 7); c.fill();
-            c.fillStyle = '#ff6600'; rr(c, PAD + 28, 344, Math.max(14, (W - PAD * 2 - 56) * pct / 100), 14, 7); c.fill();
-            // ── 연차 카드: 두 칸씩 (1·2년, 3·4년 …)
-            let Y = HEAD;
-            rows.forEach(r => {
-                const RH = rowH(r);
-                r.forEach((s, ci) => drawCard(c, F, s, PAD + ci * (CW + COLGAP), Y, CW, RH, CARD_HEAD));
-                Y += RH + ROWGAP;
-            });
-            // ── 부연설명
-            if (NARR_H) {
-                const ny = H - FOOT - NARR_H + 10;
-                c.fillStyle = '#fff'; rr(c, PAD, ny, W - PAD * 2, NARR_H - 20, 18); c.fill();
-                narrativeDraw(c, NL, PAD + 20, ny + 14, W - PAD * 2 - 40);
-            }
-            // ── 꼬리
-            c.fillStyle = '#94a3b8'; c.font = F(700, 21);
-            c.fillText('※ 교육용 시뮬레이션 결과이며, 실제 보험금 지급은 약관 및 심사 기준에 따릅니다.', PAD, H - 62);
-            c.fillText('스스로 학습하기 · 2610 주요치료통합보장 시뮬레이터', PAD, H - 30);
-            return new Promise(res => cv.toBlob(b => res({ blob: b, url: cv.toDataURL('image/png') }), 'image/png'));
+        /* ═══ A4 가로 출력 쪽 (PC 인쇄 · 휴대폰 보내기/사진 저장 공통) ═══
+           한 장짜리 긴 그림 대신 A4 가로 용지 한 장 크기(2339×1654, 200dpi)의 그림 여러 장으로 만든다:
+           그래프(연차 카드) 쪽 → 부연설명 쪽(휴대폰 보내기에만. PC 인쇄는 부연설명을 글자로 따로 인쇄) */
+        const PG = { W: 2339, H: 1654 };
+        const FNT = (w, sz) => `${w} ${sz}px 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif`;
+        const todayStr = () => { const d = new Date(); return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`; };
+        const NOTE_TXT = '※ 교육용 시뮬레이션 결과이며, 실제 보험금 지급은 약관 및 심사 기준에 따릅니다.';
+        function pageCanvas(bg) { const cv = document.createElement('canvas'); cv.width = PG.W; cv.height = PG.H; const c = cv.getContext('2d'); c.fillStyle = bg || '#f8fafc'; c.fillRect(0, 0, PG.W, PG.H); return { cv, c }; }
+        function drawFoot(c, no, total, label) {
+            c.fillStyle = '#94a3b8'; c.font = FNT(700, 20); c.fillText(NOTE_TXT, 50, PG.H - 26);
+            c.fillStyle = '#64748b'; c.font = FNT(800, 22); const t = `${label ? label + '  ·  ' : ''}${no} / ${total}`; c.fillText(t, PG.W - 50 - c.measureText(t).width, PG.H - 26);
         }
-
-        // ── PC 인쇄용 가로 보고서: 상단 연차 띠(선택 연차 색 표시) + 연차 카드 4칸 배치
-        async function makeReport() {
-            try { await document.fonts.ready; } catch (e) {}
-            const W = 2200, PAD = 50, COLS = 4, COLGAP = 18, CARD_HEAD = 62, CARD_PAD = 22, ROWGAP = 18;
-            const CW = (W - PAD * 2 - COLGAP * (COLS - 1)) / COLS;
-            const L = layout(CW);
-            const rows = []; for (let i = 0; i < L.length; i += COLS) rows.push(L.slice(i, i + COLS));
-            const rowH = r => CARD_HEAD + Math.max(...r.map(s => s.bodyH)) + CARD_PAD;
-            const HEAD = 330, FOOT = 80;
-            const H = HEAD + Math.max(120, rows.reduce((a, r) => a + rowH(r) + ROWGAP, 0)) + FOOT;   // 내용 높이에 맞춤(가로 용지 폭에 맞춰 인쇄)
-            const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
-            const c = cv.getContext('2d');
-            const F = (w, sz) => `${w} ${sz}px 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif`;
-            c.fillStyle = '#f8fafc'; c.fillRect(0, 0, W, H);
-            // 머리
+        function drawMiniHead(c, title) {
+            c.fillStyle = '#1A2744'; c.fillRect(0, 0, PG.W, 86);
+            c.fillStyle = '#fff'; c.font = FNT(900, 36); c.fillText(title, 50, 56);
+            c.fillStyle = '#FFB37E'; c.font = FNT(700, 22); const t = `${currentPlan} 한도 · ${TERM}년 갱신${perTxOn ? ' · 암추가보장(치료당)' : ''}  |  ${todayStr()}`; c.fillText(t, PG.W - 50 - c.measureText(t).width, 54);
+        }
+        // 첫 쪽 머리: 제목, 잔고, 잔고 막대, 가입 후 경과 기간 띠
+        function drawReportHead(c) {
+            const W = PG.W, PAD = 50, F = FNT;
             c.fillStyle = '#1A2744'; c.fillRect(0, 0, W, 120);
             c.fillStyle = '#fff'; c.font = F(900, 44); c.fillText('2610 주요치료통합보장 특약 보험금시뮬레이션', PAD, 64);
-            const d = new Date(), ds = `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
             c.fillStyle = '#FFB37E'; c.font = F(700, 24);
-            c.fillText(`${currentPlan} 한도 · ${TERM}년 갱신${perTxOn ? ' · 암추가보장(치료당) 가입' : ''}  |  출력일 ${ds}`, PAD, 101);
+            c.fillText(`${currentPlan} 한도 · ${TERM}년 갱신${perTxOn ? ' · 암추가보장(치료당) 가입' : ''}  |  출력일 ${todayStr()}`, PAD, 101);
             const used = getTotalClaimed(), LIM = getLimit(), bal = Math.max(0, LIM - used), pct = bal / LIM * 100;
             c.font = F(900, 50); const bs = `잔고 ${bal.toLocaleString()}만원`; c.fillStyle = '#fff'; c.fillText(bs, W - PAD - c.measureText(bs).width, 64);
             c.font = F(700, 23); const us = `총 사용 ${fmt(used)}만 원 · 잔여 ${pct.toFixed(1)}% / 사용 ${(100 - pct).toFixed(1)}%`;
             c.fillStyle = '#cbd5e1'; c.fillText(us, W - PAD - c.measureText(us).width, 101);
-            // 잔고 막대
             c.fillStyle = '#334155'; rr(c, PAD, 142, W - PAD * 2, 16, 8); c.fill();
             c.fillStyle = '#ff6600'; rr(c, PAD, 142, Math.max(16, (W - PAD * 2) * pct / 100), 16, 8); c.fill();
-            // 가입 후 경과 기간 띠: 담보를 선택했던 연차를 색으로 표시
             c.fillStyle = '#334155'; c.font = F(900, 24); c.fillText(`가입 후 경과 기간 (1~${TERM}년 차)  ·  색이 칠해진 연차 = 담보를 선택한 연차`, PAD, 200);
             const cg = 8, cw = (W - PAD * 2 - cg * (TERM - 1)) / TERM;
             for (let i = 1; i <= TERM; i++) {
@@ -2359,62 +2304,143 @@
                 c.font = F(900, 19); const am = on ? `${fmt(ys)}만` : '-';
                 c.fillText(am, x + (cw - c.measureText(am).width) / 2, yy + 64);
             }
-            // 연차 카드
-            let Y = HEAD;
-            if (!rows.length) { c.fillStyle = '#94a3b8'; c.font = F(700, 28); c.fillText('선택한 담보가 없습니다.', PAD, Y + 60); }
-            rows.forEach(r => {
-                const RH = rowH(r);
-                r.forEach((s, ci) => drawCard(c, F, s, PAD + ci * (CW + COLGAP), Y, CW, RH, CARD_HEAD));
-                Y += RH + ROWGAP;
-            });
-            c.fillStyle = '#94a3b8'; c.font = F(700, 20);
-            c.fillText('※ 교육용 시뮬레이션 결과이며, 실제 보험금 지급은 약관 및 심사 기준에 따릅니다.', PAD, H - 30);
-            return cv.toDataURL('image/png');
         }
-        // 인쇄: 다른 페이지의 인포그래픽 인쇄와 같은 방식 — 인쇄 전용 영역에 그림을 넣고 print()
+        // 그래프 쪽: 연차 카드를 4칸씩 줄로 묶어 쪽 높이에 맞게 나눈다(카드는 쪼개지 않음)
+        function reportPlan() {
+            const PAD = 50, COLS = 4, COLGAP = 18, CARD_HEAD = 62, CARD_PAD = 22, ROWGAP = 18, HEAD1 = 330, HEAD2 = 116, FOOT = 70;
+            const CW = (PG.W - PAD * 2 - COLGAP * (COLS - 1)) / COLS;
+            const L = layout(CW);
+            const rows = []; for (let i = 0; i < L.length; i += COLS) rows.push(L.slice(i, i + COLS));
+            const rowH = r => CARD_HEAD + Math.max(...r.map(x => x.bodyH)) + CARD_PAD;
+            const pages = []; let cur = { rows: [], y: HEAD1, head: HEAD1 };
+            rows.forEach(r => {
+                const rh = rowH(r) + ROWGAP;
+                if (cur.rows.length && cur.y + rh > PG.H - FOOT) { pages.push(cur); cur = { rows: [], y: HEAD2, head: HEAD2 }; }
+                cur.rows.push(r); cur.y += rh;
+            });
+            pages.push(cur);
+            return { pages, rowH, CW, PAD, COLGAP, CARD_HEAD, ROWGAP };
+        }
+        // 부연설명 쪽: 2단으로 흘려 쓰고, 단·쪽이 바뀌면 연차 제목을 '(계속)'으로 다시 붙인다
+        function narrativePlan() {
+            if (!window.narrativeLayout) return [];
+            const PAD = 50, GAPC = 44, TOP = 118, BOT = 70, K = 1.18;
+            const colW = (PG.W - PAD * 2 - GAPC) / 2;
+            const NL = narrativeLayout(document.createElement('canvas').getContext('2d'), FNT, colW, K);
+            const ops = NL.ops.filter(o => o.kind !== 'title');
+            if (!ops.length || !(window.buildNarrative && buildNarrative().length)) return [];
+            const blocks = []; let cur = null, parent = null;
+            ops.forEach(o => {
+                if (o.kind === 'card') { cur = { ops: [o], card: true, hasStep: false, y0: o.y }; parent = o; blocks.push(cur); }
+                else if (o.kind === 'step') {
+                    if (cur && cur.card && !cur.hasStep) { cur.hasStep = true; cur.ops.push(o); }
+                    else { cur = { ops: [o], parent, y0: o.y }; blocks.push(cur); }
+                } else if (o.note) { if (!(cur && cur.isNote)) { cur = { ops: [o], isNote: true, y0: o.y }; blocks.push(cur); } else cur.ops.push(o); }
+                else cur.ops.push(o);
+            });
+            blocks.forEach((b, i) => { b.y1 = i + 1 < blocks.length ? blocks[i + 1].y0 : NL.height - 10 * K; b.h = b.y1 - b.y0; });
+            const pages = []; let pg = { items: [] }, col = 0, y = TOP; const limit = PG.H - BOT, headH = 52 * K;
+            const next = () => { if (col === 0) { col = 1; y = TOP; } else { pages.push(pg); pg = { items: [] }; col = 0; y = TOP; } };
+            blocks.forEach(b => {
+                if (y > TOP && y + b.h > limit) next();
+                let cont = null;
+                if (y === TOP && b.parent && pages.length + col > 0) { cont = b.parent; }
+                if (cont && y + headH + b.h > limit && y > TOP) next();
+                pg.items.push({ b, col, y, cont });
+                y += (cont ? headH : 0) + b.h;
+            });
+            if (pg.items.length) pages.push(pg);
+            return { pages, colW, PAD, GAPC, K };
+        }
+        function drawNarrativePage(c, plan, pg, no, total) {
+            drawMiniHead(c, '📝 연도별 부연설명');
+            pg.items.forEach(it => {
+                const X = plan.PAD + it.col * (plan.colW + plan.GAPC); let Y = it.y;
+                if (it.cont) { narrativeDraw(c, { K: plan.K, ops: [{ ...it.cont, text: it.cont.text + ' (계속)', y: 0 }] }, X, Y, plan.colW); Y += 52 * plan.K; }
+                const b = it.b;
+                narrativeDraw(c, { K: plan.K, ops: b.ops.map(o => ({ ...o, y: o.y - b.y0 })) }, X, Y, plan.colW);
+            });
+            drawFoot(c, no, total, '부연설명');
+        }
+        function drawReportPage(c, rp, pg, idx, total) {
+            if (idx === 0) drawReportHead(c); else drawMiniHead(c, '2610 주요치료통합보장 특약 보험금시뮬레이션 (계속)');
+            let Y = pg.head;
+            if (!pg.rows.length) { c.fillStyle = '#94a3b8'; c.font = FNT(700, 28); c.fillText('선택한 담보가 없습니다.', rp.PAD, Y + 60); }
+            const F = FNT;
+            pg.rows.forEach(r => {
+                const RH = rp.rowH(r);
+                r.forEach((sct, ci) => drawCard(c, F, sct, rp.PAD + ci * (rp.CW + rp.COLGAP), Y, rp.CW, RH, rp.CARD_HEAD));
+                Y += RH + rp.ROWGAP;
+            });
+            drawFoot(c, idx + 1, total, '그래프');
+        }
+        // 그래프 쪽만(PC 인쇄용): 캔버스 배열
+        async function makeReportPages() {
+            try { await document.fonts.ready; } catch (e) {}
+            const rp = reportPlan(), out = [];
+            rp.pages.forEach((pg, i) => { const { cv, c } = pageCanvas(); drawReportPage(c, rp, pg, i, rp.pages.length); out.push(cv); });
+            return out;
+        }
+        // 그래프 쪽 + 부연설명 쪽 전체(휴대폰 보내기·사진 저장용): [{blob,url}] 배열
+        async function makePages() {
+            try { await document.fonts.ready; } catch (e) {}
+            const rp = reportPlan(), np = narrativePlan(), nr = rp.pages.length, nn = np.pages ? np.pages.length : 0, total = nr + nn, out = [];
+            const toBlob = cv => new Promise(res => cv.toBlob(b => res({ blob: b, url: URL.createObjectURL(b) }), 'image/png'));
+            for (let i = 0; i < nr; i++) { const { cv, c } = pageCanvas(); drawReportPage(c, rp, rp.pages[i], i, total); out.push(await toBlob(cv)); cv.width = cv.height = 1; }
+            for (let i = 0; i < nn; i++) { const { cv, c } = pageCanvas('#ffffff'); drawNarrativePage(c, np, np.pages[i], nr + i + 1, total); out.push(await toBlob(cv)); cv.width = cv.height = 1; }
+            out.counts = { report: nr, narr: nn };
+            return out;
+        }
+        // 인쇄: 그래프 쪽(A4 가로 그림)을 인쇄 전용 영역에 넣고, 부연설명은 글자로 이어서 인쇄
         window.printReport = async function () {
             if (getTotalClaimed() <= 0) { showModal('인쇄할 결과가 없습니다', '먼저 담보 항목을 선택해 시뮬레이션해 주세요.'); return; }
-            const url = await makeReport();
+            const cvs = await makeReportPages();
             let area = document.getElementById('PRINTAREA');
-            if (!area) { area = document.createElement('div'); area.id = 'PRINTAREA'; area.innerHTML = '<img id="PRINT_IMG" alt="시뮬레이션 결과"><div id="PRINT_NARR"></div>'; document.body.appendChild(area); }
-            document.getElementById('PRINT_NARR').innerHTML = '<h3 class="nv-tt">📝 연도별 부연설명</h3>' + narrativeHtml();   // 출력에는 항상 부연설명 포함
-            const img = document.getElementById('PRINT_IMG');
-            let fired = false;
-            const go = () => { if (fired) return; fired = true; setTimeout(() => window.print(), 50); };
-            img.onload = () => { if (img.decode) img.decode().then(go).catch(go); else go(); };
-            img.onerror = go;
-            img.src = url;
+            if (!area) { area = document.createElement('div'); area.id = 'PRINTAREA'; document.body.appendChild(area); }
+            area.innerHTML = '';
+            const imgs = cvs.map(cv => { const im = new Image(); im.alt = '시뮬레이션 결과'; area.appendChild(im); return im; });
+            const nar = document.createElement('div'); nar.id = 'PRINT_NARR'; area.appendChild(nar);
+            nar.innerHTML = '<h3 class="nv-tt">📝 연도별 부연설명</h3>' + narrativeHtml();   // 출력에는 항상 부연설명 포함
+            await Promise.all(imgs.map((im, i) => new Promise(res => { im.onload = () => { (im.decode ? im.decode() : Promise.resolve()).then(res, res); }; im.onerror = res; im.src = cvs[i].toDataURL('image/png'); })));
+            cvs.forEach(cv => { cv.width = cv.height = 1; });
+            setTimeout(() => window.print(), 50);
         };
-        window.__mMakeReport = makeReport;   // 확인용
+        window.__mMakeReport = async () => (await makeReportPages())[0].toDataURL('image/png');   // 확인용
+        window.__mMakePages = makePages;   // 확인용
+        window.__mMakeImage = async () => (await makePages())[0];   // 확인용
 
         let last = null;
         window.mShareResult = async function () {
             if (getTotalClaimed() <= 0) { showModal('보낼 결과가 없습니다', '먼저 담보 항목을 선택해 시뮬레이션해 주세요.'); return; }
             if (window.mDisarm) window.mDisarm();
-            const r = await makeImage();
-            const d = new Date(), name = `2610_simulation_${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}.png`;
-            const file = new File([r.blob], name, { type: 'image/png' });
-            last = { file, url: r.url, name };
-            const canShare = !!(navigator.canShare && navigator.canShare({ files: [file] }));
             document.getElementById('mSheetTitle').textContent = '📤 결과 보내기';
-            document.getElementById('mSheetBody').innerHTML =
-                `<div class="m-seg" style="margin-bottom:8px">` +
-                (canShare ? `<button type="button" class="on" id="mShareGo">💬 카톡으로 보내기<small>공유창에서 카카오톡 선택</small></button>` : '') +
-                `<button type="button" id="mSaveGo"${canShare ? '' : ' class="on"'}>🖼 사진으로 저장<small>갤러리·사진 앱에 저장</small></button></div>` +
-                `<div class="m-hint" style="text-align:left;line-height:1.6">${canShare ? '· 공유창에 카카오톡이 보이지 않으면 [사진으로 저장] 후 카카오톡에서 사진으로 보내 주세요.<br>' : '· 이 브라우저는 바로 보내기를 지원하지 않아 사진으로 저장합니다.<br>'}· 저장이 안 되면 아래 그림을 <b>길게 눌러 “사진에 저장”</b>을 선택하세요.</div>` +
-                `<img src="${r.url}" alt="시뮬레이션 결과" style="width:100%;border-radius:12px;border:1px solid #e2e8f0;margin-top:12px">`;
+            document.getElementById('mSheetBody').innerHTML = '<div class="m-hint" style="padding:22px 6px">A4 출력용 사진을 만드는 중입니다…</div>';
             document.getElementById('mSheetBg').classList.add('on'); document.getElementById('mSheet').classList.add('on');
+            const pages = await makePages();
+            const d = new Date(), stamp = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+            const files = pages.map((r, i) => new File([r.blob], `2610_simulation_${stamp}_${i + 1}of${pages.length}.png`, { type: 'image/png' }));
+            last = { files, pages };
+            const canShare = !!(navigator.canShare && navigator.canShare({ files }));
+            const cnt = pages.counts;
+            document.getElementById('mSheetBody').innerHTML =
+                `<div class="m-hint" style="text-align:left;line-height:1.6;margin-bottom:8px"><b>A4 가로 ${pages.length}장</b> (그래프 ${cnt.report}장 + 부연설명 ${cnt.narr}장) — PC 출력물과 같은 모양으로, 그대로 A4에 인쇄할 수 있는 고해상도(2339×1654) 사진입니다.</div>` +
+                `<div class="m-seg" style="margin-bottom:8px">` +
+                (canShare ? `<button type="button" class="on" id="mShareGo">💬 카톡으로 보내기<small>${pages.length}장 한 번에 · 공유창에서 카카오톡 선택</small></button>` : '') +
+                `<button type="button" id="mSaveGo"${canShare ? '' : ' class="on"'}>🖼 사진으로 저장<small>${pages.length}장을 갤러리·사진 앱에 저장</small></button></div>` +
+                `<div class="m-hint" style="text-align:left;line-height:1.6">${canShare ? '· 공유창에 카카오톡이 보이지 않으면 [사진으로 저장] 후 카카오톡에서 사진으로 보내 주세요.<br>' : '· '}저장이 막히면 아래 사진을 길게 눌러 저장할 수 있습니다.</div>` +
+                pages.map((r, i) => `<div style="margin-top:12px"><div style="font-size:12px;font-weight:800;color:#64748b;margin-bottom:4px">${i + 1} / ${pages.length}쪽 · ${i < cnt.report ? '그래프' : '부연설명'}</div><img src="${r.url}" alt="시뮬레이션 결과 ${i + 1}쪽" style="width:100%;border-radius:8px;border:1px solid #e2e8f0"></div>`).join('');
             const go = document.getElementById('mShareGo');
             if (go) go.onclick = async () => {
-                try { await navigator.share({ files: [last.file], title: '2610 주요치료통합보장 시뮬레이션 결과', text: '2610 주요치료통합보장 시뮬레이션 결과입니다.' }); }
+                try { await navigator.share({ files: last.files, title: '2610 주요치료통합보장 시뮬레이션 결과', text: '2610 주요치료통합보장 시뮬레이션 결과입니다. (A4 가로 ' + last.files.length + '장)' }); }
                 catch (e) { if (e && e.name !== 'AbortError') showModal('보내기 실패', '공유창을 열 수 없습니다. [사진으로 저장]을 이용해 주세요.'); }
             };
-            document.getElementById('mSaveGo').onclick = () => {
-                const a = document.createElement('a'); a.href = URL.createObjectURL(last.file); a.download = last.name;
-                document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+            document.getElementById('mSaveGo').onclick = async () => {
+                for (const f of last.files) {
+                    const a = document.createElement('a'); a.href = URL.createObjectURL(f); a.download = f.name;
+                    document.body.appendChild(a); a.click(); await new Promise(r => setTimeout(r, 600)); URL.revokeObjectURL(a.href); a.remove();
+                }
             };
         };
-        window.__mMakeImage = makeImage;   // 확인용
     })();
     </script>
 <!-- 매뉴얼 보기: 시뮬레이터 상태는 그대로 두고 그 위에 전체 화면으로 연다 -->
