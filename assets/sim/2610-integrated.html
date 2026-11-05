@@ -1345,6 +1345,25 @@
             });
         }
 
+        // 막대 높이 보정 (화면 그래프·출력물 공용): 금액이 달라도 비슷하면 막대가 똑같아 보이므로,
+        //  ① 담보 칸: 서로 다른 금액은 최대 담보 금액의 5% 이상 차이 나게 / ② 연차 막대: 서로 다른 총금액은 전체 높이의 10% 이상 차이 나게
+        window.barScale = function () {
+            const MIN_SEG = 1000, dispAmt = it => it.category === 'pertx' ? Math.max(it.amount, MIN_SEG) : it.amount;
+            let maxItem = 0; const av = [];
+            for (let y = 1; y <= 20; y++) (claims[y] || []).forEach(it => { const a = dispAmt(it); if (a > 0) { maxItem = Math.max(maxItem, a); if (!av.includes(a)) av.push(a); } });
+            av.sort((a, b) => a - b);
+            const adjA = new Map(); let prev = 0;
+            av.forEach(a => { const v = Math.max(a, prev + maxItem * 0.05); adjA.set(a, v); prev = v; });
+            const itemW = it => adjA.get(dispAmt(it)) || 0;
+            const D = {}, dv = []; let maxD = 0;
+            for (let y = 1; y <= 20; y++) { const d = (claims[y] || []).reduce((t, it) => t + itemW(it), 0); if (d > 0) { D[y] = d; maxD = Math.max(maxD, d); if (!dv.includes(d)) dv.push(d); } }
+            dv.sort((a, b) => a - b);
+            const adjH = new Map(); let ph = 0;
+            dv.forEach(d => { const h = Math.max(d / maxD * 100, ph + 10); adjH.set(d, h); ph = h; });
+            const sc = ph > 100 ? 100 / ph : 1;
+            return { itemW, yearD: y => D[y] || 0, yearH: y => (adjH.get(D[y]) || 0) * sc };
+        };
+
         function renderSummary() {
             const box = document.getElementById('yearlySummaryBox');
             
@@ -1362,14 +1381,7 @@
                 if(d > maxYearlySum) maxYearlySum = d;
             }
 
-            // 총금액이 다른 연차는 막대 높이에도 최소 격차(전체 높이의 4%)를 둔다 — 금액 차이가 작아도 그래프만으로 구분되도록
-            const yrD = {}, distinct = [];
-            for (let y = 1; y <= 20; y++) { const d = claims[y].reduce((sum, item) => sum + dispAmt(item), 0); if (d > 0) { yrD[y] = d; if (!distinct.includes(d)) distinct.push(d); } }
-            distinct.sort((a, b) => a - b);
-            const adjOf = new Map(); let prevH = 0;
-            distinct.forEach(v => { const h = Math.max(v / maxYearlySum * 100, prevH + 4); adjOf.set(v, h); prevH = h; });
-            const hScale = prevH > 100 ? 100 / prevH : 1;
-            const yearH = y => (adjOf.get(yrD[y]) || 0) * hScale;
+            const BS = barScale();
 
             // 추가된 연도 개수에 따라 막대 너비와 간격을 유동적으로 조절 (처음엔 크게, 많아지면 좁게)
             let barWidthClass = "w-[6.67rem] md:w-32";
@@ -1405,7 +1417,7 @@
                     
                     // 각 아이템별로 개별 막대 생성 (미리 그려진 배경 칸 없이 실제 비율만큼만 높이 차지)
                     claims[y].forEach(item => {
-                        let pct = (dispAmt(item) / yrD[y]) * yearH(y);
+                        let pct = (BS.itemW(item) / BS.yearD(y)) * BS.yearH(y);
                         let safeName = item.name.replace(/'/g, "\\'");
                         // 새로운 항목을 위로 쌓이게 하기 위해 prepending 방식으로 누적
                         barsHtml = `<div class="w-full ${colors[item.category] || 'bg-slate-400'} transition-all duration-300 cursor-pointer relative group border-b border-white/20 last:border-0 first:rounded-t-md shadow-sm" style="height: ${pct}%;" 
@@ -2278,13 +2290,13 @@
         function layout(CW) {
             const IN = 14, BAR_W = 52, BOX_X = IN + BAR_W + 32, BOX_W = CW - BOX_X - IN, BOX_H = 50, GAP = 4, MIN_SEG = 28;
             const years = [];
-            let maxSum = 0;
+            let maxSum = 0; const BS = barScale();
             for (let y = 1; y <= 20; y++) { const s = (claims[y] || []).reduce((a, it) => a + it.amount, 0); if (s > 0) { years.push(y); maxSum = Math.max(maxSum, s); } }
             return years.map(y => {
                 const items = claims[y].slice();
                 const sum = items.reduce((a, it) => a + it.amount, 0);
-                const want = 150 + 230 * (sum / maxSum);
-                const segs = items.map(it => Math.max(MIN_SEG, want * it.amount / sum));
+                const want = 150 + 230 * (BS.yearH(y) / 100);   // 화면 그래프와 같은 격차 보정
+                const segs = items.map(it => Math.max(MIN_SEG, want * BS.itemW(it) / BS.yearD(y)));
                 const barH = segs.reduce((a, b) => a + b, 0);
                 let yy = barH; const seg = items.map((it, i) => { yy -= segs[i]; return { it, top: yy, h: segs[i] }; });
                 const order = seg.slice().sort((a, b) => a.top - b.top);
