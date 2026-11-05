@@ -1140,6 +1140,38 @@
         }
 
         // 전체 렌더링 컨트롤러
+        // 현재 통장 잔고 막대 설명: 지급된 담보를 분류별로 묶어 합산 (화면 툴팁·인쇄물 공용)
+        const BAL_CATS = [['surgery','수술','#ef4444'],['drug','약물','#3b82f6'],['radiation','방사선','#facc15'],['pertx','암추가보장(치료당)','#c026d3'],['heart_surgery','심장수술','#a855f7'],['heart_procedure','심장시술','#14b8a6'],['other','기타','#94a3b8']];
+        window.balanceBreakdown = function () {
+            const LIMIT = getLimit(), used = getTotalClaimed();
+            const cats = BAL_CATS.map(([k, label, color]) => {
+                const m = new Map(); let sum = 0;
+                for (let y = 1; y <= 20; y++) (claims[y] || []).forEach(it => { if (it.category === k && it.amount > 0) { sum += it.amount; m.set(it.name, (m.get(it.name) || 0) + it.amount); } });
+                return { k, label, color, sum, items: [...m].map(([name, v]) => ({ name, sum: v })) };
+            }).filter(c => c.sum > 0);
+            return { LIMIT, used, bal: Math.max(0, LIMIT - used), cats };
+        };
+        (function () {
+            const tip = document.createElement('div');
+            tip.id = 'balTip';
+            tip.style.cssText = 'position:fixed;z-index:9999;display:none;max-width:340px;max-height:70vh;overflow:auto;background:#0f172a;color:#fff;font-size:12px;line-height:1.5;padding:10px 12px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.35);pointer-events:none';
+            document.body.appendChild(tip);
+            const pc = document.getElementById('progressContainer');
+            const move = e => { let x = e.clientX + 14, y = e.clientY + 16; const w = tip.offsetWidth, h = tip.offsetHeight; if (x + w > innerWidth - 8) x = e.clientX - w - 14; if (y + h > innerHeight - 8) y = Math.max(8, e.clientY - h - 12); tip.style.left = x + 'px'; tip.style.top = y + 'px'; };
+            pc.addEventListener('mouseenter', e => {
+                const b = balanceBreakdown(), f = n => Number(n).toLocaleString();
+                let h = `<div style="font-weight:900;font-size:13px;margin-bottom:4px">현재 통장 잔고 ${f(b.bal)}만 원 <span style="font-weight:600;color:#94a3b8">/ 한도 ${f(b.LIMIT)}만 원</span></div>`;
+                if (!b.cats.length) h += '<div style="color:#94a3b8">지급된 담보가 없습니다.</div>';
+                else {
+                    b.cats.forEach(c => { h += `<div style="margin-top:6px;font-weight:800"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${c.color};margin-right:5px"></span>${c.label} 합계 ${f(c.sum)}만 원</div>`; c.items.forEach(i => { h += `<div style="padding-left:14px;color:#cbd5e1">· ${i.name} ${f(i.sum)}만</div>`; }); });
+                    h += `<div style="margin-top:8px;padding-top:6px;border-top:1px solid #334155;font-weight:900;color:#FFB37E">지급 보험금 합산 ${f(b.used)}만 원 (사용 ${(b.used / b.LIMIT * 100).toFixed(1)}%)</div>`;
+                }
+                tip.innerHTML = h; tip.style.display = 'block'; move(e);
+            });
+            pc.addEventListener('mousemove', move);
+            pc.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+        })();
+
         function renderAll() {
             const totalClaimed = getTotalClaimed();
             const LIMIT = getLimit();
@@ -2308,12 +2340,33 @@
             c.font = F(900, 50); const bs = `잔고 ${bal.toLocaleString()}만원`; c.fillStyle = '#fff'; c.fillText(bs, W - PAD - c.measureText(bs).width, 64);
             c.font = F(700, 23); const us = `총 사용 ${fmt(used)}만 원 · 잔여 ${pct.toFixed(1)}% / 사용 ${(100 - pct).toFixed(1)}%`;
             c.fillStyle = '#cbd5e1'; c.fillText(us, W - PAD - c.measureText(us).width, 101);
-            c.fillStyle = '#334155'; rr(c, PAD, 142, W - PAD * 2, 16, 8); c.fill();
-            c.fillStyle = '#ff6600'; rr(c, PAD, 142, Math.max(16, (W - PAD * 2) * pct / 100), 16, 8); c.fill();
-            c.fillStyle = '#334155'; c.font = F(900, 24); c.fillText(`가입 후 경과 기간 (1~${TERM}년 차)  ·  색이 칠해진 연차 = 담보를 선택한 연차`, PAD, 200);
+            // 현재 통장 잔고 막대: 화면과 같이 잔여(주황) + 사용(분류별 색) 블록, 설명은 들어가면 막대 안에, 아니면 위·아래 작은 글씨
+            const BX = PAD, BY = 158, BW = W - PAD * 2, BH = 30, bd = balanceBreakdown(), uw = BW * (100 - pct) / 100;
+            c.fillStyle = '#334155'; rr(c, BX, BY, BW, BH, 15); c.fill();
+            c.save(); rr(c, BX, BY, BW, BH, 15); c.clip();
+            c.fillStyle = '#ff6600'; c.fillRect(BX, BY, BW * pct / 100, BH);
+            let ux = BX + BW - uw; const small = [];
+            bd.cats.forEach(ct => {
+                const w = uw * ct.sum / (bd.used || 1);
+                c.globalAlpha = .85; c.fillStyle = ct.color; c.fillRect(ux, BY, w, BH); c.globalAlpha = 1;
+                c.font = F(800, 17); const t = `${ct.label} ${fmt(ct.sum)}만`;
+                if (c.measureText(t).width + 12 <= w) { c.fillStyle = ct.k === 'radiation' ? '#422006' : '#fff'; c.fillText(t, ux + (w - c.measureText(t).width) / 2, BY + 21); }
+                else small.push(ct);
+                ux += w;
+            });
+            c.restore();
+            if (pct >= 14) { c.font = F(900, 18); c.fillStyle = '#fff'; c.fillText(pct.toFixed(1) + '%', BX + 14, BY + 21); }
+            c.font = F(700, 17); c.fillStyle = '#64748b';
+            c.fillText(`잔여 ${fmt(bal)}만 원 / 한도 ${fmt(LIM)}만 원`, BX, BY - 8);
+            const sumT = `지급 보험금 합산 ${fmt(used)}만 원`; c.fillStyle = '#475569'; c.fillText(sumT, BX + BW - c.measureText(sumT).width, BY - 8);
+            let lx = BX; const ly = BY + BH + 24;
+            if (!bd.cats.length) { c.fillStyle = '#94a3b8'; c.fillText('지급된 담보 없음', lx, ly); }
+            else if (small.length) small.forEach(ct => { const t = `${ct.label} ${fmt(ct.sum)}만`; c.fillStyle = ct.color; c.fillRect(lx, ly - 13, 13, 13); lx += 19; c.fillStyle = '#475569'; c.fillText(t, lx, ly); lx += c.measureText(t).width + 22; });
+            else { c.fillStyle = '#94a3b8'; c.fillText('막대 안 숫자 = 분류별 지급 보험금 합산', lx, ly); }
+            c.fillStyle = '#334155'; c.font = F(900, 24); c.fillText(`가입 후 경과 기간 (1~${TERM}년 차)  ·  색이 칠해진 연차 = 담보를 선택한 연차`, PAD, 250);
             const cg = 8, cw = (W - PAD * 2 - cg * (TERM - 1)) / TERM;
             for (let i = 1; i <= TERM; i++) {
-                const x = PAD + (i - 1) * (cw + cg), yy = 216, ys = (claims[i] || []).reduce((a, it) => a + it.amount, 0), on = ys > 0;
+                const x = PAD + (i - 1) * (cw + cg), yy = 266, ys = (claims[i] || []).reduce((a, it) => a + it.amount, 0), on = ys > 0;
                 const lvc = i === 10 && TERM === 20;
                 c.fillStyle = on ? '#ff6600' : '#fff'; rr(c, x, yy, cw, 82, 12); c.fill();
                 c.strokeStyle = on ? '#ff6600' : (lvc ? '#fca5a5' : '#cbd5e1'); c.lineWidth = 2; rr(c, x, yy, cw, 82, 12); c.stroke();
@@ -2327,7 +2380,7 @@
         // 그래프 쪽 구성: 연차 수에 따라 카드 크기·배치를 조절한다
         //  1~2개: 가로 2칸 큼직하게 / 3개: 3칸 / 4개: 4칸 / 5~8개: 4×2(한 쪽) / 9개 이상: 쪽당 6개(3×2) 또는 8개(4×2)로 나눔(예: 20개 = 8+8+4)
         function reportPlan() {
-            const PAD = 46, GAP = 16, HEADH = 80, CARD_PAD = 14, HEAD1 = 322, HEAD2 = 108, FOOT = 60, CWMIN = 420, CWMAX = 760, SMAX = 2.4;
+            const PAD = 46, GAP = 16, HEADH = 80, CARD_PAD = 14, HEAD1 = 372, HEAD2 = 108, FOOT = 60, CWMIN = 420, CWMAX = 760, SMAX = 2.4;
             const L0 = layout(560);   // 카드 높이(bodyH)는 폭과 무관
             const N = L0.length;
             let counts = [], cap = 8;
