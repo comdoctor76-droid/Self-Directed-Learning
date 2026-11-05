@@ -607,7 +607,7 @@
         <div class="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-200 shadow-sm">
             <div class="flex items-center justify-between gap-2 mb-3">
                 <h3 class="text-sm font-bold text-slate-700 tracking-tight">연도별 보장금액 합산 내역</h3>
-                <button type="button" id="narrBtn" onclick="toggleNarrPC()" class="nv-btn">📝 부연설명 필요</button>
+                <button type="button" id="narrBtn" onclick="toggleNarrPC()" class="nv-btn on">📝 부연설명 가리기</button>
             </div>
             <div id="yearlySummaryBox" class="space-y-3 text-sm">
                 <!-- 자바스크립트로 요약 내용이 주입됩니다. -->
@@ -1362,6 +1362,15 @@
                 if(d > maxYearlySum) maxYearlySum = d;
             }
 
+            // 총금액이 다른 연차는 막대 높이에도 최소 격차(전체 높이의 4%)를 둔다 — 금액 차이가 작아도 그래프만으로 구분되도록
+            const yrD = {}, distinct = [];
+            for (let y = 1; y <= 20; y++) { const d = claims[y].reduce((sum, item) => sum + dispAmt(item), 0); if (d > 0) { yrD[y] = d; if (!distinct.includes(d)) distinct.push(d); } }
+            distinct.sort((a, b) => a - b);
+            const adjOf = new Map(); let prevH = 0;
+            distinct.forEach(v => { const h = Math.max(v / maxYearlySum * 100, prevH + 4); adjOf.set(v, h); prevH = h; });
+            const hScale = prevH > 100 ? 100 / prevH : 1;
+            const yearH = y => (adjOf.get(yrD[y]) || 0) * hScale;
+
             // 추가된 연도 개수에 따라 막대 너비와 간격을 유동적으로 조절 (처음엔 크게, 많아지면 좁게)
             let barWidthClass = "w-[6.67rem] md:w-32";
             let gapClass = "gap-6 md:gap-8";
@@ -1396,7 +1405,7 @@
                     
                     // 각 아이템별로 개별 막대 생성 (미리 그려진 배경 칸 없이 실제 비율만큼만 높이 차지)
                     claims[y].forEach(item => {
-                        let pct = (dispAmt(item) / maxYearlySum) * 100;
+                        let pct = (dispAmt(item) / yrD[y]) * yearH(y);
                         let safeName = item.name.replace(/'/g, "\\'");
                         // 새로운 항목을 위로 쌓이게 하기 위해 prepending 방식으로 누적
                         barsHtml = `<div class="w-full ${colors[item.category] || 'bg-slate-400'} transition-all duration-300 cursor-pointer relative group border-b border-white/20 last:border-0 first:rounded-t-md shadow-sm" style="height: ${pct}%;" 
@@ -1922,6 +1931,16 @@
             wrap(NOTE, F(600, 17), W).forEach(l => add('text', l, F(600, 17), '#94a3b8', 26, { note: true }));
             return { ops, height: h + 10 * K, K };
         };
+        // PC: 기본으로 부연설명을 펼쳐 두고, 버튼을 누르면 가림(상태 기억)
+        let pcOn = true; try { pcOn = localStorage.getItem('sim_narr_on') !== '0'; } catch (e) {}
+        window.renderNarrPC = function () {
+            const box = document.getElementById('narrativeBox'), b = document.getElementById('narrBtn');
+            if (!box || !b) return;
+            box.classList.toggle('hidden', !pcOn); b.classList.toggle('on', pcOn);
+            b.textContent = pcOn ? '📝 부연설명 가리기' : '📝 부연설명 보기';
+            if (pcOn) box.innerHTML = '<h3 class="nv-tt">📝 연도별 부연설명 <small>선택한 담보를 치료 흐름 순서로 풀어 쓴 설명입니다</small></h3>' + narrativeHtml();
+        };
+        window.toggleNarrPC = function () { pcOn = !pcOn; try { localStorage.setItem('sim_narr_on', pcOn ? '1' : '0'); } catch (e) {} renderNarrPC(); };
         window.narrativeDraw = function (c, L, X, Y, W) {
             const K = L.K || 1;
             L.ops.forEach(o => {
