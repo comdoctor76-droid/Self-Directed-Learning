@@ -1420,7 +1420,7 @@
                         let pct = (BS.itemW(item) / BS.yearD(y)) * BS.yearH(y);
                         let safeName = item.name.replace(/'/g, "\\'");
                         // 새로운 항목을 위로 쌓이게 하기 위해 prepending 방식으로 누적
-                        barsHtml = `<div class="w-full ${colors[item.category] || 'bg-slate-400'} transition-all duration-300 cursor-pointer relative group border-b border-white/20 last:border-0 first:rounded-t-md shadow-sm" style="height: ${pct}%;" 
+                        barsHtml = `<div class="w-full ${colors[item.category] || 'bg-slate-400'} transition-all duration-300 cursor-pointer relative group border-b border-white/20 last:border-0 first:rounded-t-md shadow-sm" style="height: ${(pct * 0.84).toFixed(2)}%; flex-shrink: 0;" 
                                 onclick="handleBarClick(event, ${y}, '${item.id}', '${safeName}', ${item.amount})"
                                 onmouseenter="showTooltip(event, '${safeName}', ${item.amount})"
                                 onmouseleave="hideTooltip()"
@@ -2317,7 +2317,7 @@
             if (s.y >= 10 && checkLevelUp()) { c.fillStyle = '#2563eb'; c.font = F(800, 17); c.fillText('⬆ 레벨업', X + s.IN + ylw + 8, Y + 32); }
             const on = window.onsetLabel ? onsetLabel(s.y) : '';   // 부연설명 제목과 같은 발병 연차 표시(암발병 N년차·4기 전이암/재발암·뇌·심장질환 …)
             if (on) { c.fillStyle = '#b45309'; c.font = F(800, 17); c.fillText(fitText(c, on, CW - s.IN * 2), X + s.IN, Y + 60); }
-            const top0 = Y + CARD_HEAD - s.minTop, BX = X + s.IN, n = s.seg.length, step = Math.min(7, 32 / Math.max(1, n - 1));
+            const top0 = Y + CARD_HEAD - s.minTop + Math.max(0, RH - CARD_HEAD - 14 - s.bodyH), BX = X + s.IN, n = s.seg.length, step = Math.min(7, 32 / Math.max(1, n - 1));
             s.seg.forEach(g => {
                 const col = COL[g.it.category] || '#94a3b8';
                 c.fillStyle = col; c.fillRect(BX, top0 + g.top, s.BAR_W, g.h - 2);
