@@ -1733,6 +1733,28 @@
         }
         function ptCount(it) { const m = /×(\d+)회/.exec(it ? it.name : ''); return m ? +m[1] : 0; }
 
+        /* 그 해에 실제로 선택한 질병마다 따로 표시 — 뇌·심장은 암 발병 연차에 묻지 않고 '뇌·심장질환 N년차'로 따로 센다 (부연설명 제목·그래프 카드 제목 공통) */
+        function onsetParts(y) {
+            let fc = 0, fm = 0, fs = 0, fh = 0;
+            for (let k = 1; k <= 20; k++) {
+                const a = claims[k] || [];
+                if (!fc && a.some(i => CANCER.includes(i.id))) fc = k;
+                if (!fm && a.some(i => i.id === 'c5')) fm = k;
+                if (!fs && a.some(i => SIM.includes(i.id))) fs = k;
+                if (!fh && a.some(i => HEART.includes(i.id))) fh = k;
+            }
+            const ya = claims[y] || [], parts = [];
+            if (ya.some(i => CANCER.includes(i.id)) && fc) {
+                const n = y - fc + 1;
+                if (fm && y >= fm) parts.push(fm === fc ? `4기 전이암 발병 ${n}년차` : `4기 재발암 발병 ${y - fm + 1}년차`);
+                else parts.push(`암발병 ${n}년차, 원발암`);
+            }
+            if (ya.some(i => SIM.includes(i.id)) && fs) parts.push(`유사암 발병 ${y - fs + 1}년차`);
+            if (ya.some(i => HEART.includes(i.id)) && fh) parts.push(`뇌·심장질환 발병 ${y - fh + 1}년차`);
+            return parts;
+        }
+        window.onsetLabel = y => onsetParts(y).join(' · ');
+
         function build() {
             const out = [];
             let firstCancer = 0, firstHeart = 0;
@@ -1750,17 +1772,7 @@
             }
             const baseYear = y => y === 1 ? '1년 미만' : y + '년차';
             function yearTitle(y) {
-                const ya = claims[y] || [];
-                const hasC = ya.some(i => CANCER.includes(i.id)), hasS = ya.some(i => SIM.includes(i.id)), hasH = ya.some(i => HEART.includes(i.id));
-                const parts = [];
-                /* 그 해에 실제로 선택한 질병마다 따로 표시 — 뇌·심장은 암 발병 연차에 묻지 않고 '뇌·심장질환 N년차'로 따로 센다 */
-                if (hasC && firstCancer) {
-                    const n = y - firstCancer + 1;
-                    if (firstMeta && y >= firstMeta) parts.push(firstMeta === firstCancer ? `4기 전이암 발병 ${n}년차` : `4기 재발암 발병 ${y - firstMeta + 1}년차`);
-                    else parts.push(`암발병 ${n}년차, 원발암`);
-                }
-                if (hasS && firstSim) parts.push(`유사암 발병 ${y - firstSim + 1}년차`);
-                if (hasH && firstHeart) parts.push(`뇌·심장질환 발병 ${y - firstHeart + 1}년차`);
+                const parts = onsetParts(y);
                 let s = '가입 후 ' + baseYear(y);
                 if (parts.length) s += '(' + parts.join(' · ') + ')';
                 return s;
@@ -2213,7 +2225,7 @@
 
         // 연차별 구역 배치 계산 (카드 폭 CW 기준, 두 칸 배치)
         function layout(CW) {
-            const IN = 18, BAR_W = 64, BOX_X = IN + BAR_W + 44, BOX_W = CW - BOX_X - IN, BOX_H = 56, GAP = 6, MIN_SEG = 30;
+            const IN = 14, BAR_W = 52, BOX_X = IN + BAR_W + 32, BOX_W = CW - BOX_X - IN, BOX_H = 50, GAP = 4, MIN_SEG = 28;
             const years = [];
             let maxSum = 0;
             for (let y = 1; y <= 20; y++) { const s = (claims[y] || []).reduce((a, it) => a + it.amount, 0); if (s > 0) { years.push(y); maxSum = Math.max(maxSum, s); } }
@@ -2235,11 +2247,13 @@
 
         function drawCard(c, F, s, X, Y, CW, RH, CARD_HEAD) {
             c.fillStyle = '#fff'; rr(c, X, Y, CW, RH, 18); c.fill();
-            c.fillStyle = '#1A2744'; c.font = F(900, 27); const yl = yearLabels[s.y].replace(/\(.*\)/, ''); c.fillText(yl, X + s.IN, Y + 40);
-            c.fillStyle = '#e65c00'; c.font = F(900, 25); const sl = `${fmt(s.sum)}만 원`; c.fillText(sl, X + CW - s.IN - c.measureText(sl).width, Y + 40);
+            c.fillStyle = '#1A2744'; c.font = F(900, 27); const yl = yearLabels[s.y].replace(/\(.*\)/, ''); c.fillText(yl, X + s.IN, Y + 34);
+            c.fillStyle = '#e65c00'; c.font = F(900, 25); const sl = `${fmt(s.sum)}만 원`; c.fillText(sl, X + CW - s.IN - c.measureText(sl).width, Y + 34);
             c.font = F(900, 27); const ylw = c.measureText(yl).width;
-            if (s.y === 1) { c.fillStyle = '#ef4444'; c.font = F(800, 17); c.fillText('50% 감액', X + s.IN + ylw + 8, Y + 38); }
-            if (s.y >= 10 && checkLevelUp()) { c.fillStyle = '#2563eb'; c.font = F(800, 17); c.fillText('⬆ 레벨업', X + s.IN + ylw + 8, Y + 38); }
+            if (s.y === 1) { c.fillStyle = '#ef4444'; c.font = F(800, 17); c.fillText('50% 감액', X + s.IN + ylw + 8, Y + 32); }
+            if (s.y >= 10 && checkLevelUp()) { c.fillStyle = '#2563eb'; c.font = F(800, 17); c.fillText('⬆ 레벨업', X + s.IN + ylw + 8, Y + 32); }
+            const on = window.onsetLabel ? onsetLabel(s.y) : '';   // 부연설명 제목과 같은 발병 연차 표시(암발병 N년차·4기 전이암/재발암·뇌·심장질환 …)
+            if (on) { c.fillStyle = '#b45309'; c.font = F(800, 17); c.fillText(fitText(c, on, CW - s.IN * 2), X + s.IN, Y + 60); }
             const top0 = Y + CARD_HEAD - s.minTop, BX = X + s.IN, n = s.seg.length, step = Math.min(7, 32 / Math.max(1, n - 1));
             s.seg.forEach(g => {
                 const col = COL[g.it.category] || '#94a3b8';
@@ -2257,9 +2271,9 @@
                 c.fillStyle = '#fff'; rr(c, bx, byy, s.BOX_W, s.BOX_H, 10); c.fill();
                 c.strokeStyle = col; c.lineWidth = 2.5; rr(c, bx, byy, s.BOX_W, s.BOX_H, 10); c.stroke();
                 c.fillStyle = col; rr(c, bx, byy, 9, s.BOX_H, 5); c.fill();
-                c.fillStyle = '#1e293b'; c.font = F(800, 19); c.fillText(fitText(c, g.it.name, s.BOX_W - 28), bx + 18, byy + 23);
-                c.fillStyle = '#e65c00'; c.font = F(900, 20); const am = `${fmt(g.it.amount)}만 원`; c.fillText(am, bx + 18, byy + 47);
-                if (g.it.note) { const aw = c.measureText(am).width; c.fillStyle = /감액|부족/.test(g.it.note) ? '#ef4444' : '#2563eb'; c.font = F(700, 15); c.fillText(fitText(c, '(' + g.it.note + ')', s.BOX_W - aw - 34), bx + 24 + aw, byy + 46); }
+                c.fillStyle = '#1e293b'; c.font = F(800, 20); c.fillText(fitText(c, g.it.name, s.BOX_W - 26), bx + 17, byy + 21);
+                c.fillStyle = '#e65c00'; c.font = F(900, 21); const am = `${fmt(g.it.amount)}만 원`; c.fillText(am, bx + 17, byy + 43);
+                if (g.it.note) { const aw = c.measureText(am).width; c.fillStyle = /감액|부족/.test(g.it.note) ? '#ef4444' : '#2563eb'; c.font = F(700, 15); c.fillText(fitText(c, '(' + g.it.note + ')', s.BOX_W - aw - 34), bx + 24 + aw, byy + 42); }
             });
         }
 
@@ -2310,23 +2324,57 @@
                 c.fillText(am, x + (cw - c.measureText(am).width) / 2, yy + 64);
             }
         }
-        // 그래프 쪽: 연차 카드를 4칸씩 줄로 묶어 쪽 높이에 맞게 나눈다(카드는 쪼개지 않음)
+        // 그래프 쪽 구성: 연차 수에 따라 카드 크기·배치를 조절한다
+        //  1~2개: 가로 2칸 큼직하게 / 3개: 3칸 / 4개: 4칸 / 5~8개: 4×2(한 쪽) / 9개 이상: 쪽당 6개(3×2) 또는 8개(4×2)로 나눔(예: 20개 = 8+8+4)
         function reportPlan() {
-            const PAD = 50, COLS = 4, COLGAP = 18, CARD_HEAD = 62, CARD_PAD = 22, ROWGAP = 18, HEAD1 = 330, HEAD2 = 116, FOOT = 70;
-            const CW = (PG.W - PAD * 2 - COLGAP * (COLS - 1)) / COLS;
-            const L = layout(CW);
-            const rows = []; for (let i = 0; i < L.length; i += COLS) rows.push(L.slice(i, i + COLS));
-            const rowH = r => CARD_HEAD + Math.max(...r.map(x => x.bodyH)) + CARD_PAD;
-            const pages = []; let cur = { rows: [], y: HEAD1, head: HEAD1 };
-            rows.forEach(r => {
-                const rh = rowH(r) + ROWGAP;
-                if (cur.rows.length && cur.y + rh > PG.H - FOOT) { pages.push(cur); cur = { rows: [], y: HEAD2, head: HEAD2 }; }
-                cur.rows.push(r); cur.y += rh;
+            const PAD = 46, GAP = 16, HEADH = 80, CARD_PAD = 14, HEAD1 = 322, HEAD2 = 108, FOOT = 60, CWMIN = 420, CWMAX = 760, SMAX = 2.4;
+            const L0 = layout(560);   // 카드 높이(bodyH)는 폭과 무관
+            const N = L0.length;
+            let counts = [], cap = 8;
+            if (N <= 8) counts = [N];
+            else { const P = Math.ceil(N / 8); cap = N <= 6 * P ? 6 : 8; for (let r = N; r > 0; r -= cap) counts.push(Math.min(cap, r)); }
+            const gridFor = cnt => cnt <= 2 ? [2, 1] : cnt === 3 ? [3, 1] : cnt === 4 ? [4, 1] : (cap === 6 ? [3, 2] : [4, 2]);
+            const pages = []; let idx = 0;
+            (counts.length ? counts : [0]).forEach((cnt, pi) => {
+                const cards = L0.slice(idx, idx + cnt); idx += cnt;
+                const head = pi === 0 ? HEAD1 : HEAD2;
+                const [cols, rows] = gridFor(cnt);
+                const availW = PG.W - PAD * 2, availH = PG.H - head - FOOT;
+                const cellW = (availW - GAP * (cols - 1)) / cols, cellH = (availH - GAP * (rows - 1)) / rows;
+                const RH0 = cards.length ? Math.max(...cards.map(x => HEADH + x.bodyH + CARD_PAD)) : 100;
+                const sc = Math.min(cellH / RH0, cellW / CWMIN, SMAX);
+                const CWd = Math.min(cellW / sc, CWMAX);
+                pages.push({ years: cards.map(x => x.y), head, cols, rows, cellW, cellH, GAP, PAD, HEADH, CARD_PAD, sc, CWd });
             });
-            pages.push(cur);
-            return { pages, rowH, CW, PAD, COLGAP, CARD_HEAD, ROWGAP };
+            return { pages, HEADH, CARD_PAD };
         }
-        // 부연설명 쪽: 2단으로 흘려 쓰고, 단·쪽이 바뀌면 연차 제목을 '(계속)'으로 다시 붙인다
+        function drawReportPage(c, rp, pg, idx, total) {
+            if (idx === 0) drawReportHead(c); else drawMiniHead(c, '2610 주요치료통합보장 특약 보험금시뮬레이션 (계속)');
+            if (!pg.years.length) { c.fillStyle = '#94a3b8'; c.font = FNT(700, 28); c.fillText('선택한 담보가 없습니다.', pg.PAD, pg.head + 60); }
+            const L = layout(pg.CWd).filter(x => pg.years.includes(x.y));
+            // 줄별 높이(그 줄에서 가장 큰 카드 기준)
+            const rowsArr = []; for (let r = 0; r < pg.rows; r++) { const rc = L.slice(r * pg.cols, (r + 1) * pg.cols); if (rc.length) rowsArr.push(rc); }
+            let Y = pg.head;
+            rowsArr.forEach((rc, ri) => {
+                const RH0 = Math.max(...rc.map(x => pg.HEADH + x.bodyH + pg.CARD_PAD));
+                const offX = (pg.cols - rc.length) * (pg.cellW + pg.GAP) / 2;   // 덜 찬 줄은 가운데로
+                rc.forEach((sct, ci) => {
+                    const cx = pg.PAD + offX + ci * (pg.cellW + pg.GAP) + (pg.cellW - pg.CWd * pg.sc) / 2;
+                    c.save(); c.translate(cx, Y); c.scale(pg.sc, pg.sc);
+                    drawCard(c, FNT, sct, 0, 0, pg.CWd, RH0, pg.HEADH);
+                    c.restore();
+                });
+                Y += RH0 * pg.sc + pg.GAP;
+            });
+            drawFoot(c, idx + 1, total, '그래프');
+        }
+        // 그래프 쪽만(PC 인쇄용): 캔버스 배열
+        async function makeReportPages() {
+            try { await document.fonts.ready; } catch (e) {}
+            const rp = reportPlan(), out = [];
+            rp.pages.forEach((pg, i) => { const { cv, c } = pageCanvas(); drawReportPage(c, rp, pg, i, rp.pages.length); out.push(cv); });
+            return out;
+        }
         function narrativePlan() {
             if (!window.narrativeLayout) return [];
             const PAD = 56, GAPC = 0, TOP = 118, BOT = 70, K = 1.12;
@@ -2366,25 +2414,6 @@
                 narrativeDraw(c, { K: plan.K, ops: b.ops.map(o => ({ ...o, y: o.y - b.y0 })) }, X, Y, plan.colW);
             });
             drawFoot(c, no, total, '부연설명');
-        }
-        function drawReportPage(c, rp, pg, idx, total) {
-            if (idx === 0) drawReportHead(c); else drawMiniHead(c, '2610 주요치료통합보장 특약 보험금시뮬레이션 (계속)');
-            let Y = pg.head;
-            if (!pg.rows.length) { c.fillStyle = '#94a3b8'; c.font = FNT(700, 28); c.fillText('선택한 담보가 없습니다.', rp.PAD, Y + 60); }
-            const F = FNT;
-            pg.rows.forEach(r => {
-                const RH = rp.rowH(r);
-                r.forEach((sct, ci) => drawCard(c, F, sct, rp.PAD + ci * (rp.CW + rp.COLGAP), Y, rp.CW, RH, rp.CARD_HEAD));
-                Y += RH + rp.ROWGAP;
-            });
-            drawFoot(c, idx + 1, total, '그래프');
-        }
-        // 그래프 쪽만(PC 인쇄용): 캔버스 배열
-        async function makeReportPages() {
-            try { await document.fonts.ready; } catch (e) {}
-            const rp = reportPlan(), out = [];
-            rp.pages.forEach((pg, i) => { const { cv, c } = pageCanvas(); drawReportPage(c, rp, pg, i, rp.pages.length); out.push(cv); });
-            return out;
         }
         // 그래프 쪽 + 부연설명 쪽 전체(휴대폰 보내기·사진 저장용): [{blob,url}] 배열
         async function makePages() {
@@ -2440,6 +2469,7 @@
         };
         window.__mMakeReport = async () => (await makeReportPages())[0].toDataURL('image/png');   // 확인용
         window.__mMakePages = makePages;   // 확인용
+        window.__mMakeReportAll = async () => (await makeReportPages()).map(cv => cv.toDataURL('image/jpeg', 0.85));   // 확인용
         window.__mMakeImage = async () => (await makePages())[0];   // 확인용
 
         let last = null;
