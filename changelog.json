@@ -1263,5 +1263,13 @@
   "page": "index.html",
   "sel": null,
   "note": "메인화면 '2610 퍼플약관 검색기' 링크를 https://hiyk.co.kr/file.php 로 교체(화면 열기·링크 복사 모두)"
+ },
+ {
+  "id": "c203-1",
+  "v": "v1.203",
+  "at": "2026-11-12 18:30",
+  "page": "index.html",
+  "sel": null,
+  "note": "메인화면 '2610 퍼플약관 검색기' 링크를 https://hiyk.co.kr/ 로 변경(화면 열기·링크 복사 모두)"
  }
 ]
