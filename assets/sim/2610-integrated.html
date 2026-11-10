@@ -93,6 +93,9 @@
         html.mapp #mApp { display: flex; flex-direction: column; position: fixed; inset: 0; height: 100dvh; background: #f8fafc; z-index: 60; font-family: 'Noto Sans KR', sans-serif; color: #1e293b; }
         .m-top { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; padding-top: max(10px, env(safe-area-inset-top)); background: #fff; border-bottom: 1px solid #e2e8f0; }
         .m-title { font-size: 16px; font-weight: 900; letter-spacing: -.3px; }
+        .m-planrow { display: flex; gap: 8px; padding: 8px 14px; background: #fff; border-bottom: 1px solid #e2e8f0; }
+        .m-planrow button { flex: 1; padding: 9px 4px; border-radius: 999px; border: 2px solid #e2e8f0; background: #fff; color: #475569; font-size: 13px; font-weight: 800; }
+        .m-planrow button.on { background: #ff6600; border-color: #ff6600; color: #fff; box-shadow: 0 2px 6px rgba(255,102,0,.35); }
         .m-plantag { margin-left: 6px; font-size: 11px; font-weight: 800; color: #fff; background: #ff6600; border-radius: 999px; padding: 2px 8px; vertical-align: 2px; }
         .m-icon { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #e2e8f0; background: #f8fafc; font-size: 17px; font-weight: 900; color: #334155; }
         .m-bal { background: #fff; padding: 8px 14px 10px; border-bottom: 1px solid #e2e8f0; }
@@ -678,9 +681,12 @@
         <div class="m-top">
             <div class="m-title">2610 통합보장 시뮬<span id="mPlanTag" class="m-plantag"></span></div>
             <div style="display:flex;gap:8px;align-items:center">
-                <button type="button" class="m-icon" onclick="openManual()" aria-label="매뉴얼 보기" title="매뉴얼 보기" style="width:auto;padding:0 12px;border-radius:999px;font-size:13px;font-weight:800">📖 매뉴얼</button>
                 <button type="button" class="m-icon" onclick="mOpenSheet('set')" aria-label="설정">⚙</button>
             </div>
+        </div>
+        <div class="m-planrow" id="mPlanRow">
+            <button type="button" data-plan="10억" onclick="changePlan('10억')">💎 프리미엄 10억 통장</button>
+            <button type="button" data-plan="5억" onclick="changePlan('5억')">📘 표준형 5억 통장</button>
         </div>
         <div class="m-bal">
             <div class="m-bal-row"><span class="m-bal-amt" id="mBal">100,000</span><span class="m-bal-unit">만원</span><span class="m-bal-ratio" id="mRatio"></span></div>
@@ -2090,6 +2096,7 @@
             $('mBal').textContent = bal.toLocaleString();
             $('mRatio').textContent = `(잔여 ${pct.toFixed(1)}% / 사용 ${(100 - pct).toFixed(1)}%)`;
             $('mBarFill').style.width = pct + '%';
+            document.querySelectorAll('#mPlanRow button').forEach(b => b.classList.toggle('on', b.dataset.plan === currentPlan));
             $('mPlanTag').textContent = `${currentPlan} · ${TERM}년${perTxOn ? ' · 암추가' : ''}`;
             const lvEl = $('mLv');
             lvEl.classList.toggle('on', lvNow());
