@@ -89,6 +89,14 @@
     '#PENBAR.docked .pen-hr{width:1px;height:22px}' +
     '#PENBAR.docked #PEN_SW{flex-direction:row !important;gap:6px !important}' +
     '@media(max-width:999px){#PENBAR.docked #PEN_X{order:9;flex:1 0 100%;border-radius:12px;margin:2px 0}}' +
+    /* 화면을 확대(핀치)했을 때: 도구 막대를 '보이는 영역' 맨 위 오른쪽에 작게 붙여 따라오게 한다(프레젠테이션의 상단 배치와 같은 방식) */
+    '#PENBAR.zoomed{flex-direction:row-reverse;align-items:center;gap:6px}' +
+    '#PENBAR.zoomed #PEN_T{width:34px;height:34px;font-size:15px;box-shadow:0 3px 10px rgba(0,0,0,.3)}' +
+    '#PENBAR.zoomed #PEN_X{flex-direction:row;flex-wrap:wrap;justify-content:center;gap:5px;padding:4px 8px;border-radius:999px;box-shadow:0 3px 10px rgba(0,0,0,.3)}' +
+    '#PENBAR.zoomed .pen-b{width:28px;height:28px;border-radius:8px;font-size:13px}' +
+    '#PENBAR.zoomed .pen-sw{width:24px;height:24px}' +
+    '#PENBAR.zoomed .pen-hr{width:1px;height:20px}' +
+    '#PENBAR.zoomed #PEN_SW{flex-direction:row !important;gap:5px !important}' +
     '.pen-b.tool{font-size:16px}' +
     '.pen-b.hl.on{background:#FFE600;border-color:#FFE600;color:#1A2744}';
 
@@ -300,6 +308,16 @@
     if (!bar || bar.classList.contains('docked')) return;
     var z = zoomNow();
     bar.style.transform = '';
+    /* 확대 중(1.05배 이상): 위 오른쪽에 작게 */
+    if (vv && z > 1.05) {
+      bar.classList.add('zoomed');
+      bar.style.right = '8px'; bar.style.bottom = 'auto'; bar.style.top = '8px';
+      var rz = bar.getBoundingClientRect();
+      bar.style.transformOrigin = '100% 0%';
+      bar.style.transform = 'translate(' + (vv.offsetLeft + vv.width - 8 / z - rz.right) + 'px,' + (vv.offsetTop + 8 / z - rz.top) + 'px) scale(' + (1 / z) + ')';
+      return;
+    }
+    bar.classList.remove('zoomed'); bar.style.top = ''; bar.style.bottom = '';
     bar.style.right = BAR_M + 'px'; bar.style.bottom = BAR_M + 'px';
     if (!vv || (Math.abs(z - 1) < 0.01 && vv.offsetLeft < 1 && vv.offsetTop < 1)) {
       bar.style.right = (BAR_M + barPos.r) + 'px'; bar.style.bottom = (BAR_M + barPos.b) + 'px';
@@ -315,7 +333,7 @@
   function dragBar(bar, tog) {
     var d = null, moved = false;
     tog.addEventListener('pointerdown', function (e) {
-      if (bar.classList.contains('docked')) return;   /* 제목줄에 붙어 있을 때는 끌어 옮기지 않는다 */
+      if (bar.classList.contains('docked') || bar.classList.contains('zoomed')) return;   /* 제목줄·확대 중 상단에 붙어 있을 때는 끌어 옮기지 않는다 */
       d = { x: e.clientX, y: e.clientY, r: barPos.r, b: barPos.b, id: e.pointerId };
       moved = false;
       try { tog.setPointerCapture(e.pointerId); } catch (_) {}
