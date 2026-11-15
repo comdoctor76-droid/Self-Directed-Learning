@@ -101,7 +101,7 @@ if(!s){location.replace('login.html?next='+encodeURIComponent(location.href));re
 if(s.role!=='admin'){document.body.innerHTML='<div class="auth-bg"><div class="auth-card"><h1>관리자만 볼 수 있습니다</h1><p class="sub">'+s.emp+' 계정은 관리자 권한이 없습니다.</p><a class="btn" href="../index.html">메인으로</a></div></div>';return;}
 if(s.mustChange||!s.consent){location.replace('login.html?next='+encodeURIComponent(location.href));return;}
 var B=A.backend();
-var PAGES={'index.html':'메인','sales-guide.html':'특약나열식 제안의 문제점','receipt-guide.html':'상담 1일차 · 의료비 영수증','priority-guide.html':'상담 2일차 · 중증질환과 보험','bias-guide.html':'고객이 범하는 인지적 오류','lung-cancer-guide.html':'폐암 가이드','breast-cancer-guide.html':'유방암 가이드','cancer-guide.html':'항암치료 가이드','corporate-guide.html':'법인컨설팅 가이드','test.html':'(체험) 시험 페이지','login':'로그인'};
+var PAGES={'index.html':'메인','farmer-guide.html':'농부의 마음으로 고객을 짓다','sales-guide.html':'특약나열식 제안의 문제점','receipt-guide.html':'상담 1일차 · 의료비 영수증','priority-guide.html':'상담 2일차 · 중증질환과 보험','bias-guide.html':'고객이 범하는 인지적 오류','lung-cancer-guide.html':'폐암 가이드','breast-cancer-guide.html':'유방암 가이드','cancer-guide.html':'항암치료 가이드','corporate-guide.html':'법인컨설팅 가이드','test.html':'(체험) 시험 페이지','login':'로그인'};
 var KINDS={login:'로그인',page:'페이지 진입',section:'섹션 보기',card:'카드 열기',image:'그림 확대'};
 var FIELDS=[['emp_id','사번'],['name','성명'],['phone','연락처'],['company','소속사'],['region','지역단'],['vision_center','비전센터'],['branch','지점'],['note','비고']];
 document.getElementById('who').textContent=(s.name||s.emp)+' ('+s.emp+') · '+(A.config.mode==='firebase'?'운영 모드 (Firebase)':'체험 모드 — 이 브라우저에만 저장');
