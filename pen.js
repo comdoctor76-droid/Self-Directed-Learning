@@ -97,6 +97,11 @@
     '#PENBAR.zoomed .pen-sw{width:24px;height:24px}' +
     '#PENBAR.zoomed .pen-hr{width:1px;height:20px}' +
     '#PENBAR.zoomed #PEN_SW{flex-direction:row !important;gap:5px !important}' +
+    /* 펜을 한 번 고르면 선택한 도구 하나(+지우개·전체 지우기)만 보이고, 칩을 누르면 전체 도구가 펼쳐진다 */
+    '#PENBAR:not(.full) #PEN_M,#PENBAR:not(.full) #PEN_P,#PENBAR:not(.full) #PEN_H,#PENBAR:not(.full) #PEN_SW,#PENBAR:not(.full) .pen-hr{display:none !important}' +
+    '#PEN_CUR{position:relative;font-size:16px}' +
+    '#PEN_CUR::after{content:"";position:absolute;right:2px;bottom:2px;width:9px;height:9px;border-radius:50%;background:var(--pc,#fff);border:1.5px solid #fff}' +
+    '#PENBAR.full #PEN_CUR{background:rgba(255,255,255,.28)}' +
     '.pen-b.tool{font-size:16px}' +
     '.pen-b.hl.on{background:#FFE600;border-color:#FFE600;color:#1A2744}';
 
@@ -311,13 +316,13 @@
     /* 확대 중(1.05배 이상): 위 오른쪽에 작게 */
     if (vv && z > 1.05) {
       bar.classList.add('zoomed');
-      bar.style.right = '8px'; bar.style.bottom = 'auto'; bar.style.top = '8px';
+      bar.style.left = '8px'; bar.style.right = 'auto'; bar.style.bottom = 'auto'; bar.style.top = '8px';
       var rz = bar.getBoundingClientRect();
-      bar.style.transformOrigin = '100% 0%';
-      bar.style.transform = 'translate(' + (vv.offsetLeft + vv.width - 8 / z - rz.right) + 'px,' + (vv.offsetTop + 8 / z - rz.top) + 'px) scale(' + (1 / z) + ')';
+      bar.style.transformOrigin = '0% 0%';
+      bar.style.transform = 'translate(' + (vv.offsetLeft + 8 / z - rz.left) + 'px,' + (vv.offsetTop + 8 / z - rz.top) + 'px) scale(' + (1 / z) + ')';
       return;
     }
-    bar.classList.remove('zoomed'); bar.style.top = ''; bar.style.bottom = '';
+    bar.classList.remove('zoomed'); bar.style.top = ''; bar.style.bottom = ''; bar.style.left = '';
     bar.style.right = BAR_M + 'px'; bar.style.bottom = BAR_M + 'px';
     if (!vv || (Math.abs(z - 1) < 0.01 && vv.offsetLeft < 1 && vv.offsetTop < 1)) {
       bar.style.right = (BAR_M + barPos.r) + 'px'; bar.style.bottom = (BAR_M + barPos.b) + 'px';
@@ -378,6 +383,7 @@
     bar.id = 'PENBAR';
     bar.innerHTML =
       '<div id="PEN_X" role="group" aria-label="판서 도구">' +
+        '<button type="button" class="pen-b" id="PEN_CUR" title="선택한 도구 — 누르면 전체 도구" aria-label="선택한 도구, 누르면 전체 도구"></button>' +
         '<button type="button" class="pen-b" id="PEN_M" title="입력 방식 전환" aria-label="입력 방식 전환"></button>' +
         '<span class="pen-hr"></span>' +
         '<button type="button" class="pen-b tool" id="PEN_P" title="펜" aria-label="펜">🖊️</button>' +
@@ -397,6 +403,7 @@
       if (tog.__dragged) { e.preventDefault(); return; }
       penOn = !penOn;
       bar.classList.toggle('open', penOn);
+      bar.classList.remove('full');   /* 켤 때는 선택해 둔 도구 하나만 */
       tog.classList.toggle('on', penOn);
       if (!penOn) { erasing = false; sync(); }
       applyTouchAction();
@@ -412,15 +419,17 @@
       var t = e.target;
       if (t.classList && t.classList.contains('pen-sw')) {
         if (tool === 'hl') hlColor = t.getAttribute('data-c'); else color = t.getAttribute('data-c');
-        erasing = false; sync();
+        erasing = false; bar.classList.remove('full'); sync();
       } else if (t.id === 'PEN_P') {
-        tool = 'pen'; erasing = false; sync();
+        tool = 'pen'; erasing = false; bar.classList.remove('full'); sync();
       } else if (t.id === 'PEN_H') {
-        tool = 'hl'; erasing = false; sync();
+        tool = 'hl'; erasing = false; bar.classList.remove('full'); sync();
+      } else if (t.id === 'PEN_CUR') {
+        bar.classList.toggle('full');
       } else if (t.id === 'PEN_M') {
         setMode(inputMode === 'touch' ? 'pen' : 'touch');
       } else if (t.id === 'PEN_E') {
-        erasing = !erasing; sync();
+        erasing = !erasing; bar.classList.remove('full'); sync();
       } else if (t.id === 'PEN_C') {
         clearAll();
       }
@@ -434,6 +443,9 @@
              'aria-label="' + list[k].n + '"></button>';
       }
       bar.querySelector('#PEN_SW').innerHTML = h;
+      var cur0 = bar.querySelector('#PEN_CUR');
+      cur0.textContent = erasing ? '🧽' : (tool === 'hl' ? '🖍️' : '🖊️');
+      cur0.style.setProperty('--pc', erasing ? '#cbd5e1' : sel);
       var sws = bar.querySelectorAll('.pen-sw');
       for (var i = 0; i < sws.length; i++) {
         sws[i].classList.toggle('on', !erasing && sws[i].getAttribute('data-c') === sel);
