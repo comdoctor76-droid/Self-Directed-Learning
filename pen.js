@@ -541,14 +541,29 @@
     /* 두 손가락 확대·이동 중: 해상도 재조정(끝난 뒤 한 번) + 도구 막대를 보이는 영역에 붙여 둔다 */
     var vv = window.visualViewport;
     if (vv) {
-      var tmr = 0;
+      var tmr = 0, raf = 0, lastKey = '', calm = 0;
+      var vvKey = function () { return [vv.scale, vv.offsetLeft, vv.offsetTop, vv.width, vv.height, vv.pageLeft, vv.pageTop].join(); };
+      /* 확대·이동 중에는 브라우저가 viewport 이벤트를 드문드문(특히 iOS) 보내므로, 확대된 동안은 매 프레임
+         '보이는 영역'이 바뀌었는지 보고 도구 막대를 좌측 상단에 다시 붙인다 → 얼마나 확대하든, 어디로 이동하든 따라다닌다 */
+      var tick = function () {
+        raf = 0;
+        var k = vvKey();
+        if (k !== lastKey) { lastKey = k; calm = 0; followBar(); } else calm++;
+        if (zoomNow() > 1.01 || calm < 8) raf = requestAnimationFrame(tick);
+      };
+      var kick = function () { calm = 0; if (!raf) raf = requestAnimationFrame(tick); };
       var onVV = function () {
-        followBar();
+        followBar(); kick();
         if (tmr) clearTimeout(tmr);
         tmr = setTimeout(function () { tmr = 0; schedule(); }, 60);
       };
       vv.addEventListener('resize', onVV);
       vv.addEventListener('scroll', onVV);
+      window.addEventListener('scroll', kick, true);
+      ['touchstart', 'touchmove', 'touchend', 'touchcancel', 'gesturestart', 'gesturechange', 'gestureend', 'wheel'].forEach(function (ev) {
+        window.addEventListener(ev, kick, { passive: true, capture: true });
+      });
+      kick();
     }
   }
 
