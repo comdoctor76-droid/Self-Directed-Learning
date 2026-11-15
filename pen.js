@@ -294,76 +294,46 @@
   }
 
   /* 확대 상태에서도 도구 막대가 화면 오른쪽 아래(보이는 영역 기준)에 같은 크기로 보이게 */
-  var BAR_KEY = 'pen_bar_pos', BAR_M = 16;
-  var barPos = { r: 0, b: 0 };   /* 기본 위치(오른쪽 아래 16px)에서 더 안쪽으로 옮긴 거리(화면 px) */
-  try { var bp = JSON.parse(localStorage.getItem(BAR_KEY) || 'null'); if (bp && isFinite(bp.r) && isFinite(bp.b)) barPos = bp; } catch (_) {}
-  function clampBar(bar) {
-    var r = bar.getBoundingClientRect(), z = zoomNow();
-    var w = r.width * z || 60, h = r.height * z || 60;   /* 화면상 크기 */
-    var vw = (window.visualViewport ? window.visualViewport.width * z : vpW());
-    var vh = (window.visualViewport ? window.visualViewport.height * z : vpH());
-    barPos.r = Math.max(0, Math.min(barPos.r, vw - w - BAR_M * 2));
-    barPos.b = Math.max(0, Math.min(barPos.b, vh - h - BAR_M * 2));
-  }
+  var BAR_M = 8;   /* 화면 좌측 상단에서 떨어진 거리(화면 px) */
   function zoomNow() { var vv = window.visualViewport; return (vv && vv.scale) || 1; }
-  /* 도구 막대를 '보이는 영역'의 오른쪽 아래(옮긴 위치 반영)에, 확대해도 같은 크기로 둔다.
-     transform 을 지운 상태의 실제 위치를 재서 맞추므로 iOS 의 fixed 요소 어긋남에도 맞는다 */
+  /* 위쪽에 붙어 있는(스크롤해도 따라오는) 메뉴줄이 보이면 그 아래로 내려 앉는다 — '← 메인으로' 같은 버튼을 가리지 않게 */
+  function topOffset(vv) {
+    var nav = document.querySelector('nav.nav'), z = zoomNow();
+    if (nav) {
+      var r = nav.getBoundingClientRect(), ot = vv ? vv.offsetTop : 0;
+      var vt = (r.top - ot) * z, vb = (r.bottom - ot) * z;   /* 보이는 영역 기준 화면 px */
+      if (r.height > 0 && vt < 60 && vb > 0) return vb + BAR_M;
+    }
+    return BAR_M;
+  }
+  var origin = null;   /* 문서 좌표계의 원점(absolute 의 기준)이 페이지 좌표로 어디인지 — 확대하는 동안 한 번만 잰다 */
+  /* 도구 막대는 항상 '화면' 좌측 상단에 작게 둔다.
+     · 보통(확대 안 함 · PC 휠/브라우저 확대 포함): position:fixed 로 구석에 붙인다 — 브라우저가 알아서 고정해 주므로 계산이 필요 없다
+     · 손가락·트랙패드로 확대(핀치)한 동안: fixed 요소는 확대 전 화면(레이아웃 뷰포트)에 붙어 있어 많이 확대하면 중간으로 밀려나므로,
+       문서 좌표의 absolute 로 바꿔 '보이는 영역의 페이지 좌표'(visualViewport.pageLeft/Top)에 직접 놓고 1/배율로 줄인다.
+       getBoundingClientRect 같은 측정값에 의존하지 않아 브라우저의 fixed 보정 오차와 무관하다 */
   function followBar() {
     var bar = document.getElementById('PENBAR'), vv = window.visualViewport;
     if (!bar || bar.classList.contains('docked')) return;
-    var z = zoomNow();
-    bar.style.transform = '';
-    /* 확대 중(1.05배 이상): 위 오른쪽에 작게 */
-    if (vv && z > 1.05) {
-      bar.classList.add('zoomed');
-      bar.style.left = '8px'; bar.style.right = 'auto'; bar.style.bottom = 'auto'; bar.style.top = '8px';
-      var rz = bar.getBoundingClientRect();
-      bar.style.transformOrigin = '0% 0%';
-      bar.style.transform = 'translate(' + (vv.offsetLeft + 8 / z - rz.left) + 'px,' + (vv.offsetTop + 8 / z - rz.top) + 'px) scale(' + (1 / z) + ')';
+    bar.classList.add('zoomed');   /* 작은 크기(확대할 때와 같은 크기)를 항상 쓴다 */
+    var z = zoomNow(), top = topOffset(vv);
+    if (!vv || z <= 1.01) {
+      origin = null;
+      bar.style.position = ''; bar.style.transform = '';
+      bar.style.left = BAR_M + 'px'; bar.style.top = top + 'px'; bar.style.right = 'auto'; bar.style.bottom = 'auto';
       return;
     }
-    bar.classList.remove('zoomed'); bar.style.top = ''; bar.style.bottom = ''; bar.style.left = '';
-    bar.style.right = BAR_M + 'px'; bar.style.bottom = BAR_M + 'px';
-    if (!vv || (Math.abs(z - 1) < 0.01 && vv.offsetLeft < 1 && vv.offsetTop < 1)) {
-      bar.style.right = (BAR_M + barPos.r) + 'px'; bar.style.bottom = (BAR_M + barPos.b) + 'px';
-      return;
+    if (!origin) {
+      bar.style.position = 'absolute'; bar.style.transform = ''; bar.style.right = 'auto'; bar.style.bottom = 'auto';
+      bar.style.left = '0px'; bar.style.top = '0px';
+      var r0 = bar.getBoundingClientRect();
+      origin = { x: r0.left + (window.pageXOffset || 0), y: r0.top + (window.pageYOffset || 0) };
     }
-    var r = bar.getBoundingClientRect();
-    var wantR = vv.offsetLeft + vv.width - (BAR_M + barPos.r) / z;
-    var wantB = vv.offsetTop + vv.height - (BAR_M + barPos.b) / z;
-    bar.style.transformOrigin = '100% 100%';
-    bar.style.transform = 'translate(' + (wantR - r.right) + 'px,' + (wantB - r.bottom) + 'px) scale(' + (1 / z) + ')';
-  }
-  /* ✏️ 버튼을 누른 채 끌면 도구 막대 이동 (짧게 누르면 기존처럼 켜기/끄기) */
-  function dragBar(bar, tog) {
-    var d = null, moved = false;
-    tog.addEventListener('pointerdown', function (e) {
-      if (bar.classList.contains('docked') || bar.classList.contains('zoomed')) return;   /* 제목줄·확대 중 상단에 붙어 있을 때는 끌어 옮기지 않는다 */
-      d = { x: e.clientX, y: e.clientY, r: barPos.r, b: barPos.b, id: e.pointerId };
-      moved = false;
-      try { tog.setPointerCapture(e.pointerId); } catch (_) {}
-    });
-    tog.addEventListener('pointermove', function (e) {
-      if (!d || e.pointerId !== d.id) return;
-      var z = zoomNow();
-      var dx = (e.clientX - d.x) * z, dy = (e.clientY - d.y) * z;   /* 화면 px */
-      if (!moved && dx * dx + dy * dy < 36) return;
-      moved = true;
-      barPos.r = d.r - dx; barPos.b = d.b - dy;
-      clampBar(bar); followBar();
-      e.preventDefault();
-    });
-    function end(e) {
-      if (!d || (e && e.pointerId !== d.id)) return;
-      d = null;
-      if (moved) {
-        try { localStorage.setItem(BAR_KEY, JSON.stringify(barPos)); } catch (_) {}
-        tog.__dragged = true;   /* 바로 뒤따르는 click 은 무시 */
-        setTimeout(function () { tog.__dragged = false; }, 350);
-      }
-    }
-    tog.addEventListener('pointerup', end);
-    tog.addEventListener('pointercancel', end);
+    bar.style.position = 'absolute'; bar.style.right = 'auto'; bar.style.bottom = 'auto';
+    bar.style.left = (vv.pageLeft + BAR_M / z - origin.x) + 'px';
+    bar.style.top = (vv.pageTop + top / z - origin.y) + 'px';
+    bar.style.transformOrigin = '0% 0%';
+    bar.style.transform = 'scale(' + (1 / z) + ')';
   }
 
   /* ── 툴바 ─────────────────────────────────────────────────── */
@@ -398,7 +368,6 @@
     document.body.appendChild(bar);
 
     var tog = bar.querySelector('#PEN_T');
-    dragBar(bar, tog);
     tog.addEventListener('click', function (e) {
       if (tog.__dragged) { e.preventDefault(); return; }
       penOn = !penOn;
