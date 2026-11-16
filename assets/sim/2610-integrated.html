@@ -2565,17 +2565,37 @@
         // 인쇄: 그래프 쪽(A4 가로 그림)을 인쇄 전용 영역에 넣고, 부연설명은 글자로 이어서 인쇄
         window.printReport = async function () {
             if (getTotalClaimed() <= 0) { showModal('인쇄할 결과가 없습니다', '먼저 담보 항목을 선택해 시뮬레이션해 주세요.'); return; }
-            const cvs = await makeReportPages();
-            let area = document.getElementById('PRINTAREA');
-            if (!area) { area = document.createElement('div'); area.id = 'PRINTAREA'; document.body.appendChild(area); }
-            area.innerHTML = '';
-            const imgs = cvs.map(cv => { const im = new Image(); im.alt = '시뮬레이션 결과'; area.appendChild(im); return im; });
-            const nar = document.createElement('div'); nar.id = 'PRINT_NARR'; area.appendChild(nar);
-            nar.innerHTML = '<h3 class="nv-tt">📝 연도별 부연설명</h3>' + narrativeHtml();   // 출력에는 항상 부연설명 포함
-            await Promise.all(imgs.map((im, i) => new Promise(res => { im.onload = () => { (im.decode ? im.decode() : Promise.resolve()).then(res, res); }; im.onerror = res; im.src = cvs[i].toDataURL('image/png'); })));
-            cvs.forEach(cv => { cv.width = cv.height = 1; });
-            setTimeout(() => window.print(), 50);
+            try {
+                const cvs = await makeReportPages();
+                let area = document.getElementById('PRINTAREA');
+                if (!area) { area = document.createElement('div'); area.id = 'PRINTAREA'; document.body.appendChild(area); }
+                area.innerHTML = '';
+                const imgs = cvs.map(cv => { const im = new Image(); im.alt = '시뮬레이션 결과'; area.appendChild(im); return im; });
+                const nar = document.createElement('div'); nar.id = 'PRINT_NARR'; area.appendChild(nar);
+                nar.innerHTML = '<h3 class="nv-tt">📝 연도별 부연설명</h3>' + narrativeHtml();   // 출력에는 항상 부연설명 포함
+                await Promise.all(imgs.map((im, i) => new Promise(res => { im.onload = () => { (im.decode ? im.decode() : Promise.resolve()).then(res, res); }; im.onerror = res; im.src = cvs[i].toDataURL('image/png'); })));
+                cvs.forEach(cv => { cv.width = cv.height = 1; });
+                // 그림을 만드는 동안 시간이 지나면 브라우저(특히 사파리·아이패드)는 '버튼을 누른 직후가 아닌' print() 를 조용히 막는다.
+                // 누른 지 오래됐으면 [인쇄하기] 버튼을 한 번 더 보여 주고, 그 버튼 클릭에서 print() 를 부른다.
+                const fresh = !(navigator.userActivation) || navigator.userActivation.isActive;
+                if (fresh) { setTimeout(() => { try { window.print(); } catch (e) { askPrint(); } }, 50); }
+                else askPrint();
+            } catch (e) {
+                showModal('인쇄를 시작하지 못했습니다', '화면을 새로고침한 뒤 다시 눌러 주세요. 계속 안 되면 [결과 보내기]로 PDF를 만들어 인쇄해 주세요. (' + (e && e.message ? e.message : e) + ')');
+            }
         };
+        function askPrint() {
+            let bar = document.getElementById('PRINT_GO');
+            if (!bar) {
+                bar = document.createElement('div'); bar.id = 'PRINT_GO';
+                bar.style.cssText = 'position:fixed;left:50%;top:18%;transform:translateX(-50%);z-index:2147483000;background:#1A2744;color:#fff;border-radius:16px;padding:18px 22px;box-shadow:0 12px 40px rgba(0,0,0,.45);text-align:center;font-family:inherit;max-width:90vw';
+                bar.innerHTML = '<div style="font-weight:900;font-size:16px;margin-bottom:6px">🖨 인쇄할 준비가 되었습니다</div><div style="font-size:13px;color:#cbd5e1;margin-bottom:12px">아래 버튼을 눌러 인쇄 창을 여세요.</div><button type="button" id="PRINT_GO_B" style="background:#ff6600;color:#fff;border:0;border-radius:999px;padding:10px 26px;font-size:15px;font-weight:900;cursor:pointer">인쇄하기</button> <button type="button" id="PRINT_GO_X" style="background:transparent;color:#cbd5e1;border:1px solid #475569;border-radius:999px;padding:10px 16px;font-size:13px;cursor:pointer">닫기</button>';
+                document.body.appendChild(bar);
+                bar.querySelector('#PRINT_GO_B').onclick = () => { bar.style.display = 'none'; try { window.print(); } catch (e) { showModal('인쇄 창을 열지 못했습니다', '브라우저 메뉴의 인쇄(Ctrl+P)를 이용해 주세요.'); } };
+                bar.querySelector('#PRINT_GO_X').onclick = () => { bar.style.display = 'none'; };
+            }
+            bar.style.display = 'block';
+        }
         window.__mMakeReport = async () => (await makeReportPages())[0].toDataURL('image/png');   // 확인용
         window.__mMakePages = makePages;   // 확인용
         window.__mMakeReportAll = async () => (await makeReportPages()).map(cv => cv.toDataURL('image/jpeg', 0.85));   // 확인용
