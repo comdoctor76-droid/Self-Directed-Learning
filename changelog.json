@@ -1391,5 +1391,13 @@
   "page": "lung-cancer-guide.html",
   "sel": null,
   "note": "'5. 관련자료' 학술자료 주소(https://youtu.be/uPRfI69VQVU)를 눌러 바로 새 탭에서 열리는 링크로 수정"
+ },
+ {
+  "id": "c219-1",
+  "v": "v1.219",
+  "at": "2026-11-17 12:00",
+  "page": "lung-cancer-guide.html",
+  "sel": null,
+  "note": "폐암 가이드: 기존 SECTION 05(제안의 기술 - 설계사의 능력, 사례 A·B 카드와 모듈 그림 버튼) 전체 제외 / '진단금을 고집하는 고객에게 이야기 해야 하는 것' 내용을 SECTION 05로 본문에 바로 표시, 상단 메뉴 ⑤ 이름 변경"
  }
 ]
