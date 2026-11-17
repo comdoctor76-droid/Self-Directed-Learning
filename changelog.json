@@ -1383,5 +1383,13 @@
   "page": "design-guide.html",
   "sel": null,
   "note": "3대질병 가입우선순위(SECTION 01) 첫 번째 사진을 '병원비·보험금' 표기의 새 '고객님을 위한 질병 대비 가이드'로 교체"
+ },
+ {
+  "id": "c218-1",
+  "v": "v1.218",
+  "at": "2026-11-17 11:30",
+  "page": "lung-cancer-guide.html",
+  "sel": null,
+  "note": "'5. 관련자료' 학술자료 주소(https://youtu.be/uPRfI69VQVU)를 눌러 바로 새 탭에서 열리는 링크로 수정"
  }
 ]
