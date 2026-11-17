@@ -24,7 +24,7 @@
       "desc": "보험료 걱정이 없다면 모든걸 가입하면 문제 없지만, 제한된 보험료에 꼭 필요한 보장을 생각해야 한다면 우선순위를 정할수 있어야 합니다.",
       "type": "embed",
       "embed": {
-        "src": "assets/embeds/priority3.html?v=215",
+        "src": "assets/embeds/priority3.html?v=216",
         "title": "3대질병 가입의 우선순위 인포그래픽"
       },
       "image": {
