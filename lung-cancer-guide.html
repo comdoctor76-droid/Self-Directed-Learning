@@ -648,7 +648,17 @@ function renderSection(sec,si){
       window.IMGDATA[akey]={src:a.image.src,name:(a.image.alt||sec.title||'infographic')+'.'+_extOf(a.image.src)};
       h+='<div class="diagram"><img src="'+_t(a.image.src)+'" alt="'+_t(a.image.alt||sec.title)+'" onclick="OI(\''+akey+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
     }
-    h+=_t(a.modalBody)+'</div>';
+    h+=_t(a.modalBody);
+    var aBot=[];
+    if(a.bottomImage){aBot=(Object.prototype.toString.call(a.bottomImage)==='[object Array]')?a.bottomImage:[a.bottomImage];}
+    aBot.forEach(function(bi,bn){
+      if(!bi||!bi.src)return;
+      var bkey=akey+'_bot'+bn;
+      window.IMGDATA[bkey]={src:bi.src,name:(bi.alt||bi.heading||sec.title||'infographic')+'.'+_extOf(bi.src)};
+      if(bi.heading)h+='<h4>'+_t(bi.heading)+'</h4>';
+      h+='<div class="diagram"><img src="'+_t(bi.src)+'" alt="'+_t(bi.alt||bi.heading||sec.title)+'" onclick="OI(\''+bkey+'\')" style="cursor:zoom-in"><div class="diagram-cap">🔍 눌러서 크게 보기</div></div>';
+    });
+    h+='</div>';
   }else if(sec.type==='table'&&sec.table){
     h+='<div class="mt-box"><table class="mt"><tr>';
     (sec.table.headers||[]).forEach(function(x){h+='<th>'+_t(x)+'</th>';});
