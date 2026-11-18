@@ -12,6 +12,10 @@
    "label": "① 치료 단계별 설명"
   },
   {
+   "href": "#roadmap",
+   "label": "★ 완치 로드맵"
+  },
+  {
    "href": "#s2",
    "label": "② 산정특례 vs 비급여"
   },
@@ -104,6 +108,16 @@
      }
     }
    ]
+  },
+  {
+   "id": "roadmap",
+   "no": "완치 로드맵",
+   "title": "완치까지의 치료 로드맵",
+   "desc": "선항암 → 수술 → 후항암, 그리고 완치 판정까지 — 단계별 기간과 비용을 한 번에 정리했습니다.",
+   "type": "article",
+   "article": {
+    "modalBody": "<h4>한 장으로 보는 완치 로드맵 (폐암 2기 · 수술 가능 · 로봇수술 기준)</h4><div class=\"rmc\"><div class=\"rt\"><span>1단계 선항암 (수술 전)</span><span class=\"rp\">약 2~3개월</span></div><div class=\"rl\"><b>치료</b> 화학항암제 3주 간격 3~4회 — 암 덩어리 줄이기, 숨은 암세포 제거</div><div class=\"rl\"><b>비용</b> 기본 약 20만~60만 원 (산정특례 5%)<br>면역항암제 병용 시 약 900만~1,200만 원 추가 (비급여)</div></div><div class=\"rmarrow\">▼</div><div class=\"rmc\"><div class=\"rt\"><span>2단계 수술 (로봇 폐엽절제술)</span><span class=\"rp\">약 1개월</span></div><div class=\"rl\"><b>치료</b> 폐 한 엽 + 종격동 림프절 절제 · 입원 약 5~10일</div><div class=\"rl\"><b>비용</b> 약 1,200만~1,500만 원<br>(기본 100만~200만 급여 + 로봇 1,000만~1,300만 비급여)</div></div><div class=\"rmarrow\">▼</div><div class=\"rmc\"><div class=\"rt\"><span>3단계 후항암 (수술 후)</span><span class=\"rp\">약 3~4개월</span></div><div class=\"rl\"><b>치료</b> 화학항암제 3~4주 간격 4회 — 잔여 암세포 제거</div><div class=\"rl\"><b>비용</b> 약 40만~80만 원 (산정특례 5%)</div></div><div class=\"rmarrow\">▼</div><h4>이후 치료는 조직검사 결과에 따라 세 갈래로 나뉩니다</h4><div class=\"rmc\"><div class=\"rt\"><span>A. 기본 과정</span><span class=\"rp\">총 6~9개월</span></div><div class=\"rl\"><b>3단계 이후</b> 추가 치료 없음 (화학항암 + 수술)</div></div><div class=\"rmc\"><div class=\"rt\"><span>B. 면역항암제 병용 (PD-L1 양성)</span><span class=\"rp\">총 1년 6개월</span></div><div class=\"rl\"><b>3단계 이후</b> 수술 전 면역+화학 병용, 수술 후 화학 4회를 마친 뒤 면역항암제 3주 간격 16~17회 (약 1년)</div><div class=\"rl\"><b>추가 비용</b> 1년 약 5,000만~9,500만 원 (비급여)</div></div><div class=\"rmc\"><div class=\"rt\"><span>C. 표적항암제 병용 (EGFR 변이)</span><span class=\"rp\">총 3년 6개월</span></div><div class=\"rl\"><b>3단계 이후</b> 화학항암 4회 후 타그리소 알약 매일 3년(36개월)</div><div class=\"rl\"><b>추가 비용</b> 3년 약 2억 1,000만~2억 4,000만 원 (비급여)</div></div><div class=\"ok\"><b>🎯 완치 판정:</b> 치료를 마친 뒤 <b>5년간 재발이 없을 때</b>를 의학적 완치 기준으로 봅니다. 치료가 끝난 뒤에도 포기하지 않고 정기 검진을 잘 받는 것이 가장 중요합니다.</div><h4>수술이 어려울 때의 로드맵</h4><div class=\"rmc\"><div class=\"rt\"><span>1단계 동시 항암방사선치료(CCRT)</span><span class=\"rp\">약 5~7주</span></div><div class=\"rl\"><b>치료</b> 방사선 + 세포독성 항암제를 같은 시기에 (완치 목적) · 외래 주 5회, 총 25~33회</div><div class=\"rl\"><b>비용</b> 방사선 약 50만~150만 원 + 항암제 약 20만~40만 원 (산정특례 5%)</div></div><div class=\"rmarrow\">▼</div><div class=\"rmc\"><div class=\"rt\"><span>2단계 공고 면역치료(임핀지)</span><span class=\"rp\">약 1년</span></div><div class=\"rl\"><b>치료</b> CCRT 후 암이 커지지 않으면 2주 또는 4주 간격 주사</div><div class=\"rl\"><b>비용</b> 급여 적용 시 약 200만~300만 원<br>급여 조건 미충족 시 약 4,000만~5,000만 원 (비급여)</div></div><div class=\"note\"><b>💡 로드맵에서 비용이 커지는 곳:</b> 기본 치료(선항암·후항암 화학항암)는 산정특례로 부담이 적지만, <b>로봇수술 추가 비용 · 수술 전후 면역항암제 · 타그리소 3년 복용</b>은 비급여라서 부담이 큽니다. 그래서 치료 경로가 정해지기 전에 비급여 치료비를 대비하는 것이 중요합니다.</div>"
+   }
   },
   {
    "id": "s2",
